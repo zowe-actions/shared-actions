@@ -1,0 +1,7 @@
+name: "Parse environment variables"
+description: "Reading and parsing global environment variables"
+runs:
+  using: "composite"
+  steps:
+    - run: cd ${{github.action_path}} && cat envvars.env >> ${GITHUB_ENV}
+      shell: bash

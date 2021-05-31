@@ -1,0 +1,15 @@
+name: "Generic Setup"
+description: "Generic setup for all project builds"
+inputs:
+  manifest:
+    description: Custom manifest to overwrite default manifest exists in project
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - run: cd ${{github.action_path}}/.. && npm install && node generic-setup/index.js
+      shell: bash
+      env:
+        INPUT_MANIFEST: ${{ inputs.manifest }}
+ 

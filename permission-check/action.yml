@@ -1,0 +1,25 @@
+name: "Check permission"
+description: "Permission check for current github actor to see if it has write access"
+inputs:
+  user: 
+    description: 'user to be checked'
+    required: true
+  github_repo:
+    description: 'github repository'
+    required: true
+  github_user: 
+    description: 'github user for authenticating api requests'
+    required: true
+  github_passwd:
+    description: 'github passwd for authenticating api requests'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - run: cd ${{github.action_path}}/.. && npm install && node permission-check/index.js
+      shell: bash
+      env:
+        INPUT_USER: ${{ inputs.user }}
+        INPUT_GITHUB_REPO: ${{ inputs.github_repo }}
+        INPUT_GITHUB_USER: ${{ inputs.github_user }}
+        INPUT_GITHUB_PASSWD: ${{ inputs.github_passwd }}
