@@ -2,14 +2,27 @@ name: "Generic Setup"
 description: "Generic setup for all project builds"
 inputs:
   manifest:
-    description: Custom manifest to overwrite default manifest exists in project
+    description: Custom manifest file to overwrite default manifest exists in project
+    required: false
+  extra-init:
+    description: Extra initialization code to run (javascript)
     required: false
 
 runs:
   using: "composite"
   steps:
-    - run: cd ${{github.action_path}}/.. && npm install && node generic-setup/index.js
+    - run: |
+        cd ${{github.action_path}}/..
+        npm install
+        cd ${{github.action_path}}
+        node process-manifest.js
       shell: bash
       env:
         INPUT_MANIFEST: ${{ inputs.manifest }}
- 
+    
+    - name: run extra init code 
+      run: |
+        cd ${{github.action_path}}
+        echo "${{ inputs.extra-init }}" > extra-init.js
+        node extra-init.js
+      shell: bash

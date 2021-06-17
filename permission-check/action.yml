@@ -4,22 +4,26 @@ inputs:
   user: 
     description: 'user to be checked'
     required: true
-  github_repo:
+  github-repo:
     description: 'github repository'
     required: true
-  github_user: 
+  github-user: 
     description: 'github user for authenticating api requests'
     required: true
-  github_passwd:
+  github-passwd:
     description: 'github passwd for authenticating api requests'
     required: true
 runs:
   using: "composite"
   steps:
-    - run: cd ${{github.action_path}}/.. && npm install && node permission-check/index.js
+    - run: |
+        cd ${{github.action_path}}/..
+        npm install
+        cd ${{github.action_path}}
+        node index.js
       shell: bash
       env:
         INPUT_USER: ${{ inputs.user }}
-        INPUT_GITHUB_REPO: ${{ inputs.github_repo }}
-        INPUT_GITHUB_USER: ${{ inputs.github_user }}
-        INPUT_GITHUB_PASSWD: ${{ inputs.github_passwd }}
+        INPUT_GITHUB-REPO: ${{ inputs.github-repo }}
+        INPUT_GITHUB-USER: ${{ inputs.github-user }}
+        INPUT_GITHUB-PASSWD: ${{ inputs.github-passwd }}

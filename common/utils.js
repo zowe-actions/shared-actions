@@ -6,7 +6,7 @@ export function sh(cmd,debug) {
     if (debug) {
         console.log('Running $ '+cmd)
     }
-    return execSync(cmd);
+    return execSync(cmd).toString().trim()
 }
 
 export function fileExists(path) {
