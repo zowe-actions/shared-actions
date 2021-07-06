@@ -4631,35 +4631,6 @@ module.exports = require("util");;
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__nccwpck_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__nccwpck_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__nccwpck_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
@@ -4683,7 +4654,6 @@ __nccwpck_require__.r(__webpack_exports__);
 
 // EXTERNAL MODULE: ../node_modules/@actions/core/lib/core.js
 var core = __nccwpck_require__(4562);
-var core_default = /*#__PURE__*/__nccwpck_require__.n(core);
 ;// CONCATENATED MODULE: external "child_process"
 const external_child_process_namespaceObject = require("child_process");;
 // EXTERNAL MODULE: external "fs"
@@ -4692,7 +4662,6 @@ var external_fs_ = __nccwpck_require__(5747);
 var semver = __nccwpck_require__(4603);
 // EXTERNAL MODULE: ../node_modules/debug/src/index.js
 var src = __nccwpck_require__(8797);
-var src_default = /*#__PURE__*/__nccwpck_require__.n(src);
 ;// CONCATENATED MODULE: ../node_modules/zowe-common/lib/utils.js
 /*
  * This program and the accompanying materials are made available under the terms of the
@@ -4814,12 +4783,12 @@ class InvalidArgumentException extends Error {
 
 
 
-const index_debug = src_default()('zowe-actions:global-setup:permission-check')
+const index_debug = src('zowe-actions:global-setup:permission-check')
 
-var user = core_default().getInput('user')
-var repo = core_default().getInput('github-repo')
-var g_user = core_default().getInput('github-user')
-var g_passwd = core_default().getInput('github-passwd')
+var user = core.getInput('user')
+var repo = core.getInput('github-repo')
+var g_user = core.getInput('github-user')
+var g_passwd = core.getInput('github-passwd')
 
 var cmds = new Array()
 cmds.push('curl -u')
@@ -4832,7 +4801,7 @@ cmds.push('| jq -r .permission')
 var returnedPermission = lib_utils.sh(cmds.join(' '))
 index_debug('Returned permission is '+returnedPermission)
 if (!returnedPermission || (returnedPermission != 'admin' && returnedPermission != 'write' && returnedPermission != 'maintain')) {
-    core_default().setFailed('Permission check failure, user '+user+' is not authorized to run workflow on '+repo+', permission is '+ returnedPermission)
+    core.setFailed('Permission check failure, user '+user+' is not authorized to run workflow on '+repo+', permission is '+ returnedPermission)
 }
 })();
 
