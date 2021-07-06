@@ -8704,7 +8704,7 @@ setup_debug(packageInfo)
 //TODO: defineDefaultBranches()
 
 // run extra init code
-lib_utils.sh('echo '+extraInit+' > extra-init.js && node extra-init.js')
+lib_utils.sh('echo \"'+extraInit+'\" > extra-init.js && node extra-init.js')
 
 })();
 
