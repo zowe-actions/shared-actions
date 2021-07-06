@@ -18,6 +18,8 @@ runs:
   steps:
     - run: |
         cd ${{github.action_path}}/..
+        pwd
+        ls -al
         npm install
         cd ${{github.action_path}}
         node index.js
