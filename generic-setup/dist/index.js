@@ -4631,6 +4631,35 @@ module.exports = require("util");;
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__nccwpck_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__nccwpck_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__nccwpck_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
@@ -4654,14 +4683,17 @@ __nccwpck_require__.r(__webpack_exports__);
 
 // EXTERNAL MODULE: ../node_modules/@actions/core/lib/core.js
 var core = __nccwpck_require__(4562);
+var core_default = /*#__PURE__*/__nccwpck_require__.n(core);
 ;// CONCATENATED MODULE: external "child_process"
 const external_child_process_namespaceObject = require("child_process");;
 // EXTERNAL MODULE: external "fs"
 var external_fs_ = __nccwpck_require__(5747);
+var external_fs_default = /*#__PURE__*/__nccwpck_require__.n(external_fs_);
 // EXTERNAL MODULE: ../node_modules/semver/index.js
 var semver = __nccwpck_require__(4603);
 // EXTERNAL MODULE: ../node_modules/debug/src/index.js
 var src = __nccwpck_require__(8797);
+var src_default = /*#__PURE__*/__nccwpck_require__.n(src);
 ;// CONCATENATED MODULE: ../node_modules/zowe-common/lib/utils.js
 /*
  * This program and the accompanying materials are made available under the terms of the
@@ -8636,12 +8668,12 @@ var jsYaml = {
 
 
 
-const setup_debug = src('zowe-actions:global-setup:generic-setup')
+const setup_debug = src_default()('zowe-actions:global-setup:generic-setup')
 ;
 
 
-var manifest = core.getInput('manifest')
-var extraInit = core.getInput('extra-init')
+var manifest = core_default().getInput('manifest')
+var extraInit = core_default().getInput('extra-init')
 var projectRootPath = process.env.GITHUB_WORKSPACE + '/'
 var _manifestFormat
 var _manifestObject
@@ -8677,9 +8709,9 @@ if (manifest.endsWith('.json')) {
 
 // read file
 if (_manifestFormat == 'json') {
-    _manifestObject = JSON.parse(external_fs_.readFileSync(manifest));
+    _manifestObject = JSON.parse(external_fs_default().readFileSync(manifest));
 } else if (_manifestFormat == 'yaml') {
-    _manifestObject = js_yaml.load(external_fs_.readFileSync(manifest));
+    _manifestObject = js_yaml.load(external_fs_default().readFileSync(manifest));
 }
 
 // import information we need
@@ -8705,7 +8737,8 @@ setup_debug(packageInfo)
 
 // run extra init code
 lib_utils.sh('echo \"'+extraInit+'\" > extra-init.js')
-console.log(lib_utils.sh('node extra-init.js || rm extra-init.js'))
+console.log(lib_utils.sh('node extra-init.js && pwd && ls && rm extra-init.js && ls'))
+
 
 })();
 
