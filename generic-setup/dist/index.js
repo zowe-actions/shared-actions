@@ -8705,7 +8705,7 @@ setup_debug(packageInfo)
 
 // run extra init code
 lib_utils.sh('echo \"'+extraInit+'\" > extra-init.js')
-lib_utils.sh('node extra-init.js || rm extra-init.js')
+console.log(lib_utils.sh('node extra-init.js || rm extra-init.js'))
 
 })();
 

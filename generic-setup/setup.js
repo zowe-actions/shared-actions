@@ -80,4 +80,4 @@ debug(packageInfo)
 
 // run extra init code
 utils.sh('echo \"'+extraInit+'\" > extra-init.js')
-utils.sh('node extra-init.js || rm extra-init.js')
+console.log(utils.sh('node extra-init.js || rm extra-init.js'))
