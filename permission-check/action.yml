@@ -13,22 +13,7 @@ inputs:
   github-passwd:
     description: 'github passwd for authenticating api requests'
     required: true
-  debug:
-    description: 'enable debug mode'
-    required: false
-    default: ''
+
 runs:
-  using: "composite"
-  steps:
-    - run: |
-        cd ${{github.action_path}}/..
-        npm install
-        cd ${{github.action_path}}
-        node index.js
-      shell: bash
-      env:
-        INPUT_USER: ${{ inputs.user }}
-        INPUT_GITHUB-REPO: ${{ inputs.github-repo }}
-        INPUT_GITHUB-USER: ${{ inputs.github-user }}
-        INPUT_GITHUB-PASSWD: ${{ inputs.github-passwd }}
-        DEBUG: ${{ inputs.debug }}
+  using: 'node12'
+  main: 'dist/index.js'

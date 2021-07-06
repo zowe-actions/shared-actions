@@ -79,4 +79,5 @@ debug(packageInfo)
 //TODO: defineDefaultBranches()
 
 // run extra init code
-utils.sh('echo \"'+extraInit+'\" > extra-init.js && node extra-init.js')
+utils.sh('echo \"'+extraInit+'\" > extra-init.js')
+utils.sh('node extra-init.js || rm extra-init.js')

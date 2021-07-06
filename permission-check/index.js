@@ -26,7 +26,7 @@ cmds.push('-H \"Accept: application/vnd.github.v3+json\"')
 cmds.push('-X GET')
 cmds.push('\"https://api.github.com/repos/'+repo+'/collaborators/'+user+'/permission\"')
 cmds.push('| jq -r .permission')
-var returnedPermission = utils.sh(cmds.join(' '), debug)
+var returnedPermission = utils.sh(cmds.join(' '))
 debug('Returned permission is '+returnedPermission)
 if (!returnedPermission || (returnedPermission != 'admin' && returnedPermission != 'write' && returnedPermission != 'maintain')) {
     core.setFailed('Permission check failure, user '+user+' is not authorized to run workflow on '+repo+', permission is '+ returnedPermission)
