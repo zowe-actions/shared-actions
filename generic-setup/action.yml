@@ -7,27 +7,7 @@ inputs:
   extra-init:
     description: Extra initialization code to run (javascript)
     required: false
-  debug:
-    description: 'enable debug mode'
-    required: false
-    default: ''
 
 runs:
-  using: "composite"
-  steps:
-    - run: |
-        cd ${{github.action_path}}/..
-        npm install
-        cd ${{github.action_path}}
-        node process-manifest.js
-      shell: bash
-      env:
-        INPUT_MANIFEST: ${{ inputs.manifest }}
-        DEBUG: ${{ inputs.debug }}
-    
-    - name: run extra init code 
-      run: |
-        cd ${{github.action_path}}
-        echo "${{ inputs.extra-init }}" > extra-init.js
-        node extra-init.js
-      shell: bash
+  using: 'node12'
+  main: 'dist/index.js'
