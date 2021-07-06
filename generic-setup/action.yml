@@ -7,6 +7,10 @@ inputs:
   extra-init:
     description: Extra initialization code to run (javascript)
     required: false
+  debug:
+    description: 'enable debug mode'
+    required: false
+    default: ''
 
 runs:
   using: "composite"
@@ -19,6 +23,7 @@ runs:
       shell: bash
       env:
         INPUT_MANIFEST: ${{ inputs.manifest }}
+        DEBUG: ${{ inputs.debug }}
     
     - name: run extra init code 
       run: |

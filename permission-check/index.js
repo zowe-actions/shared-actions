@@ -1,6 +1,17 @@
+/*
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-v20.html
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Copyright IBM Corporation 2021
+ */
+
 import core from '@actions/core';
-import * as utils from '../common/utils.js';
-var debug = true
+import { utils } from 'zowe-common'
+import Debug from 'debug'
+const debug = Debug('zowe-actions:global-setup:permission-check')
 
 var user = core.getInput('user')
 var repo = core.getInput('github-repo')
@@ -16,6 +27,7 @@ cmds.push('-X GET')
 cmds.push('\"https://api.github.com/repos/'+repo+'/collaborators/'+user+'/permission\"')
 cmds.push('| jq -r .permission')
 var returnedPermission = utils.sh(cmds.join(' '), debug)
+debug('Returned permission is '+returnedPermission)
 if (!returnedPermission || (returnedPermission != 'admin' && returnedPermission != 'write' && returnedPermission != 'maintain')) {
     core.setFailed('Permission check failure, user '+user+' is not authorized to run workflow on '+repo+', permission is '+ returnedPermission)
 }

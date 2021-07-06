@@ -1,5 +1,17 @@
+/*
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-v20.html
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Copyright IBM Corporation 2021
+ */
+
 import core from '@actions/core'
-import * as utils from '../common/utils.js';
+import { utils } from 'zowe-common'
+import Debug from 'debug'
+const debug = Debug('zowe-actions:global-setup:generic-setup')
 import yaml from 'js-yaml'
 import fs from 'fs'
 
@@ -65,4 +77,6 @@ function readPackageManifest() {
             packageInfo.set('versionTrunks', utils.parseSemanticVersion(_manifestObject['version']))
         }
     }
+
+    debug(packageInfo)
 }

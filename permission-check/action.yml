@@ -13,6 +13,10 @@ inputs:
   github-passwd:
     description: 'github passwd for authenticating api requests'
     required: true
+  debug:
+    description: 'enable debug mode'
+    required: false
+    default: ''
 runs:
   using: "composite"
   steps:
@@ -27,3 +31,4 @@ runs:
         INPUT_GITHUB-REPO: ${{ inputs.github-repo }}
         INPUT_GITHUB-USER: ${{ inputs.github-user }}
         INPUT_GITHUB-PASSWD: ${{ inputs.github-passwd }}
+        DEBUG: ${{ inputs.debug }}
