@@ -3,7 +3,6 @@ import * as utils from '../common/utils.js';
 import yaml from 'js-yaml'
 import fs from 'fs'
 
-var debug = false
 var manifest = core.getInput('manifest')
 var projectRootPath = process.env.GITHUB_WORKSPACE + '/'
 var _manifestFormat
