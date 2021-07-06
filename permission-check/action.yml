@@ -20,6 +20,8 @@ runs:
         cd ${{github.action_path}}/..
         pwd
         ls -al
+        cd generic-setup
+        cat process-manifest.js
         npm install
         cd ${{github.action_path}}
         node index.js
