@@ -21,6 +21,5 @@
     "js-yaml": "^4.1.0",
     "semver": "^7.3.5",
     "zowe-common": "zowe-actions/zowe-common"
-  },
-  "type": "module"
+  }
 }
