@@ -80,5 +80,5 @@ debug(packageInfo)
 
 // run extra init code
 utils.sh('echo \"'+extraInit+'\" > extra-init.js')
-console.log(utils.sh('node extra-init.js && pwd && ls && rm extra-init.js && ls'))
+console.log(utils.sh('node extra-init.js && rm extra-init.js'))
 
