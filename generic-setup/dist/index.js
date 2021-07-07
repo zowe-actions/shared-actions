@@ -8714,7 +8714,7 @@ module.exports = InvalidArgumentException;
  * Copyright IBM Corporation 2021
  */
 
-const execSync = __nccwpck_require__(3129)
+const { execSync } = __nccwpck_require__(3129)
 const fs = __nccwpck_require__(5747)
 const semver = __nccwpck_require__(4603)
 const Debug = __nccwpck_require__(8797)
@@ -8884,7 +8884,7 @@ var __webpack_exports__ = {};
  */
 
 const core = __nccwpck_require__(4562)
-const utils = __nccwpck_require__(386)
+const { utils } = __nccwpck_require__(386)
 const Debug = __nccwpck_require__(8797)
 const debug = Debug('zowe-actions:global-setup:generic-setup')
 const yaml = __nccwpck_require__(9423)

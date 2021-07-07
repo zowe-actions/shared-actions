@@ -9,7 +9,7 @@
  */
 
 const core = require('@actions/core')
-const utils = require('zowe-common')
+const { utils } = require('zowe-common')
 const Debug = require('debug')
 const debug = Debug('zowe-actions:global-setup:generic-setup')
 const yaml = require('js-yaml')
