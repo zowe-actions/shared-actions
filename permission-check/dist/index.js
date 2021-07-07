@@ -4550,11 +4550,139 @@ try {
 
 /***/ }),
 
+/***/ 386:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const utils = __nccwpck_require__(4961)
+const InvalidArgumentException = __nccwpck_require__(1534)
+module.exports.utils = utils
+module.exports.InvalidArgumentException = InvalidArgumentException
+
+/***/ }),
+
+/***/ 1534:
+/***/ ((module) => {
+
+/*
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-v20.html
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Copyright IBM Corporation 2021
+ */
+
+/**
+ * An exception that can be thrown if an argument is invalid or missing.
+ */
+
+class InvalidArgumentException extends Error {
+    /**
+     * Construct the exception.
+     *
+     * @param argument   The argument name which value is invalid.
+     * @param message    The exception message.
+     */
+    constructor(argument, message) {
+        super(message ? message : "Argument " +argument +" is not provided or invalid")
+        this.argument = argument
+    }
+}
+module.exports = InvalidArgumentException; 
+
+/***/ }),
+
+/***/ 4961:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+/*
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-v20.html
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Copyright IBM Corporation 2021
+ */
+
+const execSync = __nccwpck_require__(3129)
+const fs = __nccwpck_require__(5747)
+const semver = __nccwpck_require__(4603)
+const Debug = __nccwpck_require__(8797)
+const debug = Debug('zowe-actions:zowe-common:utils')
+
+class utils {
+    static sh(cmd) {
+        debug('sh: $ '+cmd)
+        return execSync(cmd).toString().trim()
+    }
+
+    static fileExists(path) {
+        try {
+            fs.accessSync(path, fs.constants.F_OK)
+            console.log(path+' does exist')
+            return true
+        } catch {
+            console.error(path+' does not exist')
+            return false
+        }
+    }
+
+    static parseSemanticVersion(version) {
+        var versionMap = new Map()
+        versionMap.set('major', semver.major(version))
+        versionMap.set('minor', semver.minor(version))
+        versionMap.set('patch', semver.patch(version))
+        var prerelease = semver.prerelease(version)
+        if (prerelease)
+            versionMap.set('prerelease', ''+prerelease[0]+prerelease[1])
+        debug('parseSemanticVersion '+versionMap['major']+'.'+versionMap['minor']+'.'+versionMap['patch']+ prerelease? '-'+versionMap['prerelease']:0)
+        return versionMap
+    }
+
+    static nvmShellInit(nodeJsVersion) {
+        var nvmScript = process.env.HOME + '/.nvm/nvm.sh'
+        var cmds = new Array()
+        cmds.push('set +x')
+        cmds.push('. '+nvmScript)
+        cmds.push('nvm install '+nodeJsVersion)
+        cmds.push('npm install npm -g')
+        cmds.push('npm install yarn -g')
+        cmds.push('npm install ci -g')
+        return this.sh(cmds.join(' && '))
+    }
+
+    static nvmShell(nodeJsVersion, scripts) {
+        var nvmScript = process.env.HOME + '/.nvm/nvm.sh'
+        var cmds = new Array()
+        cmds.push('set +x')
+        cmds.push('. '+nvmScript)
+        cmds.push('nvm use '+nodeJsVersion)
+        cmds.push('set -x')
+        scripts.forEach(x => {
+            cmds.push(x)
+        });
+        return this.sh(cmds.join(' && '))
+    }
+}
+module.exports = utils;
+
+/***/ }),
+
 /***/ 6221:
 /***/ ((module) => {
 
 module.exports = eval("require")("supports-color");
 
+
+/***/ }),
+
+/***/ 3129:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("child_process");;
 
 /***/ }),
 
@@ -4631,38 +4759,12 @@ module.exports = require("util");;
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
-/******/ 		// define __esModule on exports
-/******/ 		__nccwpck_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";/************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
-"use strict";
-// ESM COMPAT FLAG
-__nccwpck_require__.r(__webpack_exports__);
-
-// EXTERNAL MODULE: ../node_modules/@actions/core/lib/core.js
-var core = __nccwpck_require__(4562);
-;// CONCATENATED MODULE: external "child_process"
-const external_child_process_namespaceObject = require("child_process");;
-// EXTERNAL MODULE: external "fs"
-var external_fs_ = __nccwpck_require__(5747);
-// EXTERNAL MODULE: ../node_modules/semver/index.js
-var semver = __nccwpck_require__(4603);
-// EXTERNAL MODULE: ../node_modules/debug/src/index.js
-var src = __nccwpck_require__(8797);
-;// CONCATENATED MODULE: ../node_modules/zowe-common/lib/utils.js
 /*
  * This program and the accompanying materials are made available under the terms of the
  * Eclipse Public License v2.0 which accompanies this distribution, and is available at
@@ -4673,117 +4775,10 @@ var src = __nccwpck_require__(8797);
  * Copyright IBM Corporation 2021
  */
 
-
-
-
-
-const debug = src('zowe-actions:zowe-common:utils')
-
-class utils {
-    static sh(cmd) {
-        debug('sh: $ '+cmd)
-        return (0,external_child_process_namespaceObject.execSync)(cmd).toString().trim()
-    }
-
-    static fileExists(path) {
-        try {
-            external_fs_.accessSync(path, external_fs_.constants.F_OK)
-            console.log(path+' does exist')
-            return true
-        } catch {
-            console.error(path+' does not exist')
-            return false
-        }
-    }
-
-    static parseSemanticVersion(version) {
-        var versionMap = new Map()
-        versionMap.set('major', semver.major(version))
-        versionMap.set('minor', semver.minor(version))
-        versionMap.set('patch', semver.patch(version))
-        var prerelease = semver.prerelease(version)
-        if (prerelease)
-            versionMap.set('prerelease', ''+prerelease[0]+prerelease[1])
-        debug('parseSemanticVersion '+versionMap['major']+'.'+versionMap['minor']+'.'+versionMap['patch']+ prerelease? '-'+versionMap['prerelease']:0)
-        return versionMap
-    }
-
-    static nvmShellInit(nodeJsVersion) {
-        var nvmScript = process.env.HOME + '/.nvm/nvm.sh'
-        var cmds = new Array()
-        cmds.push('set +x')
-        cmds.push('. '+nvmScript)
-        cmds.push('nvm install '+nodeJsVersion)
-        cmds.push('npm install npm -g')
-        cmds.push('npm install yarn -g')
-        cmds.push('npm install ci -g')
-        return this.sh(cmds.join(' && '))
-    }
-
-    static nvmShell(nodeJsVersion, scripts) {
-        var nvmScript = process.env.HOME + '/.nvm/nvm.sh'
-        var cmds = new Array()
-        cmds.push('set +x')
-        cmds.push('. '+nvmScript)
-        cmds.push('nvm use '+nodeJsVersion)
-        cmds.push('set -x')
-        scripts.forEach(x => {
-            cmds.push(x)
-        });
-        return this.sh(cmds.join(' && '))
-    }
-}
-
-/* harmony default export */ const lib_utils = (utils);
-;// CONCATENATED MODULE: ../node_modules/zowe-common/lib/invalid-argument-exception.js
-/*
- * This program and the accompanying materials are made available under the terms of the
- * Eclipse Public License v2.0 which accompanies this distribution, and is available at
- * https://www.eclipse.org/legal/epl-v20.html
- *
- * SPDX-License-Identifier: EPL-2.0
- *
- * Copyright IBM Corporation 2021
- */
-
-/**
- * An exception that can be thrown if an argument is invalid or missing.
- */
-
-class InvalidArgumentException extends Error {
-    /**
-     * Construct the exception.
-     *
-     * @param argument   The argument name which value is invalid.
-     * @param message    The exception message.
-     */
-    constructor(argument, message) {
-        super(message ? message : "Argument " +argument +" is not provided or invalid")
-        this.argument = argument
-    }
-}
-
-/* harmony default export */ const invalid_argument_exception = ((/* unused pure expression or super */ null && (InvalidArgumentException))); 
-;// CONCATENATED MODULE: ../node_modules/zowe-common/index.js
-
-
-
-
-;// CONCATENATED MODULE: ./index.js
-/*
- * This program and the accompanying materials are made available under the terms of the
- * Eclipse Public License v2.0 which accompanies this distribution, and is available at
- * https://www.eclipse.org/legal/epl-v20.html
- *
- * SPDX-License-Identifier: EPL-2.0
- *
- * Copyright IBM Corporation 2021
- */
-
-
-
-
-const index_debug = src('zowe-actions:global-setup:permission-check')
+const core = __nccwpck_require__(4562)
+const utils = __nccwpck_require__(386)
+const Debug = __nccwpck_require__(8797)
+const debug = Debug('zowe-actions:global-setup:permission-check')
 
 var user = core.getInput('user')
 var repo = core.getInput('github-repo')
@@ -4798,8 +4793,8 @@ cmds.push('-H \"Accept: application/vnd.github.v3+json\"')
 cmds.push('-X GET')
 cmds.push('\"https://api.github.com/repos/'+repo+'/collaborators/'+user+'/permission\"')
 cmds.push('| jq -r .permission')
-var returnedPermission = lib_utils.sh(cmds.join(' '))
-index_debug('Returned permission is '+returnedPermission)
+var returnedPermission = utils.sh(cmds.join(' '))
+debug('Returned permission is '+returnedPermission)
 if (!returnedPermission || (returnedPermission != 'admin' && returnedPermission != 'write' && returnedPermission != 'maintain')) {
     core.setFailed('Permission check failure, user '+user+' is not authorized to run workflow on '+repo+', permission is '+ returnedPermission)
 }

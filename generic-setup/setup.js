@@ -8,12 +8,12 @@
  * Copyright IBM Corporation 2021
  */
 
-import core from '@actions/core'
-import { utils } from 'zowe-common'
-import Debug from 'debug'
+const core = require('@actions/core')
+const utils = require('zowe-common')
+const Debug = require('debug')
 const debug = Debug('zowe-actions:global-setup:generic-setup')
-import yaml from 'js-yaml'
-import fs from 'fs'
+const yaml = require('js-yaml')
+const fs = require('fs')
 
 var manifest = core.getInput('manifest')
 var extraInit = core.getInput('extra-init')
