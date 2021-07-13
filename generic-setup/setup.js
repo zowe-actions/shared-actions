@@ -76,6 +76,7 @@ if (_manifestObject) {
 
 debug(packageInfo)
 var jsonText = JSON.stringify(Array.from(packageInfo.entries()));
+debug(jsonText)
 fs.writeFileSync(projectRootPath+'packageInfo.json', jsonText, function(err) {
     if (err) {
         console.log(err);
