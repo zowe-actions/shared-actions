@@ -4778,7 +4778,7 @@ var __webpack_exports__ = {};
 const core = __nccwpck_require__(4562)
 const { utils } = __nccwpck_require__(386)
 const Debug = __nccwpck_require__(8797)
-const debug = Debug('zowe-actions:global-setup:permission-check')
+const debug = Debug('zowe-actions:shared-actions:permission-check')
 
 var user = core.getInput('user')
 var repo = core.getInput('github-repo')

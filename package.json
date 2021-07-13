@@ -1,5 +1,5 @@
 {
-  "name": "global-setup",
+  "name": "shared-actions",
   "version": "1.0.0",
   "description": "A project containing global setup code for zowe actions",
   "scripts": {
@@ -7,14 +7,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zowe-actions/global-setup.git"
+    "url": "git+https://github.com/zowe-actions/shared-actions.git"
   },
   "author": "IBM",
   "license": "EPL-2.0",
   "bugs": {
-    "url": "https://github.com/zowe-actions/global-setup/issues"
+    "url": "https://github.com/zowe-actions/shared-actions/issues"
   },
-  "homepage": "https://github.com/zowe-actions/global-setup#readme",
+  "homepage": "https://github.com/zowe-actions/shared-actions#readme",
   "dependencies": {
     "@actions/core": "^1.4.0",
     "debug": "^4.3.2",

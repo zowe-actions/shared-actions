@@ -43,7 +43,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 
-global-setup
+shared-actions
 EPL-2.0
 Eclipse Public License - v 2.0
 

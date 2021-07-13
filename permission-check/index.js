@@ -11,7 +11,7 @@
 const core = require('@actions/core')
 const { utils } = require('zowe-common')
 const Debug = require('debug')
-const debug = Debug('zowe-actions:global-setup:permission-check')
+const debug = Debug('zowe-actions:shared-actions:permission-check')
 
 var user = core.getInput('user')
 var repo = core.getInput('github-repo')
