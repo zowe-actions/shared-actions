@@ -81,7 +81,7 @@ fs.writeFileSync(projectRootPath+'packageInfo.json', jsonText, function(err) {
         console.log(err);
     }
 })
-
+console.log(utils.sh('cd '+projectRootPath+' && ls'))
 
 
 //TODO: defineDefaultBranches()
