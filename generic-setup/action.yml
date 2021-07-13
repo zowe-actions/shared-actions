@@ -7,6 +7,9 @@ inputs:
   extra-init:
     description: Extra initialization code to run (javascript)
     required: false
+outputs:
+  packageInfoJsonText:
+    description: 'Parsed manifest information to a json string'
 
 runs:
   using: 'node12'

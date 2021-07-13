@@ -75,14 +75,8 @@ if (_manifestObject) {
 }
 
 debug(packageInfo)
-var jsonText = JSON.stringify(Array.from(packageInfo.entries()));
-fs.writeFileSync(projectRootPath+'packageInfo.json', jsonText, function(err) {
-    if (err) {
-        console.log(err);
-    }
-})
-
-//TODO: defineDefaultBranches()
+var packageInfoJsonText = JSON.stringify(Array.from(packageInfo.entries()));
+core.setOutput("packageInfoJsonText", packageInfoJsonText);
 
 // run extra init code
 utils.sh('echo \"'+extraInit+'\" > extra-init.js')
