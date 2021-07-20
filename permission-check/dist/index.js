@@ -4609,12 +4609,9 @@ module.exports = InvalidArgumentException;
 const { execSync } = __nccwpck_require__(3129)
 const fs = __nccwpck_require__(5747)
 const semver = __nccwpck_require__(4603)
-const Debug = __nccwpck_require__(8797)
-const debug = Debug('zowe-actions:zowe-common:utils')
 
 class utils {
     static sh(cmd) {
-        debug('sh: $ '+cmd)
         return execSync(cmd).toString().trim()
     }
 
@@ -4624,7 +4621,7 @@ class utils {
             console.log(path+' does exist')
             return true
         } catch {
-            console.error(path+' does not exist')
+            console.warn(path+' does not exist')
             return false
         }
     }
@@ -4637,7 +4634,6 @@ class utils {
         var prerelease = semver.prerelease(version)
         if (prerelease)
             versionMap.set('prerelease', ''+prerelease[0]+prerelease[1])
-        debug('parseSemanticVersion '+versionMap['major']+'.'+versionMap['minor']+'.'+versionMap['patch']+ prerelease? '-'+versionMap['prerelease']:0)
         return versionMap
     }
 
@@ -4664,6 +4660,16 @@ class utils {
             cmds.push(x)
         });
         return this.sh(cmds.join(' && '))
+    }
+
+    static sanitizeBranchName(branch) {
+        if (branch.startsWith('origin/')) {
+            branch = branch.substring(7)
+        }
+        branch = branch.replaceAll(/[^a-zA-Z0-9]/, '-')
+                       .replaceAll(/[\-]+/, '-')
+                       .toLowerCase()
+        return branch
     }
 }
 module.exports = utils;
