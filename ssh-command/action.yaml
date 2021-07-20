@@ -1,0 +1,31 @@
+name: "zowe-actions/ssh-command"
+description: "SSH Workflow"
+author: "AndrewTwydell"
+branding:
+  icon: "chevron-up"
+  color: "gray-dark"
+inputs:
+  host:
+    description: "SSH Host"
+    required: true
+    default: ""
+  user:
+    description: "User name"
+    required: true
+    default: ""
+  password:
+    description: "User Password"
+    required: true
+    default: ""
+  script:
+    description: "Script to Run"
+    required: true
+    default: ""
+runs:
+  using: "docker"
+  image: "Dockerfile"
+  args:
+    - ${{ inputs.host }}
+    - ${{ inputs.user }}
+    - ${{ inputs.password }}
+    - ${{ inputs.script }}
