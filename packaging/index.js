@@ -12,8 +12,6 @@ const core = require('@actions/core')
 const { InvalidArgumentException , utils , pax } = require('zowe-common')
 const Debug = require('debug')
 const debug = Debug('zowe-actions:shared-actions:packaging')
-const DEFAULT_LOCAL_WORKSPACE = './.pax'
-const DEFAULT_REMOTE_WORKSPACE = '/ZOWE/tmp'
 
 // Defaults
 const projectRootPath = process.env.GITHUB_WORKSPACE
@@ -33,12 +31,9 @@ const extraFiles = core.getInput('extra-files')
 const keepTempFolder = core.getInput('keep-temp-folders')
 const extraEnvironmentVars = core.getInput('extra-environment-vars')
 
-if (!paxLocalWorkspace){
-    paxLocalWorkspace = `${projectRootPath}/${DEFAULT_LOCAL_WORKSPACE}`
-}
-else {
-    paxLocalWorkspace = `${projectRootPath}/${paxLocalWorkspace}`
-}
+
+paxLocalWorkspace = `${projectRootPath}/${paxLocalWorkspace}`
+
 if (!paxRemoteWorkspace){
     paxRemoteWorkspace = DEFAULT_REMOTE_WORKSPACE
 }

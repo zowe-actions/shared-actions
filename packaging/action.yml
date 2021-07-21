@@ -29,7 +29,7 @@ inputs:
   pax-remote-workspace:
     description: 'remote workspace path'
     required: false
-    default: '/tmp'
+    default: '/ZOWE/tmp'
   pax-options:
     description: 'pax command options'
     required: false
