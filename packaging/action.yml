@@ -1,0 +1,54 @@
+name: "Packaging"
+description: "Packaging (making pax) for all project builds"
+inputs:
+  pax-name:
+    description: 'pax name'
+    required: false
+  pax-ssh-host:
+    description: 'ssh host for packaging'
+    required: false
+    default: zzow01.zowe.marist.cloud'
+  pax-ssh-port:
+    description: 'ssh port for packaging'
+    required: false
+    default: '22'
+  pax-ssh-username:
+    description: 'ssh username'
+    required: true
+  pax-ssh-password:
+    description: 'ssh password'
+    required: true
+  package-info-json-text:
+    description: 'Parsed manifest information to a json string'
+    required: true
+
+  pax-local-workspace:
+    description: 'local workspace path'
+    required: false
+    default: './.pax'
+  pax-remote-workspace:
+    description: 'remote workspace path'
+    required: false
+    default: '/tmp'
+  pax-options:
+    description: 'pax command options'
+    required: false
+  pax-compress:
+    description: 'flag to enable pax compression'
+    required: false
+  pax-compress-options:
+    description: 'compress command options for pax'
+    required: false
+  extra-files:
+    description: 'extra artifacts will be generated and should be transferred back'
+    required: false
+  keep-temp-folders:
+    description: 'if we want to keep the temporary packaging folder on the remote machine for debugging purpose. Default is FALSE'
+    required: false
+  extra-environment-vars:
+    description: 'extra environment variables to be parsed'
+    required: false
+
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
