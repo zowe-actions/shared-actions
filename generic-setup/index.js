@@ -17,29 +17,32 @@ const fs = require('fs')
 
 var manifest = core.getInput('manifest')
 var extraInit = core.getMultilineInput('extra-init')
-var projectRootPath = process.env.GITHUB_WORKSPACE + '/'
+var projectRootPath = process.env.GITHUB_WORKSPACE
 var _manifestFormat
 var _manifestObject
 var packageInfo
 
+var mjson = `${projectRootPath}/manifest.json`
+var myaml = `${projectRootPath}/manifest.yaml`
+var myml = `${projectRootPath}/manifest.yml`
 
 // find and check manifest file
 if (manifest) {
-    if (!utils.fileExists(projectRootPath+manifest)) {
-        throw new Error('Provided manifest file '+manifest+' doesn\'t exist')
+    if (!utils.fileExists(`${projectRootPath}/${manifest}`)) {
+        throw new Error(`Provided manifest file ${manifest} doesn't exist`)
     }
-} else if (utils.fileExists(projectRootPath+'manifest.json')) {
-    manifest = projectRootPath+'manifest.json'
-} else if (utils.fileExists(projectRootPath+'manifest.yaml')) {
-    manifest = projectRootPath+'manifest.yaml'
-} else if (utils.fileExists(projectRootPath+'manifest.yml')) {
-    manifest = projectRootPath+'manifest.yml'
+} else if (utils.fileExists(mjson)) {
+    manifest = mjson
+} else if (utils.fileExists(myaml)) {
+    manifest = myaml
+} else if (utils.fileExists(myml)) {
+    manifest = myml
 }
 
 if (!manifest) {
     console.err('something wrong with manifest file')
 }
-console.log('manifest file: '+manifest)
+console.log(`manifest file: ${manifest}`)
 
 // determine manifest format
 if (manifest.endsWith('.json')) {
@@ -47,7 +50,7 @@ if (manifest.endsWith('.json')) {
 } else if (manifest.endsWith('.yaml') || manifest.endsWith('.yml')) {
     _manifestFormat = 'yaml'
 } else {
-    throw new Error('Unknown manifest format '+manifest)
+    throw new Error(`Unknown manifest format ${manifest}`)
 }
 
 // read file
@@ -79,6 +82,6 @@ var packageInfoJsonText = JSON.stringify(Array.from(packageInfo.entries()));
 core.setOutput("packageInfoJsonText", packageInfoJsonText);
 
 // run extra init code
-utils.sh('echo \"'+extraInit+'\" > extra-init.js')
+utils.sh(`echo "${extraInit}" > extra-init.js`)
 console.log(utils.sh('node extra-init.js && rm extra-init.js'))
 

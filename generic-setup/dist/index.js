@@ -8693,7 +8693,7 @@ class InvalidArgumentException extends Error {
      * @param message    The exception message.
      */
     constructor(argument, message) {
-        super(message ? message : "Argument " +argument +" is not provided or invalid")
+        super(message ? message : `Argument ${argument} is not provided or invalid`)
         this.argument = argument
     }
 }
@@ -8726,10 +8726,10 @@ class utils {
     static fileExists(path) {
         try {
             fs.accessSync(path, fs.constants.F_OK)
-            console.log(path+' does exist')
+            console.log(`${path} does exist`)
             return true
         } catch {
-            console.warn(path+' does not exist')
+            console.warn(`${path} does not exist`)
             return false
         }
     }
@@ -8746,24 +8746,24 @@ class utils {
     }
 
     static nvmShellInit(nodeJsVersion) {
-        var nvmScript = process.env.HOME + '/.nvm/nvm.sh'
+        var nvmScript = `${process.env.HOME}/.nvm/nvm.sh`
         var cmds = new Array()
-        cmds.push('set +x')
-        cmds.push('. '+nvmScript)
-        cmds.push('nvm install '+nodeJsVersion)
-        cmds.push('npm install npm -g')
-        cmds.push('npm install yarn -g')
-        cmds.push('npm install ci -g')
+        cmds.push(`set +x`)
+        cmds.push(`. ${nvmScript}`)
+        cmds.push(`nvm install ${nodeJsVersion}`)
+        cmds.push(`npm install npm -g`)
+        cmds.push(`npm install yarn -g`)
+        cmds.push(`npm install ci -g`)
         return this.sh(cmds.join(' && '))
     }
 
     static nvmShell(nodeJsVersion, scripts) {
-        var nvmScript = process.env.HOME + '/.nvm/nvm.sh'
+        var nvmScript = `${process.env.HOME}/.nvm/nvm.sh`
         var cmds = new Array()
-        cmds.push('set +x')
-        cmds.push('. '+nvmScript)
-        cmds.push('nvm use '+nodeJsVersion)
-        cmds.push('set -x')
+        cmds.push(`set +x`)
+        cmds.push(`. ${nvmScript}`)
+        cmds.push(`nvm use ${nodeJsVersion}`)
+        cmds.push(`set -x`)
         scripts.forEach(x => {
             cmds.push(x)
         });
@@ -8779,7 +8779,29 @@ class utils {
                        .toLowerCase()
         return branch
     }
+
+    static sftp(host, port, username, passwd, cmds) {
+        var fullCMD = `SSHPASS=${passwd} sshpass -e sftp -o BatchMode=no -o StrictHostKeyChecking=no -P ${port} -b - ${username}@${host} << EOF
+${cmds}
+EOF`
+        return utils.sh(fullCMD)
+    }
+
+    static ssh(host, port, username, passwd, cmds) {
+        var fullCMD = `SSHPASS=${passwd} sshpass -e ssh -tt -o StrictHostKeyChecking=no -p ${port} ${username}@${host} << EOF
+${cmds}
+EOF`
+        return utils.sh(fullCMD)
+    }
+
+    static sshKeyFile(host, port, username, keyPassPhrase, keyfile, cmds) {
+        var fullCMD = `sshpass -e -P ${keyPassPhrase} ssh -tt -o BatchMode=no -o StrictHostKeyChecking=no -p ${port} -i ${keyfile} ${username}@${host} << EOF
+${cmds}
+EOF`
+        return utils.sh(fullCMD)
+    }
 }
+
 module.exports = utils;
 
 /***/ }),
@@ -8898,29 +8920,32 @@ const fs = __nccwpck_require__(5747)
 
 var manifest = core.getInput('manifest')
 var extraInit = core.getMultilineInput('extra-init')
-var projectRootPath = process.env.GITHUB_WORKSPACE + '/'
+var projectRootPath = process.env.GITHUB_WORKSPACE
 var _manifestFormat
 var _manifestObject
 var packageInfo
 
+var mjson = `${projectRootPath}/manifest.json`
+var myaml = `${projectRootPath}/manifest.yaml`
+var myml = `${projectRootPath}/manifest.yml`
 
 // find and check manifest file
 if (manifest) {
-    if (!utils.fileExists(projectRootPath+manifest)) {
-        throw new Error('Provided manifest file '+manifest+' doesn\'t exist')
+    if (!utils.fileExists(`${projectRootPath}/${manifest}`)) {
+        throw new Error(`Provided manifest file ${manifest} doesn't exist`)
     }
-} else if (utils.fileExists(projectRootPath+'manifest.json')) {
-    manifest = projectRootPath+'manifest.json'
-} else if (utils.fileExists(projectRootPath+'manifest.yaml')) {
-    manifest = projectRootPath+'manifest.yaml'
-} else if (utils.fileExists(projectRootPath+'manifest.yml')) {
-    manifest = projectRootPath+'manifest.yml'
+} else if (utils.fileExists(mjson)) {
+    manifest = mjson
+} else if (utils.fileExists(myaml)) {
+    manifest = myaml
+} else if (utils.fileExists(myml)) {
+    manifest = myml
 }
 
 if (!manifest) {
     console.err('something wrong with manifest file')
 }
-console.log('manifest file: '+manifest)
+console.log(`manifest file: ${manifest}`)
 
 // determine manifest format
 if (manifest.endsWith('.json')) {
@@ -8928,7 +8953,7 @@ if (manifest.endsWith('.json')) {
 } else if (manifest.endsWith('.yaml') || manifest.endsWith('.yml')) {
     _manifestFormat = 'yaml'
 } else {
-    throw new Error('Unknown manifest format '+manifest)
+    throw new Error(`Unknown manifest format ${manifest}`)
 }
 
 // read file
@@ -8960,7 +8985,7 @@ var packageInfoJsonText = JSON.stringify(Array.from(packageInfo.entries()));
 core.setOutput("packageInfoJsonText", packageInfoJsonText);
 
 // run extra init code
-utils.sh('echo \"'+extraInit+'\" > extra-init.js')
+utils.sh(`echo "${extraInit}" > extra-init.js`)
 console.log(utils.sh('node extra-init.js && rm extra-init.js'))
 
 
