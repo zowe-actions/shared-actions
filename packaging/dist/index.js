@@ -5191,8 +5191,9 @@ const extraFiles = core.getInput('extra-files')
 const keepTempFolder = core.getInput('keep-temp-folders')
 const extraEnvironmentVars = core.getInput('extra-environment-vars')
 
-
 paxLocalWorkspace = `${projectRootPath}/${paxLocalWorkspace}`
+
+core.setSecret(paxSSHUsername.toUpperCase())  //this is to prevent uppercased username to be showing in the log
 
 if (!paxRemoteWorkspace){
     paxRemoteWorkspace = DEFAULT_REMOTE_WORKSPACE
