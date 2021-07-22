@@ -5,6 +5,10 @@ inputs:
     description: "Set to true if this is a formal release"
     required: false
     default: ""
+  registry:
+    description: "Docker registry"
+    required: true
+    default: ""
   base-directory:
     description: "Base directory where image Dockerfiles are located"
     required: true
@@ -36,19 +40,17 @@ runs:
         [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=.${IMAGE_METADATA}-${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
         IMAGE_TAG=${IMAGE_VERSION}-${{ inputs.linux-distro }}-${{ inputs.cpu-arch }}${IMAGE_METADATA}
         echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
-        [ "${{ inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_RELEASE }}" >> $GITHUB_ENV
-        [ "${{ inputs.release }}" != "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_SNAPSHOT }}" >> $GITHUB_ENV
         exit 0
       shell: bash
 
     - name: build image
       working-directory: ${{ inputs.base-directory }}/${{ inputs.linux-distro }}/${{ inputs.cpu-arch }}
       run: |
-        docker build --no-cache=true -t ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} .
+        docker build --no-cache=true -t ${{ inputs.registry }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} .
       shell: bash
 
     - name: publish image
       working-directory: ${{ inputs.base-directory }}/${{ inputs.linux-distro }}/${{ inputs.cpu-arch }}
       run: |
-        docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+        docker push ${{ inputs.registry }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
       shell: bash
