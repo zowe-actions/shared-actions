@@ -1,0 +1,25 @@
+name: "Create docker manifest"
+description: "This action helps to create and publish docker manifest."
+inputs:
+  linux-distro:
+    description: "Linux distro name. This should be the second level folder name."
+    required: false
+    default: "ubuntu"
+  cpu-arch-list:
+    description: "CPU architecture name list seperated by space."
+    required: false
+    default: "amd64 s390x"
+
+runs:
+  using: "composite"
+  steps:
+    - name: define manifest
+      run: |
+        export DOCKER_CLI_EXPERIMENTAL=enabled
+        amends=
+        for arch in "${{ inputs.cpu-arch-list }}" ; do
+          amends="${amends} --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ inputs.linux-distro }}-${arch}${{ env.IMAGE_METADATA }}"
+        done
+        docker manifest create ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ inputs.linux-distro }}${{ env.IMAGE_METADATA }} ${amends}
+        docker manifest push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ inputs.linux-distro }}${{ env.IMAGE_METADATA }}
+      shell: bash
