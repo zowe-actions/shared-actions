@@ -18,8 +18,11 @@ runs:
         export DOCKER_CLI_EXPERIMENTAL=enabled
         amends=
         for arch in "${{ inputs.cpu-arch-list }}" ; do
-          amends="${amends} --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ inputs.linux-distro }}-${arch}${{ env.IMAGE_METADATA }}"
+          amend=$(echo "${IMAGE_MANIFEST_AMEND}" | sed -e "s/_ARCH_/${arch}/")
+          echo "Adding ${amend}"
+          amends="${amends} --amend ${amend}"
         done
-        docker manifest create ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ inputs.linux-distro }}${{ env.IMAGE_METADATA }} ${amends}
-        docker manifest push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ inputs.linux-distro }}${{ env.IMAGE_METADATA }}
+        echo "Creating ${{ env.IMAGE_MANIFEST }}"
+        docker manifest create ${{ env.IMAGE_MANIFEST }} ${amends}
+        docker manifest push ${{ env.IMAGE_MANIFEST }}
       shell: bash

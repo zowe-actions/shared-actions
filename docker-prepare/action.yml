@@ -49,7 +49,7 @@ runs:
       run: |
         IMAGE_DIRECTORY=${{ inputs.base-directory }}/${{ inputs.linux-distro }}/${{ inputs.cpu-arch }}
         echo "IMAGE_DIRECTORY=${IMAGE_DIRECTORY}" >> $GITHUB_ENV
-        IMAGE_NAME=$(basename ${{ inputs.base-directory }})
+        IMAGE_NAME=$(basename ${{ inputs.base-directory }} | tr '[:upper:]' '[:lower:]')
         echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
         IMAGE_VERSION=$(cat ${{ inputs.base-directory }}/${{ inputs.linux-distro }}/${{ inputs.cpu-arch }}/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | xargs)
         [ -z "${IMAGE_VERSION}" ] && echo "Cannot determine version of the image" && exit 1
@@ -64,8 +64,10 @@ runs:
         [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=${IMAGE_METADATA}" >> $GITHUB_ENV
         IMAGE_TAG=${IMAGE_VERSION}-${{ inputs.linux-distro }}-${{ inputs.cpu-arch }}${IMAGE_METADATA}
         echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
-        echo "IMAGE_NAME_FULL_LOCAL=ompzowe/${IMAGE_NAME}:${IMAGE_TAG}" >> $GITHUB_ENV
-        echo "IMAGE_NAME_FULL_REMOTE=${{ inputs.registry }}/ompzowe/${IMAGE_NAME}:${IMAGE_TAG}" >> $GITHUB_ENV
+        echo "IMAGE_NAME_FULL_LOCAL=${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${IMAGE_NAME}:${IMAGE_TAG}" >> $GITHUB_ENV
+        echo "IMAGE_NAME_FULL_REMOTE=${{ inputs.registry }}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${IMAGE_NAME}:${IMAGE_TAG}" >> $GITHUB_ENV
+        echo "IMAGE_MANIFEST_AMEND=${{ inputs.registry }}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${IMAGE_NAME}:${IMAGE_VERSION}-${{ inputs.linux-distro }}-_ARCH_${IMAGE_METADATA}" >> $GITHUB_ENV
+        echo "IMAGE_MANIFEST=${{ inputs.registry }}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${IMAGE_NAME}:${IMAGE_VERSION}-${{ inputs.linux-distro }}${IMAGE_METADATA}" >> $GITHUB_ENV
         exit 0
       shell: bash
 
