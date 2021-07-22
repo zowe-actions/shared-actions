@@ -4881,8 +4881,7 @@ fi
         try {
             // send to pax server
             var cmd = `put ${packageTar} ${paxRemoteWorkspace}
-put ${packageScriptFile} ${paxRemoteWorkspace}
-`
+put ${packageScriptFile} ${paxRemoteWorkspace}`
             debug(cmd)
             debug(utils.sftp(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd))
             
@@ -4892,8 +4891,7 @@ mv ${paxRemoteWorkspace}/${packageScriptFile}.new ${paxRemoteWorkspace}/${packag
 chmod +x ${paxRemoteWorkspace}/${packageScriptFile}
 . ${paxRemoteWorkspace}/${packageScriptFile}
 rm ${paxRemoteWorkspace}/${packageScriptFile}
-exit 0
-`
+exit 0`
             debug(cmd2)
             debug(utils.ssh(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd2))
 
@@ -4930,8 +4928,7 @@ echo "${func}[ERROR] failed on catch-all hook"
 exit 1
 fi
 fi
-exit 0
-`
+exit 0`
                     debug(cmd4)
                     console.log(utils.ssh(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd4))  //need to always print because echo presents in the cmd4
                 } catch (ex3) {
