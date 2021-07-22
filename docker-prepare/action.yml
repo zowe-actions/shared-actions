@@ -64,7 +64,6 @@ runs:
         [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=${IMAGE_METADATA}" >> $GITHUB_ENV
         IMAGE_TAG=${IMAGE_VERSION}-${{ inputs.linux-distro }}-${{ inputs.cpu-arch }}${IMAGE_METADATA}
         echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
-        ${{ inputs.registry }}/ompzowe/${IMAGE_NAME}:${IMAGE_TAG}
         echo "IMAGE_NAME_FULL_LOCAL=ompzowe/${IMAGE_NAME}:${IMAGE_TAG}" >> $GITHUB_ENV
         echo "IMAGE_NAME_FULL_REMOTE=${{ inputs.registry }}/ompzowe/${IMAGE_NAME}:${IMAGE_TAG}" >> $GITHUB_ENV
         exit 0
