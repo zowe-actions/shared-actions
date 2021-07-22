@@ -98,8 +98,6 @@ runs:
       run: |
         sshpass -e -P "passphrase for key" ssh zlinux << EOF
         [ -n "${{ env.ZLINUX_BUILD_WORKSPACE }}" ] && rm -fr ${{ env.ZLINUX_BUILD_WORKSPACE }}
-        docker image prune -a -f
-        docker system prune -f
         EOF
       env:
         SSHPASS: ${{ inputs.zlinux-ssh-passphrase }}
