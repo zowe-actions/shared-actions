@@ -8813,7 +8813,7 @@ class pax {
         if (keepTempFolderArg) {
             keepTempFolder = true
         }
-        var compressPax = 'NO'
+        var compressPax
         if (compress) {
             compressPax = 'YES'
         }
@@ -8997,8 +8997,9 @@ put ${packageScriptFile} ${paxRemoteWorkspace}`
             var cmd2 = `iconv -f ISO8859-1 -t IBM-1047 ${paxRemoteWorkspace}/${packageScriptFile} > ${paxRemoteWorkspace}/${packageScriptFile}.new
 mv ${paxRemoteWorkspace}/${packageScriptFile}.new ${paxRemoteWorkspace}/${packageScriptFile}
 chmod +x ${paxRemoteWorkspace}/${packageScriptFile}
-. ${paxRemoteWorkspace}/${packageScriptFile}
-rm ${paxRemoteWorkspace}/${packageScriptFile}`
+exit`
+//. ${paxRemoteWorkspace}/${packageScriptFile}
+//rm ${paxRemoteWorkspace}/${packageScriptFile}`
             debug(cmd2)
             console.log(utils.ssh(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd2))
             console.log('extract tar file, run pre/post hooks and create pax file completed')
