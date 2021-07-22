@@ -8955,8 +8955,6 @@ else
   exit 1
 fi
 `
-
-        
         try {
             // run prepare-packaging hook if exists
             var prepareWorkspaceScriptFullPath = `${paxLocalWorkspace}/${HOOK_PREPARE_WORKSPACE}`
@@ -8998,8 +8996,7 @@ put ${packageScriptFile} ${paxRemoteWorkspace}`
 mv ${paxRemoteWorkspace}/${packageScriptFile}.new ${paxRemoteWorkspace}/${packageScriptFile}
 chmod +x ${paxRemoteWorkspace}/${packageScriptFile}
 . ${paxRemoteWorkspace}/${packageScriptFile}
-rm ${paxRemoteWorkspace}/${packageScriptFile}
-exit 0`
+rm ${paxRemoteWorkspace}/${packageScriptFile}`
             debug(cmd2)
             debug(utils.ssh(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd2))
 
@@ -9009,7 +9006,8 @@ exit 0`
                 extraGets += `
 get ${remoteWorkspaceFullPath}/${file} ${paxLocalWorkspace}`
             )
-            var cmd3 = `get ${remoteWorkspaceFullPath}/${compressPax ? filePaxZ : filePax} ${paxLocalWorkspace}${extraGets}`
+            var cmd3 = `get ${remoteWorkspaceFullPath}/${compressPax ? filePaxZ : filePax} ${paxLocalWorkspace}`
+            cmd3 += extraGets
             debug(cmd3)
             debug(utils.sftp(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd3))
         } catch (ex1) {
@@ -9035,8 +9033,7 @@ if [ \$? -ne 0 ]; then
 echo "${func}[ERROR] failed on catch-all hook"
 exit 1
 fi
-fi
-exit 0`
+fi`
                     debug(cmd4)
                     console.log(utils.ssh(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd4))  //need to always print because echo presents in the cmd4
                 } catch (ex3) {
@@ -9153,6 +9150,7 @@ EOF`
     static ssh(host, port, username, passwd, cmds) {
         var fullCMD = `SSHPASS=${passwd} sshpass -e ssh -tt -o StrictHostKeyChecking=no -p ${port} ${username}@${host} <<EOF
 ${cmds}
+exit 0
 EOF`
         return utils.sh(fullCMD)
     }
@@ -9160,6 +9158,7 @@ EOF`
     static sshKeyFile(host, port, username, keyPassPhrase, keyfile, cmds) {
         var fullCMD = `sshpass -e -P ${keyPassPhrase} ssh -tt -o BatchMode=no -o StrictHostKeyChecking=no -p ${port} -i ${keyfile} ${username}@${host} <<EOF
 ${cmds}
+exit 0
 EOF`
         return utils.sh(fullCMD)
     }
