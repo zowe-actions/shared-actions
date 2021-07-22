@@ -37,6 +37,19 @@ inputs:
     description: "Passphrase of zLinux SSH identify file"
     required: true
     default: ""
+  redhat-registry:
+    description: "Redhat Docker registry URL"
+    required: false
+    default: ""
+  redhat-registry-user:
+    description: "Redhat Docker registry developer user"
+    required: false
+    default: ""
+  redhat-registry-password:
+    description: "Redhat Docker registry developer passsword"
+    required: false
+    default: ""
+
 runs:
   using: "composite"
   steps:
@@ -96,6 +109,7 @@ runs:
         ls -l
         echo "************ build image"
         cd ${{ inputs.base-directory }}/${{ inputs.linux-distro }}/${{ inputs.cpu-arch }}
+        [ -n "${{ inputs.redhat-registry }}" ] && echo "${{ inputs.redhat-registry-password }}" | sudo docker login --username "${{ inputs.redhat-registry-user }}" --password-stdin ${{ inputs.redhat-registry }}
         sudo docker build --no-cache=true -t ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} .
         sudo docker save -o zlinux-image.tar ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
         sudo chmod 644 zlinux-image.tar
@@ -119,4 +133,12 @@ runs:
       working-directory: ${{ inputs.base-directory }}/${{ inputs.linux-distro }}/${{ inputs.cpu-arch }}
       run: |
         docker push ${{ inputs.registry }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+      shell: bash
+
+    # FIXME: if: ${{ always() }}?
+    - name: clean up remote workspace
+      run: |
+        sshpass -e -P "passphrase for key" ssh zlinux '[ -n "${{ env.BUILD_WORKSPACE }}" ] && rm -fr ${{ env.BUILD_WORKSPACE }}'
+      env:
+        SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
       shell: bash
