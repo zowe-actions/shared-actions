@@ -73,6 +73,9 @@ runs:
         sudo docker build --no-cache=true -t ${{ env.IMAGE_NAME_FULL_LOCAL }} .
         sudo docker save -o zlinux-image.tar ${{ env.IMAGE_NAME_FULL_LOCAL }}
         sudo chmod 644 zlinux-image.tar
+        echo "************ cleanup zlinux"
+        docker image prune -a -f
+        docker system prune -f
         EOF
         echo "************ download image from zLinux:"
         sshpass -e -P "passphrase for key" scp "zlinux:${{ env.ZLINUX_BUILD_WORKSPACE }}/${{ env.IMAGE_DIRECTORY }}/zlinux-image.tar" .
