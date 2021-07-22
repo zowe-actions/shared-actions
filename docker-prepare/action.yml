@@ -71,11 +71,11 @@ runs:
 
     - name: Login to registry
       run: |
-        echo "${{ inputs.registry-password }}" | sudo docker login --username "${{ inputs.registry-user }}" --password-stdin ${{ inputs.registry }}
+        echo "${{ inputs.registry-password }}" | docker login --username "${{ inputs.registry-user }}" --password-stdin ${{ inputs.registry }}
       shell: bash
 
     - name: Login to Redhat registry
       run: |
-        [ -n "${{ inputs.redhat-registry }}" ] && echo "${{ inputs.redhat-registry-password }}" | sudo docker login --username "${{ inputs.redhat-registry-user }}" --password-stdin ${{ inputs.redhat-registry }}
+        [ -n "${{ inputs.redhat-registry }}" ] && echo "${{ inputs.redhat-registry-password }}" | docker login --username "${{ inputs.redhat-registry-user }}" --password-stdin ${{ inputs.redhat-registry }}
         exit 0
       shell: bash
