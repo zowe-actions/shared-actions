@@ -8985,14 +8985,14 @@ fi
 
             
         try {
-            // send to pax server
+            // Step 1: send to pax server
             var cmd = `put ${packageTar} ${paxRemoteWorkspace}
 put ${packageScriptFile} ${paxRemoteWorkspace}`
             debug(cmd)
             debug(utils.sftp(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd))
-            console.log(`sftp put ${packageTar} and ${packageScriptFile} completed`)
+            console.log(`[Step 1]: sftp put ${packageTar} and ${packageScriptFile} completed`)
 
-            // extract tar file, run pre/post hooks and create pax file
+            // Step 2: extract tar file, run pre/post hooks and create pax file
             var cmd2 = `iconv -f ISO8859-1 -t IBM-1047 ${paxRemoteWorkspace}/${packageScriptFile} > ${paxRemoteWorkspace}/${packageScriptFile}.new
 mv ${paxRemoteWorkspace}/${packageScriptFile}.new ${paxRemoteWorkspace}/${packageScriptFile}
 chmod +x ${paxRemoteWorkspace}/${packageScriptFile}
@@ -9000,9 +9000,9 @@ chmod +x ${paxRemoteWorkspace}/${packageScriptFile}
 rm ${paxRemoteWorkspace}/${packageScriptFile}`
             debug(cmd2)
             console.log(utils.ssh(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd2))
-            console.log('extract tar file, run pre/post hooks and create pax file completed')
+            console.log('[Step 2]: extract tar file, run pre/post hooks and create pax file completed')
 
-            // copy back pax file
+            // Step 3: copy back pax files
             var extraGets = ''
             extraFiles.forEach(file =>
                 extraGets += `
@@ -9012,6 +9012,7 @@ get ${remoteWorkspaceFullPath}/${file} ${paxLocalWorkspace}`
             cmd3 += extraGets
             debug(cmd3)
             debug(utils.sftp(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd3))
+            console.log('[Step 3]: copy back files completed')
         } catch (ex1) {
             // throw error
             throw new Error(`Pack Pax package failed: ${ex1}`)
@@ -9042,7 +9043,7 @@ fi`
                     // ignore errors for cleaning up
                     console.warn(`${func} running catch-all hooks failed: ${ex3}`)
                 }
-
+                console.log('catch all hooks completed')
                 try {
                     // always clean up temporary files/folders
                     console.log(`${func} cleaning up remote workspace...`)
