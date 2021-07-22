@@ -58,7 +58,7 @@ else {
     console.log(`Creating pax file "${paxName}" from workspace...`)
     var paxNameFull = paxCompress ? `${paxName}.pax.Z` : `${paxName}.pax`
 
-    var args = Map()
+    var args = new Map()
     args.set('job',`pax-packaging-${paxPackageName}`)
     args.set('paxSSHHost',paxSSHHost)
     args.set('paxSSHPort',paxSSHPort)
