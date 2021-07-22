@@ -8959,7 +8959,7 @@ fi
         
         try {
             // run prepare-packaging hook if exists
-            prepareWorkspaceScriptFullPath = `${paxLocalWorkspace}/${HOOK_PREPARE_WORKSPACE}`
+            var prepareWorkspaceScriptFullPath = `${paxLocalWorkspace}/${HOOK_PREPARE_WORKSPACE}`
             if (utils.fileExists(prepareWorkspaceScriptFullPath)) {
                 var cmds = new Array()
                 cmds.push(environmentText)
