@@ -66,16 +66,13 @@ runs:
         tar zxf build-workspace.tar.gz
         rm build-workspace.tar.gz
         echo "************ workspace prepared:"
-        ls -l
+        ls -la
         echo "************ build image"
         cd ${{ env.IMAGE_DIRECTORY }}
         [ -n "${{ inputs.redhat-registry }}" ] && echo "${{ inputs.redhat-registry-password }}" | sudo docker login --username "${{ inputs.redhat-registry-user }}" --password-stdin ${{ inputs.redhat-registry }}
         sudo docker build --no-cache=true -t ${{ env.IMAGE_NAME_FULL_LOCAL }} .
         sudo docker save -o zlinux-image.tar ${{ env.IMAGE_NAME_FULL_LOCAL }}
         sudo chmod 644 zlinux-image.tar
-        echo "************ cleanup zlinux"
-        docker image prune -a -f
-        docker system prune -f
         EOF
         echo "************ download image from zLinux:"
         sshpass -e -P "passphrase for key" scp "zlinux:${{ env.ZLINUX_BUILD_WORKSPACE }}/${{ env.IMAGE_DIRECTORY }}/zlinux-image.tar" .
@@ -99,7 +96,11 @@ runs:
     # FIXME: if: ${{ always() }}?
     - name: clean up remote workspace
       run: |
-        sshpass -e -P "passphrase for key" ssh zlinux '[ -n "${{ env.ZLINUX_BUILD_WORKSPACE }}" ] && rm -fr ${{ env.ZLINUX_BUILD_WORKSPACE }}'
+        sshpass -e -P "passphrase for key" ssh zlinux << EOF
+        [ -n "${{ env.ZLINUX_BUILD_WORKSPACE }}" ] && rm -fr ${{ env.ZLINUX_BUILD_WORKSPACE }}
+        docker image prune -a -f
+        docker system prune -f
+        EOF
       env:
         SSHPASS: ${{ inputs.zlinux-ssh-passphrase }}
       shell: bash
