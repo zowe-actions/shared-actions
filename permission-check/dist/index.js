@@ -4856,6 +4856,7 @@ fi
                 cmds.push(prepareWorkspaceScriptFullPath)
                 debug(cmds.join(' '))
                 console.log(utils.sh(cmds.join(' ')))    //use console to print output
+                console.log('prepare workspace completed')
             }
             console.log(utils.sh(`echo ${func} packaging contents: && find ${paxLocalWorkspace} -print`))
             
@@ -4869,18 +4870,16 @@ fi
             }
 
             // tar the whole workspace folder
-            console.log(utils.sh(`tar -c -f ${packageTar} -C ${paxLocalWorkspace} .`))
+            debug(utils.sh(`tar -c -f ${packageTar} -C ${paxLocalWorkspace} .`))
             fs.writeFileSync(packageScriptFile, packageScriptContent)
         } catch (ex0) {
             throw new Error(`Failed to prepare packaging workspace: ${ex0}`)
         }
 
-            
         try {
             // Step 1: send to pax server
             var cmd = `put ${packageTar} ${paxRemoteWorkspace}
 put ${packageScriptFile} ${paxRemoteWorkspace}`
-            debug(cmd)
             debug(utils.sftp(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd))
             console.log(`[Step 1]: sftp put ${packageTar} and ${packageScriptFile} completed`)
 
@@ -4890,7 +4889,6 @@ mv ${paxRemoteWorkspace}/${packageScriptFile}.new ${paxRemoteWorkspace}/${packag
 chmod +x ${paxRemoteWorkspace}/${packageScriptFile}
 . ${paxRemoteWorkspace}/${packageScriptFile}
 rm ${paxRemoteWorkspace}/${packageScriptFile}`
-            debug(cmd2)
             console.log(utils.ssh(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd2))
             console.log('[Step 2]: extract tar file, run pre/post hooks and create pax file completed')
 
@@ -4902,7 +4900,6 @@ get ${remoteWorkspaceFullPath}/${file} ${paxLocalWorkspace}`
             )
             var cmd3 = `get ${remoteWorkspaceFullPath}/${compressPax ? filePaxZ : filePax} ${paxLocalWorkspace}`
             cmd3 += extraGets
-            debug(cmd3)
             debug(utils.sftp(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd3))
             console.log('[Step 3]: copy back files completed')
         } catch (ex1) {
@@ -4929,8 +4926,7 @@ echo "${func}[ERROR] failed on catch-all hook"
 exit 1
 fi
 fi`
-                    debug(cmd4)
-                    console.log(utils.ssh(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd4))  //need to always print because echo presents in the cmd4
+                    debug(utils.ssh(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd4))
                 } catch (ex3) {
                     // ignore errors for cleaning up
                     console.warn(`${func} running catch-all hooks failed: ${ex3}`)
@@ -4940,8 +4936,8 @@ fi`
                     // always clean up temporary files/folders
                     console.log(`${func} cleaning up remote workspace...`)
                     var cmdCleaning = `rm -fr ${remoteWorkspaceFullPath}*`
-                    var resultCleaning = utils.ssh(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmdCleaning)
-                    console.log(`${func} cleaning up remote workspace success, returns: ${resultCleaning}`)
+                    debug(utils.ssh(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmdCleaning))
+                    console.log(`${func} cleaning up remote workspace success`)
                 } catch (ex2) {
                     // ignore errors for cleaning up
                     console.warn(`${func} cleaning up remote workspace failed: ${ex2}`)
