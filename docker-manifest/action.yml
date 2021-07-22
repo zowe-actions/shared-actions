@@ -19,10 +19,10 @@ runs:
         amends=
         for arch in "${{ inputs.cpu-arch-list }}" ; do
           amend=$(echo "${IMAGE_MANIFEST_AMEND}" | sed -e "s/_ARCH_/${arch}/")
-          echo "Adding ${amend}"
+          echo "************ adding ${amend}"
           amends="${amends} --amend ${amend}"
         done
-        echo "Creating ${{ env.IMAGE_MANIFEST }}"
+        echo "************ creating ${{ env.IMAGE_MANIFEST }}"
         docker manifest create ${{ env.IMAGE_MANIFEST }} ${amends}
         docker manifest push ${{ env.IMAGE_MANIFEST }}
       shell: bash
