@@ -4882,7 +4882,8 @@ fi
 put ${packageScriptFile} ${paxRemoteWorkspace}`
             debug(cmd)
             debug(utils.sftp(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd))
-            
+            console.log(`sftp put ${packageTar} and ${packageScriptFile} completed`)
+
             // extract tar file, run pre/post hooks and create pax file
             var cmd2 = `iconv -f ISO8859-1 -t IBM-1047 ${paxRemoteWorkspace}/${packageScriptFile} > ${paxRemoteWorkspace}/${packageScriptFile}.new
 mv ${paxRemoteWorkspace}/${packageScriptFile}.new ${paxRemoteWorkspace}/${packageScriptFile}
@@ -4890,7 +4891,8 @@ chmod +x ${paxRemoteWorkspace}/${packageScriptFile}
 . ${paxRemoteWorkspace}/${packageScriptFile}
 rm ${paxRemoteWorkspace}/${packageScriptFile}`
             debug(cmd2)
-            debug(utils.ssh(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd2))
+            console.log(utils.ssh(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd2))
+            console.log('extract tar file, run pre/post hooks and create pax file completed')
 
             // copy back pax file
             var extraGets = ''
@@ -4938,7 +4940,7 @@ fi`
                     console.log(`${func} cleaning up remote workspace...`)
                     var cmdCleaning = `rm -fr ${remoteWorkspaceFullPath}*`
                     var resultCleaning = utils.ssh(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmdCleaning)
-                    console.log(`${func} cleaning up remote workspace returns: ${resultCleaning}`)
+                    console.log(`${func} cleaning up remote workspace success, returns: ${resultCleaning}`)
                 } catch (ex2) {
                     // ignore errors for cleaning up
                     console.warn(`${func} cleaning up remote workspace failed: ${ex2}`)
