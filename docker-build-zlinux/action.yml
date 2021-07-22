@@ -140,5 +140,5 @@ runs:
       run: |
         sshpass -e -P "passphrase for key" ssh zlinux '[ -n "${{ env.BUILD_WORKSPACE }}" ] && rm -fr ${{ env.BUILD_WORKSPACE }}'
       env:
-        SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
+        SSHPASS: ${{ inputs.zlinux-ssh-passphrase }}
       shell: bash
