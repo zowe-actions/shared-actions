@@ -59,7 +59,7 @@ else {
     var paxNameFull = paxCompress ? `${paxName}.pax.Z` : `${paxName}.pax`
 
     var args = new Map()
-    args.set('job',`pax-packaging-${paxPackageName}`)
+    args.set('job',`pax-packaging-${paxName}`)
     args.set('paxSSHHost',paxSSHHost)
     args.set('paxSSHPort',paxSSHPort)
     args.set('paxSSHUsername',paxSSHUsername)
