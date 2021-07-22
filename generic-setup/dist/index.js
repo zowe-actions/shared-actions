@@ -8977,7 +8977,8 @@ fi
             }
 
             // tar the whole workspace folder
-            utils.sh(`tar -c -f ${packageTar} -C ${paxLocalWorkspace} .`)
+            console.log(utils.sh(`tar -c -f ${packageTar} -C ${paxLocalWorkspace} .`))
+            console.log(utils.sh('pwd && ls'))
             fs.writeFileSync(packageScriptFile, packageScriptContent)
         } catch (ex0) {
             throw new Error(`Failed to prepare packaging workspace: ${ex0}`)
