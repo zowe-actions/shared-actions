@@ -4880,18 +4880,18 @@ fi
             
         try {
             // send to pax server
-            var cmd = `put ${packageTar} ${remoteWorkspace}
-put ${packageScriptFile} ${remoteWorkspace}
+            var cmd = `put ${packageTar} ${paxRemoteWorkspace}
+put ${packageScriptFile} ${paxRemoteWorkspace}
 `
             debug(cmd)
             debug(utils.sftp(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd))
             
             // extract tar file, run pre/post hooks and create pax file
-            var cmd2 = `iconv -f ISO8859-1 -t IBM-1047 ${remoteWorkspace}/${packageScriptFile} > ${remoteWorkspace}/${packageScriptFile}.new
-mv ${remoteWorkspace}/${packageScriptFile}.new ${remoteWorkspace}/${packageScriptFile}
-chmod +x ${remoteWorkspace}/${packageScriptFile}
-. ${remoteWorkspace}/${packageScriptFile}
-rm ${remoteWorkspace}/${packageScriptFile}
+            var cmd2 = `iconv -f ISO8859-1 -t IBM-1047 ${paxRemoteWorkspace}/${packageScriptFile} > ${paxRemoteWorkspace}/${packageScriptFile}.new
+mv ${paxRemoteWorkspace}/${packageScriptFile}.new ${paxRemoteWorkspace}/${packageScriptFile}
+chmod +x ${paxRemoteWorkspace}/${packageScriptFile}
+. ${paxRemoteWorkspace}/${packageScriptFile}
+rm ${paxRemoteWorkspace}/${packageScriptFile}
 exit 0
 `
             debug(cmd2)
@@ -5039,21 +5039,21 @@ class utils {
     }
 
     static sftp(host, port, username, passwd, cmds) {
-        var fullCMD = `SSHPASS=${passwd} sshpass -e sftp -o BatchMode=no -o StrictHostKeyChecking=no -P ${port} -b - ${username}@${host} << EOF
+        var fullCMD = `SSHPASS=${passwd} sshpass -e sftp -o BatchMode=no -o StrictHostKeyChecking=no -P ${port} -b - ${username}@${host} <<EOF
 ${cmds}
 EOF`
         return utils.sh(fullCMD)
     }
 
     static ssh(host, port, username, passwd, cmds) {
-        var fullCMD = `SSHPASS=${passwd} sshpass -e ssh -tt -o StrictHostKeyChecking=no -p ${port} ${username}@${host} << EOF
+        var fullCMD = `SSHPASS=${passwd} sshpass -e ssh -tt -o StrictHostKeyChecking=no -p ${port} ${username}@${host} <<EOF
 ${cmds}
 EOF`
         return utils.sh(fullCMD)
     }
 
     static sshKeyFile(host, port, username, keyPassPhrase, keyfile, cmds) {
-        var fullCMD = `sshpass -e -P ${keyPassPhrase} ssh -tt -o BatchMode=no -o StrictHostKeyChecking=no -p ${port} -i ${keyfile} ${username}@${host} << EOF
+        var fullCMD = `sshpass -e -P ${keyPassPhrase} ssh -tt -o BatchMode=no -o StrictHostKeyChecking=no -p ${port} -i ${keyfile} ${username}@${host} <<EOF
 ${cmds}
 EOF`
         return utils.sh(fullCMD)
