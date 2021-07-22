@@ -1,10 +1,6 @@
 name: "Prepare for docker build environment"
 description: "This action helps to define image name, version, metadata and tag. Also it will try to login to target registry."
 inputs:
-  registry:
-    description: "Docker registry"
-    required: true
-    default: ""
   registry-user:
     description: "Docker registry user"
     required: false
@@ -47,6 +43,8 @@ runs:
   steps:
     - name: Set image name, version and metadata
       run: |
+        [ "${{ inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_RELEASE }}" >> $GITHUB_ENV
+        [ "${{ inputs.release }}" != "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_SNAPSHOT }}" >> $GITHUB_ENV
         IMAGE_DIRECTORY=${{ inputs.base-directory }}/${{ inputs.linux-distro }}/${{ inputs.cpu-arch }}
         echo "IMAGE_DIRECTORY=${IMAGE_DIRECTORY}" >> $GITHUB_ENV
         IMAGE_NAME=$(basename ${{ inputs.base-directory }} | tr '[:upper:]' '[:lower:]')
