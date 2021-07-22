@@ -17,7 +17,8 @@ runs:
       run: |
         export DOCKER_CLI_EXPERIMENTAL=enabled
         amends=
-        for arch in "${{ inputs.cpu-arch-list }}" ; do
+        for arch in ${{ inputs.cpu-arch-list }}
+        do
           amend=$(echo "${IMAGE_MANIFEST_AMEND}" | sed -e "s/_ARCH_/${arch}/")
           echo "************ adding ${amend}"
           amends="${amends} --amend ${amend}"
