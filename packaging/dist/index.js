@@ -5032,8 +5032,8 @@ class utils {
         if (branch.startsWith('origin/')) {
             branch = branch.substring(7)
         }
-        branch = branch.replaceAll(/[^a-zA-Z0-9]/, '-')
-                       .replaceAll(/[\-]+/, '-')
+        branch = branch.replace(/[^a-zA-Z0-9]/g, '-')
+                       .replace(/[\-]+/g, '-')
                        .toLowerCase()
         return branch
     }
