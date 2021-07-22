@@ -43,8 +43,9 @@ runs:
   steps:
     - name: Set image name, version and metadata
       run: |
-        [ "${{ inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_RELEASE }}" >> $GITHUB_ENV
-        [ "${{ inputs.release }}" != "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_SNAPSHOT }}" >> $GITHUB_ENV
+        [ "${{ inputs.release }}" = "true" ] && ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_RELEASE }}
+        [ "${{ inputs.release }}" != "true" ] && ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_SNAPSHOT }}
+        echo "ZOWE_DOCKER_REGISTRY=${ZOWE_DOCKER_REGISTRY}" >> $GITHUB_ENV
         IMAGE_DIRECTORY=${{ inputs.base-directory }}/${{ inputs.linux-distro }}/${{ inputs.cpu-arch }}
         echo "IMAGE_DIRECTORY=${IMAGE_DIRECTORY}" >> $GITHUB_ENV
         IMAGE_NAME=$(basename ${{ inputs.base-directory }} | tr '[:upper:]' '[:lower:]')
@@ -63,15 +64,15 @@ runs:
         IMAGE_TAG=${IMAGE_VERSION}-${{ inputs.linux-distro }}-${{ inputs.cpu-arch }}${IMAGE_METADATA}
         echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
         echo "IMAGE_NAME_FULL_LOCAL=${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${IMAGE_NAME}:${IMAGE_TAG}" >> $GITHUB_ENV
-        echo "IMAGE_NAME_FULL_REMOTE=${{ inputs.registry }}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${IMAGE_NAME}:${IMAGE_TAG}" >> $GITHUB_ENV
-        echo "IMAGE_MANIFEST_AMEND=${{ inputs.registry }}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${IMAGE_NAME}:${IMAGE_VERSION}-${{ inputs.linux-distro }}-_ARCH_${IMAGE_METADATA}" >> $GITHUB_ENV
-        echo "IMAGE_MANIFEST=${{ inputs.registry }}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${IMAGE_NAME}:${IMAGE_VERSION}-${{ inputs.linux-distro }}${IMAGE_METADATA}" >> $GITHUB_ENV
+        echo "IMAGE_NAME_FULL_REMOTE=${ZOWE_DOCKER_REGISTRY}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${IMAGE_NAME}:${IMAGE_TAG}" >> $GITHUB_ENV
+        echo "IMAGE_MANIFEST_AMEND=${ZOWE_DOCKER_REGISTRY}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${IMAGE_NAME}:${IMAGE_VERSION}-${{ inputs.linux-distro }}-_ARCH_${IMAGE_METADATA}" >> $GITHUB_ENV
+        echo "IMAGE_MANIFEST=${ZOWE_DOCKER_REGISTRY}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${IMAGE_NAME}:${IMAGE_VERSION}-${{ inputs.linux-distro }}${IMAGE_METADATA}" >> $GITHUB_ENV
         exit 0
       shell: bash
 
     - name: Login to registry
       run: |
-        echo "${{ inputs.registry-password }}" | docker login --username "${{ inputs.registry-user }}" --password-stdin ${{ inputs.registry }}
+        echo "${{ inputs.registry-password }}" | docker login --username "${{ inputs.registry-user }}" --password-stdin ${{ env.ZOWE_DOCKER_REGISTRY }}
       shell: bash
 
     - name: Login to Redhat registry
