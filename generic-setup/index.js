@@ -88,6 +88,6 @@ console.log(utils.sh('node extra-init.js && rm extra-init.js'))
 
 
 // read branches.json data into jsonObject and pass it around
-console.log(utils.sh(`pwd`))
+console.log(utils.sh(`ls`))
 var branchesJsonText = fs.readFileSync('branches.json')
 console.log('aaaaaaaaa'+branchesJsonText)
