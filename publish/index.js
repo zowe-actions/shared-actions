@@ -41,7 +41,7 @@ for (var i=0; i < defaultBranchesJsonObject.length; i++) {
         break;
     }
 }
-
-
+console.log('aaa '+_isReleaseBranch)
+console.log('bbb '+_isFormalReleaseBranch)
 
 
