@@ -25,8 +25,9 @@ runs:
           do
             manifest=$(echo "${manifest}" | sed -e "s/{major}/${{ env.IMAGE_VERSION_MAJOR }}/" -e "s/{minor}/${{ env.IMAGE_VERSION_MINOR }}/" -e "s/{patch}/${{ env.IMAGE_VERSION_PATCH }}/")
             echo "************ extra manifest: ${manifest}"
-            IMAGE_MANIFEST=${IMAGE_MANIFEST} ${{ env.ZOWE_DOCKER_REGISTRY }}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${{ env.IMAGE_NAME }}:${manifest}
+            IMAGE_MANIFEST="${IMAGE_MANIFEST} ${{ env.ZOWE_DOCKER_REGISTRY }}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${{ env.IMAGE_NAME }}:${manifest}"
           done
+          echo "Final manifests: ${IMAGE_MANIFEST}"
           echo "IMAGE_MANIFEST=${IMAGE_MANIFEST}" >> $GITHUB_ENV
         fi
       shell: bash
