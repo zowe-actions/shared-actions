@@ -9,10 +9,27 @@ inputs:
     description: "CPU architecture name list seperated by space."
     required: false
     default: "amd64 s390x"
+  extra-manifests:
+    description: "If we want to create extra manifests when it's a formal release. Use {major}, {minor} and {patch} special variables for special manifest based on current version."
+    required: false
+    default: ""
 
 runs:
   using: "composite"
   steps:
+    - name: Define extra manifests
+      run: |
+        if [ ${{ inputs.extra-manifests }} != "" -a ${{ env.IMAGE_RELEASE }} = "true" ]; then
+          IMAGE_MANIFEST=${{ env.IMAGE_MANIFEST }}
+          for manifest in ${{ inputs.extra-manifests }}
+          do
+            manifest=$(echo "${manifest}" | sed -e "s/{major}/${{ env.IMAGE_VERSION_MAJOR }}/"  -e "s/{minor}/${{ env.IMAGE_VERSION_MINOR }}/"  -e "s/{patch}/${{ env.IMAGE_VERSION_PATCH }}/")
+            IMAGE_MANIFEST=${IMAGE_MANIFEST} ${{ env.ZOWE_DOCKER_REGISTRY }}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${{ env.IMAGE_NAME }}:${manifest}
+          done
+          echo "IMAGE_MANIFEST=${IMAGE_MANIFEST}" >> $GITHUB_ENV
+        fi
+      shell: bash
+
     - name: define manifest
       run: |
         export DOCKER_CLI_EXPERIMENTAL=enabled
@@ -23,7 +40,10 @@ runs:
           echo "************ adding ${amend}"
           amends="${amends} --amend ${amend}"
         done
-        echo "************ creating ${{ env.IMAGE_MANIFEST }}"
-        docker manifest create ${{ env.IMAGE_MANIFEST }} ${amends}
-        docker manifest push ${{ env.IMAGE_MANIFEST }}
+        for manifest in ${{ env.IMAGE_MANIFEST }}
+        do
+          echo "************ creating ${manifest}"
+          docker manifest create ${manifest} ${amends}
+          docker manifest push ${manifest}
+        done
       shell: bash

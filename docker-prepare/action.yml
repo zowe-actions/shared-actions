@@ -43,6 +43,7 @@ runs:
   steps:
     - name: Set image name, version and metadata
       run: |
+        [ "${{ inputs.release }}" = "true" ] && echo "IMAGE_RELEASE=true" >> $GITHUB_ENV
         [ "${{ inputs.release }}" = "true" ] && ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_RELEASE }}
         [ "${{ inputs.release }}" != "true" ] && ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_SNAPSHOT }}
         echo "ZOWE_DOCKER_REGISTRY=${ZOWE_DOCKER_REGISTRY}" >> $GITHUB_ENV
@@ -52,7 +53,13 @@ runs:
         echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
         IMAGE_VERSION=$(cat ${{ inputs.base-directory }}/${{ inputs.linux-distro }}/${{ inputs.cpu-arch }}/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | xargs)
         [ -z "${IMAGE_VERSION}" ] && echo "Cannot determine version of the image" && exit 1
+        IMAGE_VERSION_MAJOR=$(echo "${IMAGE_VERSION}" | awk -F. '{print $1}')
+        IMAGE_VERSION_MINOR=$(echo "${IMAGE_VERSION}" | awk -F. '{print $2}')
+        IMAGE_VERSION_PATCH=$(echo "${IMAGE_VERSION}" | awk -F. '{print $3}')
         echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
+        echo "IMAGE_VERSION_MAJOR=${IMAGE_VERSION_MAJOR}" >> $GITHUB_ENV
+        echo "IMAGE_VERSION_MINOR=${IMAGE_VERSION_MINOR}" >> $GITHUB_ENV
+        echo "IMAGE_VERSION_PATCH=${IMAGE_VERSION_PATCH}" >> $GITHUB_ENV
         IMAGE_METADATA=
         [ -n "${{ github.event.pull_request.number }}" ] && IMAGE_METADATA=pr-${{ github.event.pull_request.number }}
         [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF#refs/heads/}
