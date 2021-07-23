@@ -10,7 +10,7 @@ runs:
         # 2. remove blank lines
         # 3. quote the whole string with double quotes
         # 4. prefix "echo" and append ">> $GITHUB_ENV" 
-        sed '/^#/d' envvars.env | awk NF | sed 's/^/"/;s/$/"/' | awk '{ print "echo",$0,">> $GITHUB_ENV" }'> envvars.sh
+        sed '/^#/d' envvars.env | awk NF | sed 's/^/"/;s/$/"/' | awk '{ print "echo",$0,">> $GITHUB_ENV" }' > envvars.sh
         chmod +x envvars.sh
         ./envvars.sh
       shell: bash
