@@ -26,6 +26,7 @@ var mjson = `${projectRootPath}/manifest.json`
 var myaml = `${projectRootPath}/manifest.yaml`
 var myml = `${projectRootPath}/manifest.yml`
 
+
 // find and check manifest file
 if (manifest) {
     if (!utils.fileExists(`${projectRootPath}/${manifest}`)) {
@@ -85,3 +86,7 @@ core.setOutput("packageInfoJsonText", packageInfoJsonText);
 utils.sh(`echo "${extraInit}" > extra-init.js`)
 console.log(utils.sh('node extra-init.js && rm extra-init.js'))
 
+
+// read branches.json data into jsonObject and pass it around
+var branchesJsonText = fs.readFileSync('branches.json')
+console.log('aaaaaaaaa'+branchesJsonText)
