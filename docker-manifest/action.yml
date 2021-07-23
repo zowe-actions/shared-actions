@@ -19,11 +19,12 @@ runs:
   steps:
     - name: Define extra manifests
       run: |
-        if [ ${{ inputs.extra-manifests }} != "" -a ${{ env.IMAGE_RELEASE }} = "true" ]; then
+        if [ "${{ inputs.extra-manifests }}" != "" -a "${{ env.IMAGE_RELEASE }}" = "true" ]; then
           IMAGE_MANIFEST=${{ env.IMAGE_MANIFEST }}
           for manifest in ${{ inputs.extra-manifests }}
           do
-            manifest=$(echo "${manifest}" | sed -e "s/{major}/${{ env.IMAGE_VERSION_MAJOR }}/"  -e "s/{minor}/${{ env.IMAGE_VERSION_MINOR }}/"  -e "s/{patch}/${{ env.IMAGE_VERSION_PATCH }}/")
+            manifest=$(echo "${manifest}" | sed -e "s/{major}/${{ env.IMAGE_VERSION_MAJOR }}/" -e "s/{minor}/${{ env.IMAGE_VERSION_MINOR }}/" -e "s/{patch}/${{ env.IMAGE_VERSION_PATCH }}/")
+            echo "************ extra manifest: ${manifest}"
             IMAGE_MANIFEST=${IMAGE_MANIFEST} ${{ env.ZOWE_DOCKER_REGISTRY }}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${{ env.IMAGE_NAME }}:${manifest}
           done
           echo "IMAGE_MANIFEST=${IMAGE_MANIFEST}" >> $GITHUB_ENV
@@ -36,13 +37,13 @@ runs:
         amends=
         for arch in ${{ inputs.cpu-arch-list }}
         do
-          amend=$(echo "${IMAGE_MANIFEST_AMEND}" | sed -e "s/_ARCH_/${arch}/")
-          echo "************ adding ${amend}"
+          amend=$(echo "${IMAGE_MANIFEST_AMEND}" | sed -e "s/{ARCH}/${arch}/")
+          echo "************ adding amend ${amend}"
           amends="${amends} --amend ${amend}"
         done
         for manifest in ${{ env.IMAGE_MANIFEST }}
         do
-          echo "************ creating ${manifest}"
+          echo "************ creating manifest ${manifest}"
           docker manifest create ${manifest} ${amends}
           docker manifest push ${manifest}
         done
