@@ -10,8 +10,6 @@ inputs:
 outputs:
   package-info-json-text:
     description: 'Parsed manifest information to a json string'
-  default-branches-json-text:
-    description: 'Default branches json in string'
 
 runs:
   using: 'node12'
