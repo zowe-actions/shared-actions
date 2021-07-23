@@ -33,6 +33,9 @@ runs:
 
     - name: Create and publish manifests
       run: |
+        echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+        cat "$0"
+        echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
         export DOCKER_CLI_EXPERIMENTAL=enabled
         amends=
         for arch in ${{ inputs.cpu-arch-list }}
