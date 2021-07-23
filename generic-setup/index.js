@@ -88,6 +88,36 @@ console.log(utils.sh('node extra-init.js && rm extra-init.js'))
 
 
 // read branches.json data into jsonObject and pass it around
-console.log(utils.sh(`ls /home/runner/work/_actions/zowe-actions/shared-actions/generic-setup`))
-var branchesJsonText = fs.readFileSync(`/home/runner/work/_actions/zowe-actions/shared-actions/generic-setup/branches.json`)
-console.log('aaaaaaaaa'+branchesJsonText)
+var json = {
+    "branches":[
+        {
+            "name"               : "master",
+            "isProtected"        : true,
+            "buildHistory"       : 20,
+            "allowRelease"       : true,
+            "allowFormalRelease" : true,
+            "releaseTag"         : "snapshot"
+        },
+        {
+            "name"               : "v[0-9]+\\.[0-9x]+(\\.[0-9x]+)?/master",
+            "isProtected"        : true,
+            "buildHistory"       : 20,
+            "allowRelease"       : true,
+            "allowFormalRelease" : true,
+            "releaseTag"         : "$1-snapshot"
+        },
+        {
+            "name"               : "staging",
+            "isProtected"        : true,
+            "buildHistory"       : 20,
+            "allowRelease"       : true
+        },
+        {
+            "name"               : "v[0-9]+\\.[0-9x]+(\\.[0-9x]+)?/staging",
+            "isProtected"        : true,
+            "buildHistory"       : 20,
+            "allowRelease"       : true
+        }
+    ]
+}
+console.log(json)
