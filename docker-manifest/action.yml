@@ -27,7 +27,7 @@ runs:
             echo "************ extra manifest: ${manifest}"
             extras="${extras} ${{ env.ZOWE_DOCKER_REGISTRY }}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${{ env.IMAGE_NAME }}:${manifest}"
           done
-          echo "IMAGE_MANIFEST_EXTRAS=\"${extras}\"" >> $GITHUB_ENV
+          echo "IMAGE_MANIFEST_EXTRAS=${extras}" >> $GITHUB_ENV
         fi
       shell: bash
 
