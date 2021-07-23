@@ -79,8 +79,8 @@ if (_manifestObject) {
 }
 
 debug(packageInfo)
-var packageInfoJsonText = JSON.stringify(Array.from(packageInfo.entries()));
-core.setOutput("packageInfoJsonText", packageInfoJsonText);
+var packageInfoJsonText = JSON.stringify(Array.from(packageInfo.entries()))
+core.setOutput("package-info-json-text", packageInfoJsonText)
 
 // run extra init code
 utils.sh(`echo "${extraInit}" > extra-init.js`)
@@ -120,4 +120,4 @@ var json = {
         }
     ]
 }
-console.log(json)
+core.setOutput("default-branches-json-text", json)
