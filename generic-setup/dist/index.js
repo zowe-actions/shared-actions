@@ -9350,41 +9350,6 @@ core.setOutput("package-info-json-text", packageInfoJsonText)
 utils.sh(`echo "${extraInit}" > extra-init.js`)
 console.log(utils.sh('node extra-init.js && rm extra-init.js'))
 
-
-// read branches.json data into jsonObject and pass it around
-var json = {
-    "branches":[
-        {
-            "name"               : "master",
-            "isProtected"        : true,
-            "buildHistory"       : 20,
-            "allowRelease"       : true,
-            "allowFormalRelease" : true,
-            "releaseTag"         : "snapshot"
-        },
-        {
-            "name"               : "v[0-9]+\\.[0-9x]+(\\.[0-9x]+)?/master",
-            "isProtected"        : true,
-            "buildHistory"       : 20,
-            "allowRelease"       : true,
-            "allowFormalRelease" : true,
-            "releaseTag"         : "$1-snapshot"
-        },
-        {
-            "name"               : "staging",
-            "isProtected"        : true,
-            "buildHistory"       : 20,
-            "allowRelease"       : true
-        },
-        {
-            "name"               : "v[0-9]+\\.[0-9x]+(\\.[0-9x]+)?/staging",
-            "isProtected"        : true,
-            "buildHistory"       : 20,
-            "allowRelease"       : true
-        }
-    ]
-}
-core.setOutput("default-branches-json-text", json)
 })();
 
 module.exports = __webpack_exports__;
