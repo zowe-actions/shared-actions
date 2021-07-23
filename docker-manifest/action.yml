@@ -17,7 +17,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Define extra manifests
+    - name: Define extra manifests for release
       run: |
         if [ "${{ inputs.extra-manifests }}" != "" -a "${{ env.IMAGE_RELEASE }}" = "true" ]; then
           IMAGE_MANIFEST=${{ env.IMAGE_MANIFEST }}
