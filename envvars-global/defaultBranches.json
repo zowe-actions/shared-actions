@@ -1,32 +1,30 @@
-{
-    "defaultBranches":[
-        {
-            "name"               : "master",
-            "isProtected"        : true,
-            "buildHistory"       : 20,
-            "allowRelease"       : true,
-            "allowFormalRelease" : true,
-            "releaseTag"         : "snapshot"
-        },
-        {
-            "name"               : "v[0-9]+\\.[0-9x]+(\\.[0-9x]+)?/master",
-            "isProtected"        : true,
-            "buildHistory"       : 20,
-            "allowRelease"       : true,
-            "allowFormalRelease" : true,
-            "releaseTag"         : "$1-snapshot"
-        },
-        {
-            "name"               : "staging",
-            "isProtected"        : true,
-            "buildHistory"       : 20,
-            "allowRelease"       : true
-        },
-        {
-            "name"               : "v[0-9]+\\.[0-9x]+(\\.[0-9x]+)?/staging",
-            "isProtected"        : true,
-            "buildHistory"       : 20,
-            "allowRelease"       : true
-        }
-    ]
-}
+[
+    {
+        "name"               : "master",
+        "isProtected"        : true,
+        "buildHistory"       : 20,
+        "allowRelease"       : true,
+        "allowFormalRelease" : true,
+        "releaseTag"         : "snapshot"
+    },
+    {
+        "name"               : "v[0-9]+\\.[0-9x]+(\\.[0-9x]+)?/master",
+        "isProtected"        : true,
+        "buildHistory"       : 20,
+        "allowRelease"       : true,
+        "allowFormalRelease" : true,
+        "releaseTag"         : "$1-snapshot"
+    },
+    {
+        "name"               : "staging",
+        "isProtected"        : true,
+        "buildHistory"       : 20,
+        "allowRelease"       : true
+    },
+    {
+        "name"               : "v[0-9]+\\.[0-9x]+(\\.[0-9x]+)?/staging",
+        "isProtected"        : true,
+        "buildHistory"       : 20,
+        "allowRelease"       : true
+    }
+]

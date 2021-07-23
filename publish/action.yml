@@ -1,0 +1,19 @@
+name: "Publish"
+description: "Publish to artifactory for all project builds"
+inputs:
+  artifacts:
+    description: 'artifacts to upload, also support multiple line inputs'
+    required: true
+  default-branches-json-text:
+    description: 'default branch json text'
+    required: true
+  perform-release:
+    description: 'flag to perform steps to release'
+    required: false
+  current-branch:
+    description: 'current branch name'
+    required: true
+
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
