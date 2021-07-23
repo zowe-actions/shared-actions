@@ -27,12 +27,11 @@ runs:
             echo "************ extra manifest: ${manifest}"
             IMAGE_MANIFEST="${IMAGE_MANIFEST} ${{ env.ZOWE_DOCKER_REGISTRY }}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${{ env.IMAGE_NAME }}:${manifest}"
           done
-          echo "Final manifests: ${IMAGE_MANIFEST}"
-          echo "IMAGE_MANIFEST=${IMAGE_MANIFEST}" >> $GITHUB_ENV
+          echo "IMAGE_MANIFEST=\"${IMAGE_MANIFEST}\"" >> $GITHUB_ENV
         fi
       shell: bash
 
-    - name: define manifest
+    - name: Create and publish manifests
       run: |
         export DOCKER_CLI_EXPERIMENTAL=enabled
         amends=
@@ -42,9 +41,11 @@ runs:
           echo "************ adding amend ${amend}"
           amends="${amends} --amend ${amend}"
         done
-        for manifest in ${{ env.IMAGE_MANIFEST }}
+        IMAGE_MANIFEST="${{ env.IMAGE_MANIFEST }}"
+        echo "************ final manifests: ${IMAGE_MANIFEST}"
+        for manifest in ${IMAGE_MANIFEST}
         do
-          echo "************ creating manifest ${manifest}"
+          echo "************ creating ${manifest}"
           docker manifest create ${manifest} ${amends}
           docker manifest push ${manifest}
         done
