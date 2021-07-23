@@ -88,6 +88,6 @@ console.log(utils.sh('node extra-init.js && rm extra-init.js'))
 
 
 // read branches.json data into jsonObject and pass it around
-console.log(utils.sh(`cd ../../_actions/zowe-actions/shared-actions/generic-setup && ls`))
-var branchesJsonText = fs.readFileSync('../../_actions/zowe-actions/shared-actions/generic-setup/branches.json')
+console.log(utils.sh(`cd ${projectRootPath}/../../_actions/zowe-actions/shared-actions/generic-setup && ls`))
+var branchesJsonText = fs.readFileSync(`${projectRootPath}/../../_actions/zowe-actions/shared-actions/generic-setup/branches.json`)
 console.log('aaaaaaaaa'+branchesJsonText)
