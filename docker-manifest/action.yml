@@ -20,14 +20,14 @@ runs:
     - name: Define extra manifests for release
       run: |
         if [ "${{ inputs.extra-manifests }}" != "" -a "${{ env.IMAGE_RELEASE }}" = "true" ]; then
-          IMAGE_MANIFEST=${{ env.IMAGE_MANIFEST }}
+          extras=
           for manifest in ${{ inputs.extra-manifests }}
           do
             manifest=$(echo "${manifest}" | sed -e "s/{major}/${{ env.IMAGE_VERSION_MAJOR }}/" -e "s/{minor}/${{ env.IMAGE_VERSION_MINOR }}/" -e "s/{patch}/${{ env.IMAGE_VERSION_PATCH }}/")
             echo "************ extra manifest: ${manifest}"
-            IMAGE_MANIFEST="${IMAGE_MANIFEST} ${{ env.ZOWE_DOCKER_REGISTRY }}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${{ env.IMAGE_NAME }}:${manifest}"
+            extras="${extras} ${{ env.ZOWE_DOCKER_REGISTRY }}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${{ env.IMAGE_NAME }}:${manifest}"
           done
-          echo "IMAGE_MANIFEST=\"${IMAGE_MANIFEST}\"" >> $GITHUB_ENV
+          echo "IMAGE_MANIFEST_EXTRAS=\"${extras}\"" >> $GITHUB_ENV
         fi
       shell: bash
 
@@ -41,7 +41,7 @@ runs:
           echo "************ adding amend ${amend}"
           amends="${amends} --amend ${amend}"
         done
-        IMAGE_MANIFEST="${{ env.IMAGE_MANIFEST }}"
+        IMAGE_MANIFEST="${{ env.IMAGE_MANIFEST }} ${{ env.IMAGE_MANIFEST_EXTRAS }}"
         echo "************ final manifests: ${IMAGE_MANIFEST}"
         for manifest in ${IMAGE_MANIFEST}
         do
