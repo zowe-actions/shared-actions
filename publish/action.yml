@@ -4,9 +4,6 @@ inputs:
   artifacts:
     description: 'artifacts to upload, also support multiple line inputs'
     required: true
-  default-branches-json-text:
-    description: 'default branch json text'
-    required: true
   perform-release:
     description: 'flag to perform steps to release'
     required: false

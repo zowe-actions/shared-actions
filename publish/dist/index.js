@@ -5173,7 +5173,7 @@ const debug = Debug('zowe-actions:shared-actions:publish')
 const projectRootPath = process.env.GITHUB_WORKSPACE
 
 // Gets inputs
-const defaultBranchesJsonText = core.getInput('default-branches-json-text')
+const defaultBranchesJsonText = process.env('DEFAULT_BRANCHES_JSON_TEXT')
 const artifacts = core.getInput('artifacts')
 const performRelease = core.getInput('perform-release')
 const currentBranch = core.getInput('current-branch')
