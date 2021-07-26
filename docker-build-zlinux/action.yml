@@ -1,0 +1,104 @@
+name: "Build docker image on zLinux"
+description: "Build docker image on zLinux and publish to Zowe docker registry"
+inputs:
+  zlinux-host:
+    description: "zLinux host name"
+    required: true
+    default: ""
+  zlinux-ssh-user:
+    description: "zLinux SSH user"
+    required: true
+    default: ""
+  zlinux-ssh-key:
+    description: "zLinux SSH identify file"
+    required: true
+    default: ""
+  zlinux-ssh-passphrase:
+    description: "Passphrase of zLinux SSH identify file"
+    required: true
+    default: ""
+  redhat-registry:
+    description: "Redhat Docker registry URL"
+    required: false
+    default: ""
+  redhat-registry-user:
+    description: "Redhat Docker registry developer user"
+    required: false
+    default: ""
+  redhat-registry-password:
+    description: "Redhat Docker registry developer passsword"
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure SSH
+      run: |
+        mkdir -p ~/.ssh/
+        echo "${{ inputs.zlinux-ssh-key }}" > ~/.ssh/zlinux.key
+        chmod 600 ~/.ssh/zlinux.key
+        cat >>~/.ssh/config <<END
+        Host zlinux
+          HostName ${{ inputs.zlinux-host }}
+          User ${{ inputs.zlinux-ssh-user }}
+          IdentityFile ~/.ssh/zlinux.key
+          StrictHostKeyChecking no
+          LogLevel QUIET
+        END
+      shell: bash
+
+    - name: create remote workspace
+      run: |
+        ZLINUX_BUILD_WORKSPACE=$(sshpass -e -P "passphrase for key" ssh zlinux 'mktemp -d -p /home/${{ inputs.zlinux-ssh-user }} -t build-XXXXXXXX')
+        echo "ZLINUX_BUILD_WORKSPACE=${ZLINUX_BUILD_WORKSPACE}" >> $GITHUB_ENV
+      env:
+        SSHPASS: ${{ inputs.zlinux-ssh-passphrase }}
+      shell: bash
+
+    - name: build image
+      run: |
+        tar --exclude .git --exclude .tmp --exclude build-workspace.tar.gz -zcf build-workspace.tar.gz *
+        sshpass -e -P "passphrase for key" scp build-workspace.tar.gz "zlinux:${{ env.ZLINUX_BUILD_WORKSPACE }}"
+        rm -f build-workspace.tar.gz
+        sshpass -e -P "passphrase for key" ssh zlinux << EOF
+        cd "${{ env.ZLINUX_BUILD_WORKSPACE }}"
+        tar zxf build-workspace.tar.gz
+        rm build-workspace.tar.gz
+        echo "************ workspace prepared:"
+        ls -la
+        echo "************ build image"
+        cd ${{ env.IMAGE_DIRECTORY }}
+        [ -n "${{ inputs.redhat-registry }}" ] && echo "${{ inputs.redhat-registry-password }}" | sudo docker login --username "${{ inputs.redhat-registry-user }}" --password-stdin ${{ inputs.redhat-registry }}
+        sudo docker build --no-cache=true -t ${{ env.IMAGE_NAME_FULL_LOCAL }} .
+        sudo docker save -o zlinux-image.tar ${{ env.IMAGE_NAME_FULL_LOCAL }}
+        sudo chmod 644 zlinux-image.tar
+        EOF
+        echo "************ download image from zLinux:"
+        sshpass -e -P "passphrase for key" scp "zlinux:${{ env.ZLINUX_BUILD_WORKSPACE }}/${{ env.IMAGE_DIRECTORY }}/zlinux-image.tar" .
+        ls -l zlinux-image.tar
+        echo "************ load image:"
+        docker load --input zlinux-image.tar
+        rm -fr zlinux-image.tar
+        echo "************ display images:"
+        docker images
+      env:
+        SSHPASS: ${{ inputs.zlinux-ssh-passphrase }}
+      shell: bash
+
+    - name: publish image
+      working-directory: ${{ env.IMAGE_DIRECTORY }}
+      run: |
+        docker tag ${{ env.IMAGE_NAME_FULL_LOCAL }} ${{ env.IMAGE_NAME_FULL_REMOTE }}
+        docker push ${{ env.IMAGE_NAME_FULL_REMOTE }}
+      shell: bash
+
+    # FIXME: if: ${{ always() }}?
+    - name: clean up remote workspace
+      run: |
+        sshpass -e -P "passphrase for key" ssh zlinux << EOF
+        [ -n "${{ env.ZLINUX_BUILD_WORKSPACE }}" ] && rm -fr ${{ env.ZLINUX_BUILD_WORKSPACE }}
+        EOF
+      env:
+        SSHPASS: ${{ inputs.zlinux-ssh-passphrase }}
+      shell: bash

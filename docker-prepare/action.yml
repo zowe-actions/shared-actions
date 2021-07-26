@@ -1,0 +1,89 @@
+name: "Prepare for docker build environment"
+description: "This action helps to define image name, version, metadata and tag. Also it will try to login to target registry."
+inputs:
+  registry-user:
+    description: "Docker registry user"
+    required: false
+    default: ""
+  registry-password:
+    description: "Docker registry passsword"
+    required: false
+    default: ""
+  release:
+    description: "Set to true if this is a formal release"
+    required: false
+    default: ""
+  base-directory:
+    description: "Base directory where image Dockerfiles are located"
+    required: true
+    default: ""
+  linux-distro:
+    description: "Linux distro name. This should be the second level folder name."
+    required: false
+    default: "ubuntu"
+  cpu-arch:
+    description: "CPU architecture name. This should be the third level folde rname."
+    required: false
+    default: "amd64"
+  redhat-registry:
+    description: "Redhat Docker registry URL"
+    required: false
+    default: ""
+  redhat-registry-user:
+    description: "Redhat Docker registry developer user"
+    required: false
+    default: ""
+  redhat-registry-password:
+    description: "Redhat Docker registry developer passsword"
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set image name, version and metadata
+      run: |
+        [ "${{ inputs.release }}" = "true" ] && echo "IMAGE_RELEASE=true" >> $GITHUB_ENV
+        [ "${{ inputs.release }}" = "true" ] && ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_RELEASE }}
+        [ "${{ inputs.release }}" != "true" ] && ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_SNAPSHOT }}
+        echo "ZOWE_DOCKER_REGISTRY=${ZOWE_DOCKER_REGISTRY}" >> $GITHUB_ENV
+        IMAGE_DIRECTORY=${{ inputs.base-directory }}/${{ inputs.linux-distro }}/${{ inputs.cpu-arch }}
+        echo "IMAGE_DIRECTORY=${IMAGE_DIRECTORY}" >> $GITHUB_ENV
+        IMAGE_NAME=$(basename ${{ inputs.base-directory }} | tr '[:upper:]' '[:lower:]')
+        echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
+        IMAGE_VERSION=$(cat ${{ inputs.base-directory }}/${{ inputs.linux-distro }}/${{ inputs.cpu-arch }}/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | xargs)
+        [ -z "${IMAGE_VERSION}" ] && echo "Cannot determine version of the image" && exit 1
+        IMAGE_VERSION_MAJOR=$(echo "${IMAGE_VERSION}" | awk -F. '{print $1}')
+        IMAGE_VERSION_MINOR=$(echo "${IMAGE_VERSION}" | awk -F. '{print $2}')
+        IMAGE_VERSION_PATCH=$(echo "${IMAGE_VERSION}" | awk -F. '{print $3}')
+        echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
+        echo "IMAGE_VERSION_MAJOR=${IMAGE_VERSION_MAJOR}" >> $GITHUB_ENV
+        echo "IMAGE_VERSION_MINOR=${IMAGE_VERSION_MINOR}" >> $GITHUB_ENV
+        echo "IMAGE_VERSION_PATCH=${IMAGE_VERSION_PATCH}" >> $GITHUB_ENV
+        IMAGE_METADATA=
+        [ -n "${{ github.event.pull_request.number }}" ] && IMAGE_METADATA=pr-${{ github.event.pull_request.number }}
+        [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF#refs/heads/}
+        [ "${IMAGE_METADATA}" = "master" ] && IMAGE_METADATA=snapshot
+        IMAGE_METADATA=$(echo "${IMAGE_METADATA}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/\-/g')
+        [ "${{ inputs.release }}" = "true" ] && IMAGE_METADATA=
+        [ -n "${IMAGE_METADATA}" ] && IMAGE_METADATA=.${IMAGE_METADATA}-${GITHUB_RUN_NUMBER}
+        [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=${IMAGE_METADATA}" >> $GITHUB_ENV
+        IMAGE_TAG=${IMAGE_VERSION}-${{ inputs.linux-distro }}-${{ inputs.cpu-arch }}${IMAGE_METADATA}
+        echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
+        echo "IMAGE_NAME_FULL_LOCAL=${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${IMAGE_NAME}:${IMAGE_TAG}" >> $GITHUB_ENV
+        echo "IMAGE_NAME_FULL_REMOTE=${ZOWE_DOCKER_REGISTRY}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${IMAGE_NAME}:${IMAGE_TAG}" >> $GITHUB_ENV
+        echo "IMAGE_MANIFEST_AMEND=${ZOWE_DOCKER_REGISTRY}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${IMAGE_NAME}:${IMAGE_VERSION}-${{ inputs.linux-distro }}-{ARCH}${IMAGE_METADATA}" >> $GITHUB_ENV
+        echo "IMAGE_MANIFEST=${ZOWE_DOCKER_REGISTRY}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${IMAGE_NAME}:${IMAGE_VERSION}-${{ inputs.linux-distro }}${IMAGE_METADATA}" >> $GITHUB_ENV
+        exit 0
+      shell: bash
+
+    - name: Login to registry
+      run: |
+        echo "${{ inputs.registry-password }}" | docker login --username "${{ inputs.registry-user }}" --password-stdin ${{ env.ZOWE_DOCKER_REGISTRY }}
+      shell: bash
+
+    - name: Login to Redhat registry
+      run: |
+        [ -n "${{ inputs.redhat-registry }}" ] && echo "${{ inputs.redhat-registry-password }}" | docker login --username "${{ inputs.redhat-registry-user }}" --password-stdin ${{ inputs.redhat-registry }}
+        exit 0
+      shell: bash

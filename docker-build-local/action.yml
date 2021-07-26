@@ -1,0 +1,15 @@
+name: "Build docker image on local runner"
+description: "Build image and publish docker image to Zowe docker registry"
+runs:
+  using: "composite"
+  steps:
+    - name: build image
+      working-directory: ${{ env.IMAGE_DIRECTORY }}
+      run: |
+        docker build --no-cache=true -t ${{ env.IMAGE_NAME_FULL_REMOTE }} .
+      shell: bash
+
+    - name: publish image
+      run: |
+        docker push ${{ env.IMAGE_NAME_FULL_REMOTE }}
+      shell: bash
