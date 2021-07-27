@@ -67,6 +67,9 @@ runs:
         rm build-workspace.tar.gz
         echo "************ workspace prepared:"
         ls -la
+        echo "************ prune local docker"
+        sudo docker system prune -f
+        sudo docker image prune -a -f
         echo "************ build image"
         cd ${{ env.IMAGE_DIRECTORY }}
         [ -n "${{ inputs.redhat-registry }}" ] && echo "${{ inputs.redhat-registry-password }}" | sudo docker login --username "${{ inputs.redhat-registry-user }}" --password-stdin ${{ inputs.redhat-registry }}
