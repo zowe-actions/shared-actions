@@ -26,5 +26,12 @@
         "isProtected"        : true,
         "buildHistory"       : 20,
         "allowRelease"       : true
+    },
+    {
+        "name"               : "users/tom/GHA_nodejssetup",
+        "isProtected"        : false,
+        "buildHistory"       : 20,
+        "allowRelease"       : true
     }
+    
 ]
