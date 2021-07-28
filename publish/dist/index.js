@@ -8718,10 +8718,10 @@ function uploadArtifacts() {
                 var newMacros = extractArtifactoryUploadTargetFileMacros(file)
                 debug(`After extractArtifactoryUploadTargetFileMacros(${file}): newMacros`)
                 var mergedMacros = new Map([...macros, ...newMacros])
-                console.log(mergedMacros)
                 var t = parseString(targetFileFull, mergedMacros)
                 console.log(`- + found ${file} -> ${t}`)
-                uploadSpec['files'] = `["pattern": ${file}, "target": ${t}]`
+                var arr = [{"pattern": file, "target": t}]
+                uploadSpec['files'] = uploadSpec['files'].concat(arr)
 
                 if (er) {
                     console.error(er)
