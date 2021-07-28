@@ -89,7 +89,7 @@ function uploadArtifacts() {
 
     console.log(`Uploading artifacts ${artifacts} to ${publishTargetPath}`)
 
-    var uploadSpec = JSON.parse('{"files":[]}')
+    var uploadSpec = {"files":[]}
     artifacts.forEach( eachArtifact => {
         console.log(`- pattern ${eachArtifact}`)
         glob(`${projectRootPath}/${eachArtifact}`, function (er, files) {
@@ -97,8 +97,8 @@ function uploadArtifacts() {
                 var targetFileFull = publishTargetPath + artifactoryUploadTargetFile
                 extractArtifactoryUploadTargetFileMacros(file)
                 var t = parseString(targetFileFull, macros)
-                console.log("- + found ${file} -> ${t}")
-                uploadSpec['files'].push(`["pattern": ${file}, "target": ${t}]`)
+                console.log(`- + found ${file} -> ${t}`)
+                uploadSpec['files'] = `["pattern": ${file}, "target": ${t}]`
             })
         })
     })
