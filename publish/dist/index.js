@@ -8709,9 +8709,8 @@ function uploadArtifacts() {
     var uploadSpec = {"files":[]}
     artifacts.forEach( eachArtifact => {
         console.log(`- pattern ${eachArtifact}`)
-        glob(`${projectRootPath}/${eachArtifact}`, function (er, files) {
-            console.log(files)
-            
+        console.log(utils.fileExists(`${projectRootPath}/${eachArtifact}`))
+        glob(`${projectRootPath}/${eachArtifact}`, function (er, files) {     
             files.forEach( file => {
                 console.log('Im here2')
                 var targetFileFull = publishTargetPath + artifactoryUploadTargetFile
