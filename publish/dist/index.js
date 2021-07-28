@@ -8712,8 +8712,11 @@ function uploadArtifacts() {
         glob(`${projectRootPath}/${eachArtifact}`, function (er, files) {
             files.forEach( file => {
                 var targetFileFull = publishTargetPath + artifactoryUploadTargetFile
-                extractArtifactoryUploadTargetFileMacros(file)
-                var t = parseString(targetFileFull, macros)
+                var newMacros = extractArtifactoryUploadTargetFileMacros(file)
+                console.log('=================================================')
+                console.log(newMacros)
+                var mergedMacros = new Map([macros,newMacros])
+                var t = parseString(targetFileFull, mergedMacros)
                 console.log(`- + found ${file} -> ${t}`)
                 uploadSpec['files'] = `["pattern": ${file}, "target": ${t}]`
 
@@ -8858,25 +8861,27 @@ function getBranchTag(branch) {
  * the expected macros extracted are: {@code [filename: "my-artifact", fileext: "zip"]}</p>
  *
  * @param  file     original file name
- * @return          macro map (global)
+ * @return          newMarco only contrans filename and fileext
  */
  function extractArtifactoryUploadTargetFileMacros(file) {
     var fileNameExt = utils.parseFileExtension(file)
-    macros.set('filename', fileNameExt.get('name'))
-    macros.set('fileext', fileNameExt.get('ext'))
+    var newMacros = new Map()
+    newMacros.set('filename', fileNameExt.get('name'))
+    newMacros.set('fileext', fileNameExt.get('ext'))
 
     // Does file name looks like my-project-1.2.3-snapshot? If so, we remove the version information.
-    var matches = macros.get('filename').match(/^(.+)-([0-9]+\.[0-9]+\.[0-9]+)(-[0-9a-zA-Z-+\.]+)?$/)
+    var matches = newMacros.get('filename').match(/^(.+)-([0-9]+\.[0-9]+\.[0-9]+)(-[0-9a-zA-Z-+\.]+)?$/)
     if (matches && matches[0] && matches.size() == 4) {
         if (packageInfo && packageInfo['versionTrunks']) {
             var semver = `${packageInfo['versionTrunks']['major']}.${packageInfo['versionTrunks']['minor']}.${packageInfo['versionTrunks']['patch']}`
             if (matches[2] == semver) {
                 // the artifact file name has version infromation
-                console.log(`Version in artifact "${macros.get('filename')}" name is extracted as "${matches[1]}".`)
-                macros.set('filename',matches[1])
+                console.log(`Version in artifact "${newMacros.get('filename')}" name is extracted as "${matches[1]}".`)
+                newMacros.set('filename',matches[1])
             }
         }
     }
+    return newMacros
 }
 
 
