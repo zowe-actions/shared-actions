@@ -8710,7 +8710,7 @@ function uploadArtifacts() {
     artifacts.forEach( eachArtifact => {
         console.log(`- pattern ${eachArtifact}`)
         glob(`${projectRootPath}/${eachArtifact}`, function (er, files) {
-            console.log('I am here')
+            
             files.forEach( file => {
                 var targetFileFull = publishTargetPath + artifactoryUploadTargetFile
                 var newMacros = extractArtifactoryUploadTargetFileMacros(file)
@@ -8865,10 +8865,12 @@ function getBranchTag(branch) {
  * @return          newMarco only contrans filename and fileext
  */
  function extractArtifactoryUploadTargetFileMacros(file) {
+    console.log('in extractArtifactoryUploadTargetFileMacros:' + file)
     var fileNameExt = utils.parseFileExtension(file)
     var newMacros = new Map()
     newMacros.set('filename', fileNameExt.get('name'))
     newMacros.set('fileext', fileNameExt.get('ext'))
+    console.log(newMacros)
 
     // Does file name looks like my-project-1.2.3-snapshot? If so, we remove the version information.
     var matches = newMacros.get('filename').match(/^(.+)-([0-9]+\.[0-9]+\.[0-9]+)(-[0-9a-zA-Z-+\.]+)?$/)
