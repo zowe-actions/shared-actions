@@ -97,7 +97,7 @@ function uploadArtifacts() {
                 var targetFileFull = publishTargetPath + artifactoryUploadTargetFile
                 extractArtifactoryUploadTargetFileMacros(file)
                 var t = parseString(targetFileFull, macros)
-                log.fine("- + found ${file} -> ${t}")
+                console.log("- + found ${file} -> ${t}")
                 uploadSpec['files'].push(`["pattern": ${file}, "target": ${t}]`)
             })
         })
