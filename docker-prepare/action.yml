@@ -62,6 +62,8 @@ runs:
           chmod +x prepare.sh && ./prepare.sh "${{ inputs.linux-distro }}" "${{ inputs.cpu-arch }}"
         fi
         exit 0
+      env:
+        GITHUB_PR_ID: ${{ github.event.pull_request.number }}
       shell: bash
 
     - name: Set image name, version and metadata
