@@ -17,6 +17,10 @@ inputs:
     description: "Base directory where image Dockerfiles are located"
     required: true
     default: ""
+  image-name:
+    description: "Target image name. By default it will be the basename of base-directory."
+    required: false
+    default: ""
   linux-distro:
     description: "Linux distro name. This should be the second level folder name."
     required: false
@@ -49,7 +53,8 @@ runs:
         echo "ZOWE_DOCKER_REGISTRY=${ZOWE_DOCKER_REGISTRY}" >> $GITHUB_ENV
         IMAGE_DIRECTORY=${{ inputs.base-directory }}/${{ inputs.linux-distro }}/${{ inputs.cpu-arch }}
         echo "IMAGE_DIRECTORY=${IMAGE_DIRECTORY}" >> $GITHUB_ENV
-        IMAGE_NAME=$(basename ${{ inputs.base-directory }} | tr '[:upper:]' '[:lower:]')
+        IMAGE_NAME=${{ inputs.image-name }}
+        [ -z "${IMAGE_NAME}" ] && IMAGE_NAME=$(basename "${{ inputs.base-directory }}" | tr '[:upper:]' '[:lower:]')
         echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
         IMAGE_VERSION=$(cat ${{ inputs.base-directory }}/${{ inputs.linux-distro }}/${{ inputs.cpu-arch }}/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | xargs)
         [ -z "${IMAGE_VERSION}" ] && echo "Cannot determine version of the image" && exit 1
