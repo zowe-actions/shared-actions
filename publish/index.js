@@ -97,6 +97,10 @@ function uploadArtifacts() {
                 var t = parseString(targetFileFull, macros)
                 console.log(`- + found ${file} -> ${t}`)
                 uploadSpec['files'] = `["pattern": ${file}, "target": ${t}]`
+
+                if (er) {
+                    console.error(er)
+                }
             })
         })
     })
