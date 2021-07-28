@@ -45,6 +45,21 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: run prepare.sh if exists
+      run: |
+        cd "${{ inputs.base-directory }}"
+        if [ -f prepare.sh ]; then
+          echo ">>>>>> running ${{ inputs.base-directory }}/prepare.sh"
+          ./prepare.sh "${{ inputs.linux-distro }}" "${{ inputs.cpu-arch }}"
+        fi
+        cd "${{ inputs.base-directory }}/${{ inputs.linux-distro }}"
+        if [ -f prepare.sh ]; then
+          echo ">>>>>> running ${{ inputs.base-directory }}/${{ inputs.linux-distro }}/prepare.sh"
+          ./prepare.sh "${{ inputs.linux-distro }}" "${{ inputs.cpu-arch }}"
+        fi
+        exit 0
+      shell: bash
+
     - name: Set image name, version and metadata
       run: |
         [ "${{ inputs.release }}" = "true" ] && echo "IMAGE_RELEASE=true" >> $GITHUB_ENV
