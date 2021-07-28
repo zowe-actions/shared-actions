@@ -8683,7 +8683,7 @@ if (isPerformingRelease) {
 }
 
 // upload artifacts if provided
-if (artifacts && artifacts.size() > 0) {
+if (artifacts && artifacts.length > 0) {
     uploadArtifacts()
 } else {
     console.warn ('No artifacts to publish.')
