@@ -118,7 +118,7 @@ function uploadArtifacts() {
  * @param  macros        default value of macros.
  * @return               updated macro list.
  */
-function getBuildStringMacros(macros) {
+function getBuildStringMacros() {
     var release = isReleaseBranch && isPerformingRelease
 
     if (!macros.has('repository')) {
