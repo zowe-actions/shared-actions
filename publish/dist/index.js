@@ -8710,16 +8710,15 @@ function uploadArtifacts() {
     var uploadSpec = {"files":[]}
     artifacts.forEach( eachArtifact => {
         console.log(`- pattern ${eachArtifact}`)
-        console.log(utils.fileExists(`${projectRootPath}/${eachArtifact}`))
-        glob(`${projectRootPath}/${eachArtifact}`, function (er, files) {     
+        var fullFilePath = `${projectRootPath}/${eachArtifact}`
+        utils.fileExists(fullFilePath)
+        glob(fullFilePath, function (er, files) {     
             files.forEach( file => {
-                console.log('Im here2')
                 var targetFileFull = publishTargetPath + artifactoryUploadTargetFile
-                console.log('Im here3')
                 var newMacros = extractArtifactoryUploadTargetFileMacros(file)
-                console.log('=================================================')
-                console.log(newMacros)
+                debug(`After extractArtifactoryUploadTargetFileMacros(${file}): newMacros`)
                 var mergedMacros = new Map([macros,newMacros])
+                console.log(mergedMacros)
                 var t = parseString(targetFileFull, mergedMacros)
                 console.log(`- + found ${file} -> ${t}`)
                 uploadSpec['files'] = `["pattern": ${file}, "target": ${t}]`
@@ -8868,12 +8867,10 @@ function getBranchTag(branch) {
  * @return          newMarco only contrans filename and fileext
  */
  function extractArtifactoryUploadTargetFileMacros(file) {
-    console.log('in extractArtifactoryUploadTargetFileMacros:' + file)
     var fileNameExt = utils.parseFileExtension(file)
     var newMacros = new Map()
     newMacros.set('filename', fileNameExt.get('name'))
     newMacros.set('fileext', fileNameExt.get('ext'))
-    console.log(newMacros)
 
     // Does file name looks like my-project-1.2.3-snapshot? If so, we remove the version information.
     var matches = newMacros.get('filename').match(/^(.+)-([0-9]+\.[0-9]+\.[0-9]+)(-[0-9a-zA-Z-+\.]+)?$/)
