@@ -42,10 +42,10 @@ var defaultBranchesJsonObject = JSON.parse(defaultBranchesJsonText)
 var matchedBranch = searchDefaultBranches()
 if (matchedBranch) {
     if (matchedBranch.hasOwnProperty('allowRelease')) {
-        isReleaseBranch = branch.allowRelease
+        isReleaseBranch = matchedBranch.allowRelease
     }
     if (matchedBranch.hasOwnProperty('allowFormalRelease')) {
-        isFormalReleaseBranch = branch.allowFormalRelease
+        isFormalReleaseBranch = matchedBranch.allowFormalRelease
     }
 }
    
