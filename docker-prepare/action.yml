@@ -21,10 +21,6 @@ inputs:
     description: "Target image name. By default it will be the basename of base-directory."
     required: false
     default: ""
-  skip-prepare-script:
-    description: "Set to true if prepare.sh are not neccesssary."
-    required: false
-    default: ""
   linux-distro:
     description: "Linux distro name. This should be the second level folder name."
     required: false
@@ -33,6 +29,10 @@ inputs:
     description: "CPU architecture name. This should be the third level folde rname."
     required: false
     default: "amd64"
+  dockerfile:
+    description: "name of Dockerfile will be passed to docker build -f."
+    required: false
+    default: "Dockerfile"
   redhat-registry:
     description: "Redhat Docker registry URL"
     required: false
@@ -51,9 +51,6 @@ runs:
   steps:
     - name: run prepare.sh if exists
       run: |
-        if [ "${{ inputs.skip-prepare-script }}" = "true" ]; then
-          exit 0
-        fi
         cd "${{ inputs.base-directory }}"
         if [ -f prepare.sh ]; then
           echo ">>>>>> running ${{ inputs.base-directory }}/prepare.sh"
@@ -84,7 +81,7 @@ runs:
         IMAGE_NAME=${{ inputs.image-name }}
         [ -z "${IMAGE_NAME}" ] && IMAGE_NAME=$(basename "${{ inputs.base-directory }}" | tr '[:upper:]' '[:lower:]')
         echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
-        IMAGE_VERSION=$(cat ${{ inputs.base-directory }}/${{ inputs.linux-distro }}/${{ inputs.cpu-arch }}/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | xargs)
+        IMAGE_VERSION=$(cat ${{ inputs.base-directory }}/${{ inputs.linux-distro }}/${{ inputs.cpu-arch }}/${{ inputs.dockerfile }} |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | xargs)
         [ -z "${IMAGE_VERSION}" ] && echo "Cannot determine version of the image" && exit 1
         IMAGE_VERSION_MAJOR=$(echo "${IMAGE_VERSION}" | awk -F. '{print $1}')
         IMAGE_VERSION_MINOR=$(echo "${IMAGE_VERSION}" | awk -F. '{print $2}')
