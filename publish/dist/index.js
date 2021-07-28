@@ -8710,6 +8710,7 @@ function uploadArtifacts() {
     artifacts.forEach( eachArtifact => {
         console.log(`- pattern ${eachArtifact}`)
         glob(`${projectRootPath}/${eachArtifact}`, function (er, files) {
+            console.log('I am here')
             files.forEach( file => {
                 var targetFileFull = publishTargetPath + artifactoryUploadTargetFile
                 var newMacros = extractArtifactoryUploadTargetFileMacros(file)
