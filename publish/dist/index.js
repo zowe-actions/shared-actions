@@ -8706,8 +8706,6 @@ function uploadArtifacts() {
         publishTargetPath += '/'
     }
 
-    console.log(`Uploading artifacts ${artifacts} to ${publishTargetPath}`)
-
     var uploadSpec = {"files":[]}
     artifacts.forEach( eachArtifact => {
         console.log(`- pattern ${eachArtifact}`)
@@ -8777,7 +8775,7 @@ function getBuildStringMacros() {
     }
 
     // normalize some values
-    if (macros.has('subproject') && !macros.get('subproject').startsWith('/')) {
+    if (macros.get('subproject') && !macros.get('subproject').startsWith('/')) {
         macros.set('subproject','/'+macros.get('subproject'))
     }
     var fields = ['prerelease', 'branchtag', 'timestamp', 'buildnumber']
