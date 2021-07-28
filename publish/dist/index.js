@@ -8672,6 +8672,8 @@ console.log(`Current branch ${currentBranch} is release branch? ${isReleaseBranc
 console.log(`Current branch ${currentBranch} is formal release branch? ${isFormalReleaseBranch}`)
 console.log(`Are we performing a release? ${isPerformingRelease}`)
 
+console.log('debug1 '+packageInfo)
+console.log('debug2 '+packageInfo['name'])
 var macros = new Map()
 macros = getBuildStringMacros()
 
@@ -8743,6 +8745,7 @@ function getBuildStringMacros() {
     if (!macros.has('repository')) {
         macros.set('repository', release ? REPOSITORY_RELEASE : REPOSITORY_SNAPSHOT)
     }
+    console.log('debug3 '+packageInfo['name'])
     if (!macros.has('package')) {
         macros.set('package', (packageInfo['name'] ? packageInfo['name'] : '').replace('.', '/'))
     }
