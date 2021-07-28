@@ -52,7 +52,11 @@ runs:
           echo ">>>>>> running ${{ inputs.base-directory }}/prepare.sh"
           chmod +x prepare.sh && ./prepare.sh "${{ inputs.linux-distro }}" "${{ inputs.cpu-arch }}"
         fi
-        cd "${{ inputs.base-directory }}/${{ inputs.linux-distro }}"
+        if [ ! -d "${{ inputs.linux-distro }}" ]; then
+          echo "Error: ${{ inputs.base-directory }}/${{ inputs.linux-distro }} doesn't exist."
+          exit 1
+        fi
+        cd "${{ inputs.linux-distro }}"
         if [ -f prepare.sh ]; then
           echo ">>>>>> running ${{ inputs.base-directory }}/${{ inputs.linux-distro }}/prepare.sh"
           chmod +x prepare.sh && ./prepare.sh "${{ inputs.linux-distro }}" "${{ inputs.cpu-arch }}"
