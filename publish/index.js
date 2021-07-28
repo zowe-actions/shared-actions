@@ -28,6 +28,7 @@ const temporaryUploadSpecName = '.tmp-pipeline-publish-spec.json'
 // Gets inputs
 const defaultBranchesJsonText = process.env.DEFAULT_BRANCHES_JSON_TEXT
 const artifacts = core.getMultilineInput('artifacts') //array form
+console.log(artifacts)
 const performRelease = core.getInput('perform-release')
 const currentBranch = core.getInput('current-branch')
 const preReleaseString = core.getInput('pre-release-string')
