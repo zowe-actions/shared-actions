@@ -8722,6 +8722,7 @@ function uploadArtifacts() {
 
     console.log(`Spec of uploading artifact: ${uploadSpec}`)
     var json = JSON.stringify(uploadSpec)
+    console.log(json)
     fs.writeFileSync(temporaryUploadSpecName, json)
     //artifactory.upload(temporaryUploadSpecName) ???????
 }
