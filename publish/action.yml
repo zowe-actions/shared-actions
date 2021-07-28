@@ -10,6 +10,16 @@ inputs:
   current-branch:
     description: 'current branch name'
     required: true
+  pre-release-string:
+    description: 'pre-release string'
+    required: false
+  package-info-json-text:
+    description: 'Parsed manifest information to a json string'
+    required: true
+  publish-target-path:
+    description: path format for publishing to artifactory
+    required: false
+    default: '{repository}/{package}{subproject}/{version}{branchtag-uc}/'
 
 runs:
   using: 'node12'
