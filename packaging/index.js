@@ -43,7 +43,6 @@ if (!paxRemoteWorkspace){
 if (!paxName) {
     var packageInfo = JSON.parse(core.getInput('package-info-json-text'))
     paxName = packageInfo['name']
-    
 }
 if (!paxName) {
     core.setFailed('Package name is not provided through shared-actions/packaging or through manifest file')

@@ -8661,12 +8661,58 @@ try {
 /***/ 386:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+module.exports.utils = __nccwpck_require__(4961)
+module.exports.InvalidArgumentException = __nccwpck_require__(1534)
+module.exports.pax = __nccwpck_require__(6518)
+module.exports.github = __nccwpck_require__(3822)
+
+
+/***/ }),
+
+/***/ 3822:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+/*
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-v20.html
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Copyright IBM Corporation 2021
+ */
+
 const utils = __nccwpck_require__(4961)
-const InvalidArgumentException = __nccwpck_require__(1534)
-const pax = __nccwpck_require__(6518)
-module.exports.utils = utils
-module.exports.InvalidArgumentException = InvalidArgumentException
-module.exports.pax = pax
+
+class github {
+    
+    /**
+     * Validate if a tag exists in remote.
+     *
+     * @Example
+     * <pre>
+     *     if (github.tagExistsRemote('v1.2.3')) {
+     *         echo "Tag v1.2.3 already exists in remote."
+     *     }
+     * </pre>
+     *
+     * @param tag     tag name to check
+     * @return        true/false
+     */
+    static tagExistsRemote(tag) {
+        var remotedTags = utils.sh('git ls-remote --tags').split("\n")
+        var foundTag = false
+
+        remotedTags.forEach(eachtag => {
+            if (eachtag.endsWith(`refs/tags/${tag}`)) { 
+                foundTag = true 
+            }
+        })
+        return foundTag
+    }
+}
+
+module.exports = github;
 
 /***/ }),
 
@@ -9078,6 +9124,11 @@ const fs = __nccwpck_require__(5747)
 const semver = __nccwpck_require__(4603)
 
 class utils {
+
+    static dateTimeNow() {
+        return (new Date()).toISOString().split('.')[0].replace(/[^0-9]/g, "")
+    }
+
     static sh(cmd) {
         return execSync(cmd).toString().trim()
     }
@@ -9091,6 +9142,36 @@ class utils {
             console.warn(`${path} does not exist`)
             return false
         }
+    }
+
+    static parseFileExtension(file) {
+        var result = new Map()
+        var KNOWN_DOUBLE_EXTS = ['.tar.gz', '.pax.Z']
+
+        var baseName = file.lastIndexOf('/') != -1 ? file.substring(file.lastIndexOf('/')+1) : file
+
+        var idx = -1
+
+        // some file names end with .tar.gz we want to keep
+        KNOWN_DOUBLE_EXTS.forEach( ext => {
+            if (baseName.endsWith(ext)) {
+                idx = baseName.length - ext.length
+            }
+        })
+
+        if (idx == -1) {
+            idx = baseName.lastIndexOf('.')
+        }
+
+        if (idx != -1) {
+            result.set('name', baseName.substring(0,idx))
+            result.set('ext', baseName.substring(idx))
+        } else {
+            result.set('name', baseName)
+            result.set('ext', '')
+        }
+
+        return result
     }
 
     static parseSemanticVersion(version) {
@@ -9280,7 +9361,7 @@ const yaml = __nccwpck_require__(9423)
 const fs = __nccwpck_require__(5747)
 
 var manifest = core.getInput('manifest')
-var extraInit = core.getMultilineInput('extra-init')
+var extraInit = core.getInput('extra-init')
 var projectRootPath = process.env.GITHUB_WORKSPACE
 var _manifestFormat
 var _manifestObject

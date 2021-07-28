@@ -16,7 +16,7 @@ const yaml = require('js-yaml')
 const fs = require('fs')
 
 var manifest = core.getInput('manifest')
-var extraInit = core.getMultilineInput('extra-init')
+var extraInit = core.getInput('extra-init')
 var projectRootPath = process.env.GITHUB_WORKSPACE
 var _manifestFormat
 var _manifestObject
