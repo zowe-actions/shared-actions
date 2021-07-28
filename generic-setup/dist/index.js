@@ -9365,7 +9365,7 @@ var extraInit = core.getInput('extra-init')
 var projectRootPath = process.env.GITHUB_WORKSPACE
 var _manifestFormat
 var _manifestObject
-var packageInfo
+var manifestInfo
 
 var mjson = `${projectRootPath}/manifest.json`
 var myaml = `${projectRootPath}/manifest.yaml`
@@ -9408,23 +9408,23 @@ if (_manifestFormat == 'json') {
 
 // import information we need
 if (_manifestObject) {
-    var packageInfo = JSON.parse('{}')
+    var manifestInfo = JSON.parse('{}')
     var properties = [ 'name','id','title','description','version' ]
 
     properties.forEach((x, i) => {
         if (_manifestObject[x]) {
-            packageInfo[x]=_manifestObject[x]
+            manifestInfo[x]=_manifestObject[x]
         }
     });
 
     if (_manifestObject['version']) {
-        packageInfo['versionTrunks'] = utils.parseSemanticVersion(_manifestObject['version'])
+        manifestInfo['versionTrunks'] = utils.parseSemanticVersion(_manifestObject['version'])
     }
 }
 
-debug(packageInfo)
-var packageInfoJsonText = JSON.stringify(packageInfo)
-core.setOutput("package-info-json-text", packageInfoJsonText)
+debug(manifestInfo)
+var manifestInfoJsonText = JSON.stringify(manifestInfo)
+core.setOutput("manifest-info-json-text", manifestInfoJsonText)
 
 // run extra init code
 utils.sh(`echo "${extraInit}" > extra-init.js`)

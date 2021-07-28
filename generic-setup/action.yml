@@ -8,7 +8,7 @@ inputs:
     description: Extra initialization code to run (javascript)
     required: false
 outputs:
-  package-info-json-text:
+  manifest-info-json-text:
     description: 'Parsed manifest information to a json string'
 
 runs:
