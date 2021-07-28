@@ -29,10 +29,30 @@ inputs:
     description: "Redhat Docker registry developer passsword"
     required: false
     default: ""
+  build-arg-list:
+    description: "docker build arguments passed to --build-arg. Use space to separate multiple arguments."
+    required: false
+    default: ""
+  dockerfile:
+    description: "name of Dockerfile will be passed to docker build -f."
+    required: false
+    default: "Dockerfile"
 
 runs:
   using: "composite"
   steps:
+    - name: prepare build args
+      run: |
+        build_args_string=
+        full_build_args="${{ inputs.build-arg-list }}"
+        for arg in $full_build_args
+        do
+          echo "************ adding --build-arg ${arg}"
+          build_args_string="${build_args_string} --build-arg '${arg}'"
+        done
+        echo "IMAGE_BUILD_ARGS=${build_args_string}" >> $GITHUB_ENV
+      shell: bash
+
     - name: Configure SSH
       run: |
         mkdir -p ~/.ssh/
@@ -73,7 +93,7 @@ runs:
         echo "************ build image"
         cd ${{ env.IMAGE_DIRECTORY }}
         [ -n "${{ inputs.redhat-registry }}" ] && echo "${{ inputs.redhat-registry-password }}" | sudo docker login --username "${{ inputs.redhat-registry-user }}" --password-stdin ${{ inputs.redhat-registry }}
-        sudo docker build --no-cache=true -t ${{ env.IMAGE_NAME_FULL_LOCAL }} .
+        sudo docker build --no-cache=true ${{ env.IMAGE_BUILD_ARGS }} -f ${{ inputs.dockerfile }} -t ${{ env.IMAGE_NAME_FULL_LOCAL }} .
         sudo docker save -o zlinux-image.tar ${{ env.IMAGE_NAME_FULL_LOCAL }}
         sudo chmod 644 zlinux-image.tar
         EOF
