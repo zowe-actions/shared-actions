@@ -56,7 +56,7 @@ console.log(`Are we performing a release? ${isPerformingRelease}`)
 var macros = new Map()
 macros = getBuildStringMacros()
 
-if (_isPerformingRelease) {
+if (isPerformingRelease) {
     var tag = 'v' + macros.get('publishversion')     // when doing release, macros.get('publishversion') will just return a version number 
     if (github.tagExistsRemote(tag)) {
         throw new Error(`Github tag ${tag} already exists, publish abandoned.`)
@@ -69,7 +69,6 @@ if (artifacts && artifacts.size() > 0) {
 } else {
     console.warn ('No artifacts to publish.')
 }
-
 
 
 /* ========================================================================================================*/
