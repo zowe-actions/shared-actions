@@ -21,6 +21,10 @@ inputs:
     description: "Target image name. By default it will be the basename of base-directory."
     required: false
     default: ""
+  skip-prepare-script:
+    description: "Set to true if prepare.sh are not neccesssary."
+    required: false
+    default: ""
   linux-distro:
     description: "Linux distro name. This should be the second level folder name."
     required: false
