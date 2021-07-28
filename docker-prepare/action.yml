@@ -50,12 +50,12 @@ runs:
         cd "${{ inputs.base-directory }}"
         if [ -f prepare.sh ]; then
           echo ">>>>>> running ${{ inputs.base-directory }}/prepare.sh"
-          ./prepare.sh "${{ inputs.linux-distro }}" "${{ inputs.cpu-arch }}"
+          chmod +x prepare.sh && ./prepare.sh "${{ inputs.linux-distro }}" "${{ inputs.cpu-arch }}"
         fi
         cd "${{ inputs.base-directory }}/${{ inputs.linux-distro }}"
         if [ -f prepare.sh ]; then
           echo ">>>>>> running ${{ inputs.base-directory }}/${{ inputs.linux-distro }}/prepare.sh"
-          ./prepare.sh "${{ inputs.linux-distro }}" "${{ inputs.cpu-arch }}"
+          chmod +x prepare.sh && ./prepare.sh "${{ inputs.linux-distro }}" "${{ inputs.cpu-arch }}"
         fi
         exit 0
       shell: bash
