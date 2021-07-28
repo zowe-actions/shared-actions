@@ -95,7 +95,7 @@ function uploadArtifacts() {
         glob(`${projectRootPath}/${eachArtifact}`, function (er, files) {
             files.forEach( file => {
                 var targetFileFull = publishTargetPath + artifactoryUploadTargetFile
-                extractArtifactoryUploadTargetFileMacros()
+                extractArtifactoryUploadTargetFileMacros(file)
                 var t = parseString(targetFileFull, macros)
                 log.fine("- + found ${file} -> ${t}")
                 uploadSpec['files'].push(`["pattern": ${file}, "target": ${t}]`)
@@ -106,7 +106,6 @@ function uploadArtifacts() {
     console.log(`Spec of uploading artifact: ${uploadSpec}`)
     var json = JSON.stringify(uploadSpec)
     fs.writeFileSync(temporaryUploadSpecName, json)
-    console.log(uploadSpec)
     //artifactory.upload(temporaryUploadSpecName) ???????
 }
 
@@ -237,7 +236,7 @@ function getBranchTag(branch) {
  * the expected macros extracted are: {@code [filename: "my-artifact", fileext: "zip"]}</p>
  *
  * @param  file     original file name
- * @return          macro map
+ * @return          macro map (global)
  */
  function extractArtifactoryUploadTargetFileMacros(file) {
     var fileNameExt = utils.parseFileExtension(file)
