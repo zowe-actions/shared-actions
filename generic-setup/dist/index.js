@@ -9408,23 +9408,22 @@ if (_manifestFormat == 'json') {
 
 // import information we need
 if (_manifestObject) {
-    packageInfo = new Map()
-
+    var packageInfo = JSON.parse('{}')
     var properties = [ 'name','id','title','description','version' ]
 
     properties.forEach((x, i) => {
         if (_manifestObject[x]) {
-            packageInfo.set(x,_manifestObject[x])
+            packageInfo[x]=_manifestObject[x]
         }
     });
 
     if (_manifestObject['version']) {
-        packageInfo.set('versionTrunks', utils.parseSemanticVersion(_manifestObject['version']))
+        packageInfo['versionTrunks'] = utils.parseSemanticVersion(_manifestObject['version'])
     }
 }
 
 debug(packageInfo)
-var packageInfoJsonText = JSON.stringify(Array.from(packageInfo.entries()))
+var packageInfoJsonText = JSON.stringify(packageInfo)
 core.setOutput("package-info-json-text", packageInfoJsonText)
 
 // run extra init code
