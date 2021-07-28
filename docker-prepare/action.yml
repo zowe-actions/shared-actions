@@ -51,6 +51,9 @@ runs:
   steps:
     - name: run prepare.sh if exists
       run: |
+        if [ "${{ inputs.skip-prepare-script }}" = "true" ]; then
+          exit 0
+        fi
         cd "${{ inputs.base-directory }}"
         if [ -f prepare.sh ]; then
           echo ">>>>>> running ${{ inputs.base-directory }}/prepare.sh"
