@@ -8717,7 +8717,7 @@ function uploadArtifacts() {
                 var targetFileFull = publishTargetPath + artifactoryUploadTargetFile
                 var newMacros = extractArtifactoryUploadTargetFileMacros(file)
                 debug(`After extractArtifactoryUploadTargetFileMacros(${file}): newMacros`)
-                var mergedMacros = new Map([macros,newMacros])
+                var mergedMacros = new Map([...macros, ...newMacros])
                 console.log(mergedMacros)
                 var t = parseString(targetFileFull, mergedMacros)
                 console.log(`- + found ${file} -> ${t}`)
