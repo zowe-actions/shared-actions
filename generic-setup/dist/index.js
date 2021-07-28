@@ -9408,7 +9408,7 @@ if (_manifestFormat == 'json') {
 
 // import information we need
 if (_manifestObject) {
-    var manifestInfo = JSON.parse('{}')
+    var manifestInfo = {}
     var properties = [ 'name','id','title','description','version' ]
 
     properties.forEach((x, i) => {
