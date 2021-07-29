@@ -8445,7 +8445,7 @@ class utils {
 
     static printMap (map) {
         for (const [key, value] of map.entries()) {
-            console.log(key, value);
+            console.log(`${key}: ${value ? value : 'null'}`);
         }
     }
 
@@ -8796,19 +8796,17 @@ function getBuildStringMacros() {
         macros.set('subproject','/'+macros.get('subproject'))
     }
     var fields = ['prerelease', 'branchtag', 'timestamp', 'buildnumber']
-    for (field in fields) {
+    fields.forEach( field => {
         if (macros.get(field) && !macros.get(field).startsWith('-')) {
             macros.set(field,'-'+macros.get(field))
         }
-    }
+    })
 
     if (!macros.has('publishversion')) {
         macros.set('publishversion', parseString(publishTargetVersion, macros))
     }
 
     macros.set('branchtag-uc', macros['branchtag'] ? macros['branchtag'].toUpperCase() : '')
-
-    debug(`getBuildStringMacros macros: ${macros}`)
 
     return macros
 }

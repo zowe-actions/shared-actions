@@ -9187,7 +9187,7 @@ class utils {
 
     static printMap (map) {
         for (const [key, value] of map.entries()) {
-            console.log(key, value);
+            console.log(`${key}: ${value ? value : 'null'}`);
         }
     }
 
