@@ -8711,20 +8711,19 @@ function uploadArtifacts() {
         console.log(`- pattern ${eachArtifact}`)
         var fullFilePath = `${projectRootPath}/${eachArtifact}`
         utils.fileExists(fullFilePath)
-        glob(fullFilePath, function (er, files) {     
-            files.forEach( file => {
-                var targetFileFull = publishTargetPath + artifactoryUploadTargetFile
-                var newMacros = extractArtifactoryUploadTargetFileMacros(file)
-                debug(`After extractArtifactoryUploadTargetFileMacros(${file}): newMacros`)
-                var mergedMacros = new Map([...macros, ...newMacros])
-                var t = parseString(targetFileFull, mergedMacros)
-                console.log(`- + found ${file} -> ${t}`)
-                var arr = [{"pattern": file, "target": t}]
-                uploadSpec['files'] = uploadSpec['files'].concat(arr)
-                if (er) {
-                    console.error(er)
-                }
-            })
+        var files = glob.sync(fullFilePath)
+        files.forEach( file => {
+            var targetFileFull = publishTargetPath + artifactoryUploadTargetFile
+            var newMacros = extractArtifactoryUploadTargetFileMacros(file)
+            debug(`After extractArtifactoryUploadTargetFileMacros(${file}): newMacros`)
+            var mergedMacros = new Map([...macros, ...newMacros])
+            var t = parseString(targetFileFull, mergedMacros)
+            console.log(`- + found ${file} -> ${t}`)
+            var arr = [{"pattern": file, "target": t}]
+            uploadSpec['files'] = uploadSpec['files'].concat(arr)
+            if (er) {
+                console.error(er)
+            }
         })
     })
 
