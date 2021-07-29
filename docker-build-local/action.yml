@@ -27,7 +27,7 @@ runs:
     - name: build image
       working-directory: ${{ env.IMAGE_DIRECTORY }}
       run: |
-        docker build --no-cache=true ${{ env.IMAGE_BUILD_ARGS }} -f ${{ inputs.dockerfile }} -t ${{ env.IMAGE_NAME_FULL_REMOTE }} .
+        docker build --no-cache=true --pull=true ${{ env.IMAGE_BUILD_ARGS }} -f ${{ inputs.dockerfile }} -t ${{ env.IMAGE_NAME_FULL_REMOTE }} .
       shell: bash
 
     - name: publish image

@@ -87,13 +87,10 @@ runs:
         rm build-workspace.tar.gz
         echo "************ workspace prepared:"
         ls -la
-        echo "************ prune local docker"
-        sudo docker system prune -f
-        sudo docker image prune -a -f
         echo "************ build image"
         cd ${{ env.IMAGE_DIRECTORY }}
         [ -n "${{ inputs.redhat-registry }}" ] && echo "${{ inputs.redhat-registry-password }}" | sudo docker login --username "${{ inputs.redhat-registry-user }}" --password-stdin ${{ inputs.redhat-registry }}
-        sudo docker build --no-cache=true ${{ env.IMAGE_BUILD_ARGS }} -f ${{ inputs.dockerfile }} -t ${{ env.IMAGE_NAME_FULL_LOCAL }} .
+        sudo docker build --no-cache=true --pull=true ${{ env.IMAGE_BUILD_ARGS }} -f ${{ inputs.dockerfile }} -t ${{ env.IMAGE_NAME_FULL_LOCAL }} .
         sudo docker save -o zlinux-image.tar ${{ env.IMAGE_NAME_FULL_LOCAL }}
         sudo chmod 644 zlinux-image.tar
         EOF
