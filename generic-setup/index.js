@@ -77,7 +77,7 @@ if (_manifestObject) {
     }
 }
 
-debug(manifestInfo)
+debug(JSON.stringify(manifestInfo, null, 2))
 var manifestInfoJsonText = JSON.stringify(manifestInfo)
 core.setOutput("manifest-info-json-text", manifestInfoJsonText)
 
