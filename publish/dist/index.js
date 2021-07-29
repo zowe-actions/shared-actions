@@ -8722,7 +8722,7 @@ function uploadArtifacts() {
                 console.log(`- + found ${file} -> ${t}`)
                 var arr = [{"pattern": file, "target": t}]
                 uploadSpec['files'] = uploadSpec['files'].concat(arr)
-                console.log('oh yes '+uploadSpec['files'])
+                console.log('oh yes '+JSON.stringify(uploadSpec))
                 if (er) {
                     console.error(er)
                 }
