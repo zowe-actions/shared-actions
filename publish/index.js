@@ -134,7 +134,11 @@ function getBuildStringMacros() {
         macros.set('repository', release ? REPOSITORY_RELEASE : REPOSITORY_SNAPSHOT)
     }
     if (!macros.has('package')) {
-        macros.set('package', (manifestInfo['id'] ? manifestInfo['id'] : '').replace((/\./g,'/')))
+        var package = manifestInfo['id'] ? manifestInfo['id'] : ''
+        if (package) {
+            package = package.replace(/\./g,'/')
+        }
+        macros.set('package', package)
     }
     if (!macros.has('subproject')) {
         macros.set('subproject', '')
