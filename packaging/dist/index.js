@@ -5077,6 +5077,12 @@ class utils {
         return versionMap
     }
 
+    static printMap (map) {
+        for (const [key, value] of map.entries()) {
+            console.log(key, value);
+        }
+    }
+
     static nvmShellInit(nodeJsVersion) {
         var nvmScript = `${process.env.HOME}/.nvm/nvm.sh`
         var cmds = new Array()

@@ -55,7 +55,11 @@ console.log(`Are we performing a release? ${isPerformingRelease}`)
 
 var macros = new Map()
 macros = getBuildStringMacros()
-debug('Macros is built as follows: '+macros)
+debug('Macros is built as follows:')
+if (process.env.DEBUG) {
+    utils.printMap(macros)
+}
+
 if (isPerformingRelease) {
     var tag = 'v' + macros.get('publishversion')     // when doing release, macros.get('publishversion') will just return a version number 
     if (github.tagExistsRemote(tag)) {
@@ -96,7 +100,10 @@ function uploadArtifacts() {
         files.forEach( file => {
             var targetFileFull = publishTargetPath + artifactoryUploadTargetFile
             var newMacros = extractArtifactoryUploadTargetFileMacros(file)
-            debug(`After extractArtifactoryUploadTargetFileMacros(${file}): newMacros`)
+            debug('After extractArtifactoryUploadTargetFileMacros():')
+            if (process.env.DEBUG) {
+                utils.printMap(newMacros)
+            }
             var mergedMacros = new Map([...macros, ...newMacros])
             var t = parseString(targetFileFull, mergedMacros)
             console.log(`- + found ${file} -> ${t}`)
