@@ -102,9 +102,6 @@ function uploadArtifacts() {
             console.log(`- + found ${file} -> ${t}`)
             var arr = [{"pattern": file, "target": t}]
             uploadSpec['files'] = uploadSpec['files'].concat(arr)
-            if (er) {
-                console.error(er)
-            }
         })
     })
 
