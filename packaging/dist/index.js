@@ -5028,10 +5028,10 @@ class utils {
     static fileExists(path) {
         try {
             fs.accessSync(path, fs.constants.F_OK)
-            console.log(`${path} does exist`)
+            console.log(`${path} exists :D `)
             return true
         } catch {
-            console.warn(`${path} does not exist`)
+            console.warn(`${path} does not exist :(`)
             return false
         }
     }

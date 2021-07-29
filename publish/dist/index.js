@@ -8394,10 +8394,10 @@ class utils {
     static fileExists(path) {
         try {
             fs.accessSync(path, fs.constants.F_OK)
-            console.log(`${path} does exist`)
+            console.log(`${path} exists :D `)
             return true
         } catch {
-            console.warn(`${path} does not exist`)
+            console.warn(`${path} does not exist :(`)
             return false
         }
     }
@@ -8674,7 +8674,7 @@ console.log(`Are we performing a release? ${isPerformingRelease}`)
 
 var macros = new Map()
 macros = getBuildStringMacros()
-
+debug('Macros is built as follows: '+macros)
 if (isPerformingRelease) {
     var tag = 'v' + macros.get('publishversion')     // when doing release, macros.get('publishversion') will just return a version number 
     if (github.tagExistsRemote(tag)) {
