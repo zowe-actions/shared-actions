@@ -21,6 +21,10 @@ inputs:
     required: false
     default: '{repository}/{package}{subproject}/{version}{branchtag-uc}/'
 
+outputs:
+  jfrog-upload-spec-json:
+    description: 'jfrog upload spec in json format'
+
 runs:
   using: 'node12'
   main: 'dist/index.js'

@@ -8695,6 +8695,7 @@ if (isPerformingRelease) {
 // upload artifacts if provided
 if (artifacts && artifacts.length > 0) {
     uploadArtifacts()
+    core.setOutput('jfrog-upload-spec-json',temporaryUploadSpecName)
 } else {
     console.warn ('No artifacts to publish.')
 }
@@ -8740,7 +8741,7 @@ function uploadArtifacts() {
     var json = JSON.stringify(uploadSpec)
     console.log(`Spec of uploading artifact: ${JSON.stringify(uploadSpec, null, 2)}`)
     fs.writeFileSync(temporaryUploadSpecName, json)
-    //artifactory.upload(temporaryUploadSpecName) ???????
+    return temporaryUploadSpecName
 }
 
 
