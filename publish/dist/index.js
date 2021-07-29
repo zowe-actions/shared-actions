@@ -8657,6 +8657,7 @@ const performRelease = core.getInput('perform-release')
 const currentBranch = core.getInput('current-branch')
 const preReleaseString = core.getInput('pre-release-string')
 const packageInfo = JSON.parse(core.getInput('package-info-json-text'))
+const manifestInfo = JSON.parse(core.getInput('manifest-info-json-text'))
 var publishTargetPath = core.getInput('publish-target-path')
 
 var isReleaseBranch = false
@@ -8758,7 +8759,7 @@ function getBuildStringMacros() {
         macros.set('repository', release ? REPOSITORY_RELEASE : REPOSITORY_SNAPSHOT)
     }
     if (!macros.has('package')) {
-        macros.set('package', (packageInfo['name'] ? packageInfo['name'] : '').replace('.', '/'))
+        macros.set('package', (manifestInfo['id'] ? manifestInfo['id'] : '').replace('.', '/'))
     }
     if (!macros.has('subproject')) {
         macros.set('subproject', '')
