@@ -28,7 +28,6 @@ const temporaryUploadSpecName = '.tmp-pipeline-publish-spec.json'
 // Gets inputs
 const defaultBranchesJsonText = process.env.DEFAULT_BRANCHES_JSON_TEXT
 const artifacts = core.getMultilineInput('artifacts') //array form
-console.log(artifacts)
 const performRelease = core.getInput('perform-release')
 const currentBranch = core.getInput('current-branch')
 const preReleaseString = core.getInput('pre-release-string')
@@ -103,7 +102,6 @@ function uploadArtifacts() {
                 console.log(`- + found ${file} -> ${t}`)
                 var arr = [{"pattern": file, "target": t}]
                 uploadSpec['files'] = uploadSpec['files'].concat(arr)
-                console.log('oh yes '+JSON.stringify(uploadSpec))
                 if (er) {
                     console.error(er)
                 }
@@ -111,9 +109,8 @@ function uploadArtifacts() {
         })
     })
 
-    console.log(`Spec of uploading artifact: ${uploadSpec}`)
     var json = JSON.stringify(uploadSpec)
-    console.log(json)
+    console.log(`Spec of uploading artifact: ${JSON.stringify(uploadSpec, null, 2)}`)
     fs.writeFileSync(temporaryUploadSpecName, json)
     //artifactory.upload(temporaryUploadSpecName) ???????
 }
