@@ -8806,7 +8806,7 @@ function getBuildStringMacros() {
         macros.set('publishversion', parseString(publishTargetVersion, macros))
     }
 
-    macros.set('branchtag-uc', macros['branchtag'] ? macros['branchtag'].toUpperCase() : '')
+    macros.set('branchtag-uc', macros.get('branchtag') ? macros.get('branchtag').toUpperCase() : '')
 
     return macros
 }
