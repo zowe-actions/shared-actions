@@ -1,0 +1,11 @@
+name: "Release"
+description: "Release the component if PERFORM_RELEASE is checked"
+inputs:
+  github-tag-prefix:
+    description: 'tag prefix'
+    required: false
+
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
+

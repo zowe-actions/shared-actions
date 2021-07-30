@@ -31,8 +31,8 @@ const artifacts = core.getMultilineInput('artifacts') //array form
 const performRelease = core.getInput('perform-release')
 const currentBranch = process.env.CURRENT_BRANCH
 const preReleaseString = core.getInput('pre-release-string')
-const packageInfo = process.env.PACKAGE_INFO
-const manifestInfo = process.env.MANIFEST_INFO
+const packageInfo = JSON.parse(process.env.PACKAGE_INFO)
+const manifestInfo = JSON.parse(process.env.MANIFEST_INFO)
 var publishTargetPath = core.getInput('publish-target-path')
 
 // main
