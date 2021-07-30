@@ -16,15 +16,16 @@ const yaml = require('js-yaml')
 const fs = require('fs')
 
 var manifest = core.getInput('manifest')
-var extraInit = core.getMultilineInput('extra-init')
+var extraInit = core.getInput('extra-init')
 var projectRootPath = process.env.GITHUB_WORKSPACE
 var _manifestFormat
 var _manifestObject
-var packageInfo
+var manifestInfo
 
 var mjson = `${projectRootPath}/manifest.json`
 var myaml = `${projectRootPath}/manifest.yaml`
 var myml = `${projectRootPath}/manifest.yml`
+
 
 // find and check manifest file
 if (manifest) {
@@ -62,26 +63,24 @@ if (_manifestFormat == 'json') {
 
 // import information we need
 if (_manifestObject) {
-    packageInfo = new Map()
-
+    var manifestInfo = {}
     var properties = [ 'name','id','title','description','version' ]
 
     properties.forEach((x, i) => {
         if (_manifestObject[x]) {
-            packageInfo.set(x,_manifestObject[x])
+            manifestInfo[x]=_manifestObject[x]
         }
     });
 
     if (_manifestObject['version']) {
-        packageInfo.set('versionTrunks', utils.parseSemanticVersion(_manifestObject['version']))
+        manifestInfo['versionTrunks'] = utils.parseSemanticVersion(_manifestObject['version'])
     }
 }
 
-debug(packageInfo)
-var packageInfoJsonText = JSON.stringify(Array.from(packageInfo.entries()));
-core.setOutput("packageInfoJsonText", packageInfoJsonText);
+debug(JSON.stringify(manifestInfo, null, 2))
+var manifestInfoJsonText = JSON.stringify(manifestInfo)
+core.setOutput("manifest-info-json-text", manifestInfoJsonText)
 
 // run extra init code
 utils.sh(`echo "${extraInit}" > extra-init.js`)
 console.log(utils.sh('node extra-init.js && rm extra-init.js'))
-

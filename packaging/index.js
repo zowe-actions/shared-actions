@@ -43,45 +43,47 @@ if (!paxRemoteWorkspace){
 if (!paxName) {
     var packageInfo = JSON.parse(core.getInput('package-info-json-text'))
     paxName = packageInfo['name']
-    if (!paxName) {
-        core.setFailed('Package name is not provided through shared-actions/packaging or through manifest file')
-    }
 }
-// set to default path if not passing through this action
-if (!utils.fileExists(paxLocalWorkspace)) {
-    console.warn('pax local workspace path does not exist, packaging step skipped')
+if (!paxName) {
+    core.setFailed('Package name is not provided through shared-actions/packaging or through manifest file')
 } 
 else {
-    // normalize pax name to only contains letters, numbers or dashes
-    paxName = utils.sanitizeBranchName(paxName)
-    // Real work starts now
-    console.log(`Prepare to package ${paxName}`)
-    console.log(`Creating pax file "${paxName}" from workspace...`)
-    var paxNameFull = paxCompress ? `${paxName}.pax.Z` : `${paxName}.pax`
-
-    var args = new Map()
-    args.set('job',`pax-packaging-${paxName}`)
-    args.set('paxSSHHost',paxSSHHost)
-    args.set('paxSSHPort',paxSSHPort)
-    args.set('paxSSHUsername',paxSSHUsername)
-    args.set('paxSSHPassword',paxSSHPassword)
-    args.set('filename',paxNameFull)
-    args.set('paxOptions',paxOptions)
-    args.set('extraFiles',extraFiles)
-    args.set('environments',extraEnvironmentVars)
-    args.set('compress',paxCompress)
-    args.set('compressOptions',paxCompressOptions)
-    args.set('keepTempFolder',keepTempFolder)
-    args.set('paxLocalWorkspace',paxLocalWorkspace)
-    args.set('paxRemoteWorkspace',paxRemoteWorkspace)
-
-    pax.pack(args)
-
-    if (utils.fileExists(`${paxLocalWorkspace}/${paxNameFull}`)) {
-        console.log(`Packaging result ${paxNameFull} is in place.`)
+    // set to default path if not passing through this action
+    if (!utils.fileExists(paxLocalWorkspace)) {
+        console.warn('pax local workspace path does not exist, packaging step skipped')
     } 
     else {
-        console.log(utils.sh(`ls -la ${paxLocalWorkspace}`))
-        core.setFailed(`Failed to find packaging result ${paxNameFull}`)
+        // normalize pax name to only contains letters, numbers or dashes
+        paxName = utils.sanitizeBranchName(paxName)
+        // Real work starts now
+        console.log(`Prepare to package ${paxName}`)
+        console.log(`Creating pax file "${paxName}" from workspace...`)
+        var paxNameFull = paxCompress ? `${paxName}.pax.Z` : `${paxName}.pax`
+
+        var args = new Map()
+        args.set('job',`pax-packaging-${paxName}`)
+        args.set('paxSSHHost',paxSSHHost)
+        args.set('paxSSHPort',paxSSHPort)
+        args.set('paxSSHUsername',paxSSHUsername)
+        args.set('paxSSHPassword',paxSSHPassword)
+        args.set('filename',paxNameFull)
+        args.set('paxOptions',paxOptions)
+        args.set('extraFiles',extraFiles)
+        args.set('environments',extraEnvironmentVars)
+        args.set('compress',paxCompress)
+        args.set('compressOptions',paxCompressOptions)
+        args.set('keepTempFolder',keepTempFolder)
+        args.set('paxLocalWorkspace',paxLocalWorkspace)
+        args.set('paxRemoteWorkspace',paxRemoteWorkspace)
+
+        pax.pack(args)
+
+        if (utils.fileExists(`${paxLocalWorkspace}/${paxNameFull}`)) {
+            console.log(`Packaging result ${paxNameFull} is in place.`)
+        } 
+        else {
+            console.log(utils.sh(`ls -la ${paxLocalWorkspace}`))
+            core.setFailed(`Failed to find packaging result ${paxNameFull}`)
+        }
     }
 }

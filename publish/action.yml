@@ -1,0 +1,33 @@
+name: "Publish"
+description: "Publish to artifactory for all project builds"
+inputs:
+  artifacts:
+    description: 'artifacts to upload, also support multiple line inputs'
+    required: true
+  perform-release:
+    description: 'flag to perform steps to release'
+    required: false
+  current-branch:
+    description: 'current branch name'
+    required: true
+  pre-release-string:
+    description: 'pre-release string'
+    required: false
+  package-info-json-text:
+    description: 'Parsed package information to a json string'
+    required: true
+  manifest-info-json-text:
+    description: 'Parsed manifest information to a json string'
+    required: true
+  publish-target-path:
+    description: path format for publishing to artifactory
+    required: false
+    default: '{repository}/{package}{subproject}/{version}{branchtag-uc}/'
+
+outputs:
+  jfrog-upload-spec-json:
+    description: 'jfrog upload spec in json format'
+
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
