@@ -9230,7 +9230,7 @@ class utils {
         var fullCMD = `SSHPASS=${passwd} sshpass -e sftp -o BatchMode=no -o StrictHostKeyChecking=no -P ${port} -b - ${username}@${host} <<EOF
 ${cmds}
 EOF`
-        return utils.sh(fullCMD)
+        return this.sh(fullCMD)
     }
 
     static ssh(host, port, username, passwd, cmds) {
@@ -9238,7 +9238,7 @@ EOF`
 ${cmds}
 exit 0
 EOF`
-        return utils.sh(fullCMD)
+        return this.sh(fullCMD)
     }
 
     static sshKeyFile(host, port, username, keyPassPhrase, keyfile, cmds) {
@@ -9246,7 +9246,7 @@ EOF`
 ${cmds}
 exit 0
 EOF`
-        return utils.sh(fullCMD)
+        return this.sh(fullCMD)
     }
 }
 
@@ -9429,8 +9429,8 @@ if (_manifestObject) {
 }
 
 debug(JSON.stringify(manifestInfo, null, 2))
-var manifestInfoJsonText = JSON.stringify(manifestInfo)
-core.setOutput("manifest-info-json-text", manifestInfoJsonText)
+var manifestInfoText = JSON.stringify(manifestInfo, null, 2)
+core.exportVariable("MANIFEST_INFO", manifestInfoText)
 
 // run extra init code
 utils.sh(`echo "${extraInit}" > extra-init.js`)

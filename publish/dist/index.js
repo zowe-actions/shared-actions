@@ -8488,7 +8488,7 @@ class utils {
         var fullCMD = `SSHPASS=${passwd} sshpass -e sftp -o BatchMode=no -o StrictHostKeyChecking=no -P ${port} -b - ${username}@${host} <<EOF
 ${cmds}
 EOF`
-        return utils.sh(fullCMD)
+        return this.sh(fullCMD)
     }
 
     static ssh(host, port, username, passwd, cmds) {
@@ -8496,7 +8496,7 @@ EOF`
 ${cmds}
 exit 0
 EOF`
-        return utils.sh(fullCMD)
+        return this.sh(fullCMD)
     }
 
     static sshKeyFile(host, port, username, keyPassPhrase, keyfile, cmds) {
@@ -8504,7 +8504,7 @@ EOF`
 ${cmds}
 exit 0
 EOF`
-        return utils.sh(fullCMD)
+        return this.sh(fullCMD)
     }
 }
 
@@ -8654,12 +8654,13 @@ const temporaryUploadSpecName = '.tmp-pipeline-publish-spec.json'
 const defaultBranchesJsonText = process.env.DEFAULT_BRANCHES_JSON_TEXT
 const artifacts = core.getMultilineInput('artifacts') //array form
 const performRelease = core.getInput('perform-release')
-const currentBranch = core.getInput('current-branch')
+const currentBranch = process.env.CURRENT_BRANCH
 const preReleaseString = core.getInput('pre-release-string')
-const packageInfo = JSON.parse(core.getInput('package-info-json-text'))
-const manifestInfo = JSON.parse(core.getInput('manifest-info-json-text'))
+const packageInfo = process.env.PACKAGE_INFO
+const manifestInfo = process.env.MANIFEST_INFO
 var publishTargetPath = core.getInput('publish-target-path')
 
+// main
 var isReleaseBranch = false
 var isFormalReleaseBranch = false
 var isPerformingRelease = `${ performRelease ? true : false }`
@@ -8696,10 +8697,12 @@ if (isPerformingRelease) {
 // upload artifacts if provided
 if (artifacts && artifacts.length > 0) {
     uploadArtifacts()
-    core.setOutput('jfrog-upload-spec-json',temporaryUploadSpecName)
+    core.exportVariable('JFROG_UPLOAD_SPEC_JSON',temporaryUploadSpecName)
 } else {
     console.warn ('No artifacts to publish.')
 }
+
+core.exportVariable('IS_RELEASE_BRANCH', isReleaseBranch)
 
 
 /* ========================================================================================================*/

@@ -41,7 +41,7 @@ if (!paxRemoteWorkspace){
 
 // get package name from manifest file if not entered through this action
 if (!paxName) {
-    var packageInfo = JSON.parse(core.getInput('package-info-json-text'))
+    var packageInfo = JSON.parse(process.env.PACKAGE_INFO)
     paxName = packageInfo['name']
 }
 if (!paxName) {
