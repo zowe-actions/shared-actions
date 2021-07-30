@@ -7968,6 +7968,22 @@ class github {
         })
         return foundTag
     }
+
+    /**
+     * Tag the branch and push to remote.
+     *
+     * @Note Currently only support lightweighted tag.
+     *
+     * @param  tag           tag name to be created
+     */
+    static tag(tag) {
+        // init with arguments
+        if (!tag) {
+            throw new Error('tag name is missing, failed to tag')
+        }
+
+        console.log(utils.sh(`git tag "${tag}" && git push origin "${tag}"`))
+    }
 }
 
 module.exports = github;
@@ -8702,7 +8718,9 @@ if (artifacts && artifacts.length > 0) {
     console.warn ('No artifacts to publish.')
 }
 
+core.exportVariable('PUBLISH_VERSION', macros.get('publishversion'))
 core.exportVariable('IS_RELEASE_BRANCH', isReleaseBranch)
+core.exportVariable('IS_FORMAL_RELEASE_BRANCH', isFormalReleaseBranch)
 
 
 /* ========================================================================================================*/

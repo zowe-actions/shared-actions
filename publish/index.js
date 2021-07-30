@@ -77,7 +77,9 @@ if (artifacts && artifacts.length > 0) {
     console.warn ('No artifacts to publish.')
 }
 
+core.exportVariable('PUBLISH_VERSION', macros.get('publishversion'))
 core.exportVariable('IS_RELEASE_BRANCH', isReleaseBranch)
+core.exportVariable('IS_FORMAL_RELEASE_BRANCH', isFormalReleaseBranch)
 
 
 /* ========================================================================================================*/
