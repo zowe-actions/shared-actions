@@ -1,0 +1,36 @@
+name: "Build docker image on local runner"
+description: "Build image and publish docker image to Zowe docker registry"
+inputs:
+  build-arg-list:
+    description: "docker build arguments passed to --build-arg. Use space to separate multiple arguments."
+    required: false
+    default: ""
+  dockerfile:
+    description: "name of Dockerfile will be passed to docker build -f."
+    required: false
+    default: "Dockerfile"
+runs:
+  using: "composite"
+  steps:
+    - name: prepare build args
+      run: |
+        build_args_string=
+        full_build_args="${{ inputs.build-arg-list }}"
+        for arg in $full_build_args
+        do
+          echo "************ adding --build-arg ${arg}"
+          build_args_string="${build_args_string} --build-arg '${arg}'"
+        done
+        echo "IMAGE_BUILD_ARGS=${build_args_string}" >> $GITHUB_ENV
+      shell: bash
+
+    - name: build image
+      working-directory: ${{ env.IMAGE_DIRECTORY }}
+      run: |
+        docker build --no-cache=true --pull=true ${{ env.IMAGE_BUILD_ARGS }} -f ${{ inputs.dockerfile }} -t ${{ env.IMAGE_NAME_FULL_REMOTE }} .
+      shell: bash
+
+    - name: publish image
+      run: |
+        docker push ${{ env.IMAGE_NAME_FULL_REMOTE }}
+      shell: bash
