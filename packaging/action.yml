@@ -18,9 +18,6 @@ inputs:
   pax-ssh-password:
     description: 'ssh password'
     required: true
-  package-info-json-text:
-    description: 'Parsed manifest information to a json string'
-    required: true
 
   pax-local-workspace:
     description: 'local workspace path'

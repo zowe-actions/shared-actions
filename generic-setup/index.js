@@ -78,8 +78,8 @@ if (_manifestObject) {
 }
 
 debug(JSON.stringify(manifestInfo, null, 2))
-var manifestInfoJsonText = JSON.stringify(manifestInfo)
-core.setOutput("manifest-info-json-text", manifestInfoJsonText)
+var manifestInfoText = JSON.stringify(manifestInfo, null, 2)
+core.exportVariable("MANIFEST_INFO", manifestInfoText)
 
 // run extra init code
 utils.sh(`echo "${extraInit}" > extra-init.js`)

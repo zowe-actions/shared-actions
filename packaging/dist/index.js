@@ -5122,7 +5122,7 @@ class utils {
         var fullCMD = `SSHPASS=${passwd} sshpass -e sftp -o BatchMode=no -o StrictHostKeyChecking=no -P ${port} -b - ${username}@${host} <<EOF
 ${cmds}
 EOF`
-        return utils.sh(fullCMD)
+        return this.sh(fullCMD)
     }
 
     static ssh(host, port, username, passwd, cmds) {
@@ -5130,7 +5130,7 @@ EOF`
 ${cmds}
 exit 0
 EOF`
-        return utils.sh(fullCMD)
+        return this.sh(fullCMD)
     }
 
     static sshKeyFile(host, port, username, keyPassPhrase, keyfile, cmds) {
@@ -5138,7 +5138,7 @@ EOF`
 ${cmds}
 exit 0
 EOF`
-        return utils.sh(fullCMD)
+        return this.sh(fullCMD)
     }
 }
 
@@ -5284,7 +5284,7 @@ if (!paxRemoteWorkspace){
 
 // get package name from manifest file if not entered through this action
 if (!paxName) {
-    var packageInfo = JSON.parse(core.getInput('package-info-json-text'))
+    var packageInfo = JSON.parse(process.env.PACKAGE_INFO)
     paxName = packageInfo['name']
 }
 if (!paxName) {
