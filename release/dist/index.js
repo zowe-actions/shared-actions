@@ -7984,6 +7984,66 @@ class github {
 
         console.log(utils.sh(`git tag "${tag}" && git push origin "${tag}"`))
     }
+
+    /**
+     * Clone a remote repository
+     *
+     * @param  repo            the repository name, required 
+     * @param  dir             the directory name to do the clone, required
+     * @param  branch          the branch name to be cloned, required
+     */
+    static clone(repo, dir, branch) {
+        if (!repo || !dir || !branch) {
+            console.warn('Clone operation skipped, must specify all three arguments: repo, dir and branch')
+        } 
+        else {
+            var cmd = `mkdir ${dir} && cd ${dir} && git clone`
+            if (branch) {
+                cmd += ` --single-branch --branch ${branch} `
+            }
+            var fullRepo = `https://github.com/${repo}.git/`
+            cmd += fullRepo
+            console.log(utils.sh(cmd))
+        }
+    }
+
+    /**
+     * Push committed changes to a remote repository
+     *
+     * @param  repo            the repository name, required 
+     * @param  branch          the branch name to be cloned, required
+     */
+    static push(repo, branch) {
+        if (!repo || !branch) {
+            console.warn('Push operation skipped, must specify both arguments: repo and branch')
+        } 
+        else {
+            var cmd = `git push -u ${repo} ${branch}`
+            console.log(utils.sh(cmd))
+        }
+    }
+
+    /**
+     * Check if current branch is synced with remote
+     */
+    static isSync() {
+        // update remote
+        utils.sh('git fetch origin')
+        // get last hash
+        var localHash = utils.sh(`git rev-parse ${branch}`)
+        var remoteHash = utils.sh(`git rev-parse origin/${branch}`)
+
+        if (localHash == remoteHash) {
+            console.log('Working directory is synced with remote.')
+            return true
+        } else {
+            console.warn(`Working directory is not synced with remote:
+                local : ${localHash}
+                remote: ${remoteHash}`)
+            return false
+        }
+    }
+
 }
 
 module.exports = github;
@@ -8658,21 +8718,18 @@ var fs = __nccwpck_require__(5747)
 
 // get inputs
 var githubTagPrefix = core.getInput('github-tag-prefix')
+var genericBumpVersion = core.getInput('generic-bump-version')
 
 // main
 tagBranch()
 
-
 // only bump version on formal release without pre-release string
-// if (this.isFormalReleaseBranch() && this.getPreReleaseString() == '') {
-//     if (arguments.bumpVersion) {
-//         arguments.bumpVersion()
-//     } else {
-//         this.bumpVersion()
-//     }
-// } else {
-//     this.steps.echo "No need to bump version."
-// }
+if (process.env.IS_FORMAL_RELEASE_BRANCH == 'true' && process.env.PRE_RELEASE_STRING == '' && genericBumpVersion) {
+    bumpVersion()
+} 
+else {
+    console.log('No need to bump version.')
+}
 
 // send out notice
 // this.sendReleaseNotice()
@@ -8691,6 +8748,11 @@ function tagBranch() {
     console.log(`Creating tag "${tag}" at "${process.env.GITHUB_REPOSITORY}:${process.env.CURRENT_BRANCH}`)
 
     github.tag(tag)
+}
+
+// Generic bumpversion function, npm or gradle bumpversion uses different techniques
+function bumpVersion() {
+    //TODO
 }
 })();
 

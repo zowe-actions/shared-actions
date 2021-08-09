@@ -80,7 +80,7 @@ if (artifacts && artifacts.length > 0) {
 core.exportVariable('PUBLISH_VERSION', macros.get('publishversion'))
 core.exportVariable('IS_RELEASE_BRANCH', isReleaseBranch)
 core.exportVariable('IS_FORMAL_RELEASE_BRANCH', isFormalReleaseBranch)
-
+core.exportVariable('PRE_RELEASE_STRING',preReleaseString)
 
 /* ========================================================================================================*/
 

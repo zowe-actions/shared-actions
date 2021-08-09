@@ -17,21 +17,18 @@ var fs = require('fs')
 
 // get inputs
 var githubTagPrefix = core.getInput('github-tag-prefix')
+var genericBumpVersion = core.getInput('generic-bump-version')
 
 // main
 tagBranch()
 
-
 // only bump version on formal release without pre-release string
-// if (this.isFormalReleaseBranch() && this.getPreReleaseString() == '') {
-//     if (arguments.bumpVersion) {
-//         arguments.bumpVersion()
-//     } else {
-//         this.bumpVersion()
-//     }
-// } else {
-//     this.steps.echo "No need to bump version."
-// }
+if (process.env.IS_FORMAL_RELEASE_BRANCH == 'true' && process.env.PRE_RELEASE_STRING == '' && genericBumpVersion) {
+    bumpVersion()
+} 
+else {
+    console.log('No need to bump version.')
+}
 
 // send out notice
 // this.sendReleaseNotice()
@@ -50,4 +47,9 @@ function tagBranch() {
     console.log(`Creating tag "${tag}" at "${process.env.GITHUB_REPOSITORY}:${process.env.CURRENT_BRANCH}`)
 
     github.tag(tag)
+}
+
+// Generic bumpversion function, npm or gradle bumpversion uses different techniques
+function bumpVersion() {
+    //TODO
 }
