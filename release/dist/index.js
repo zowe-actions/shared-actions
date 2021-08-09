@@ -8724,8 +8724,12 @@ var genericBumpVersion = core.getInput('generic-bump-version')
 tagBranch()
 
 // only bump version on formal release without pre-release string
-if (process.env.IS_FORMAL_RELEASE_BRANCH == 'true' && process.env.PRE_RELEASE_STRING == '' && genericBumpVersion) {
-    bumpVersion()
+if (process.env.IS_FORMAL_RELEASE_BRANCH == 'true' && process.env.PRE_RELEASE_STRING == '') {
+    if (genericBumpVersion) {
+        bumpVersion()
+    } else {
+        console.log('Generic version bump skipped, it will be performed later in project specific version bump code')
+    }
 } 
 else {
     console.log('No need to bump version.')
