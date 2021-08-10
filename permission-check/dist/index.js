@@ -4647,12 +4647,12 @@ class github {
      * @param  repo            the repository name, required 
      * @param  branch          the branch name to be cloned, required
      */
-    static push(repo, branch) {
-        if (!repo || !branch) {
-            console.warn('Push operation skipped, must specify both arguments: repo and branch')
+    static push(branch) {
+        if (!branch) {
+            console.warn('Push operation skipped, must specify argument: branch')
         } 
         else {
-            var cmd = `git push -u ${repo} ${branch}`
+            var cmd = `git push -u origin ${branch}`
             console.log(utils.sh(cmd))
         }
     }
