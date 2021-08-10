@@ -9,7 +9,7 @@
  */
 
 const core = require('@actions/core')
-const { InvalidArgumentException , utils , pax } = require('zowe-common')
+const { utils , pax } = require('zowe-common')
 const Debug = require('debug')
 const debug = Debug('zowe-actions:shared-actions:packaging')
 

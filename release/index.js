@@ -9,11 +9,9 @@
  */
 
 const core = require('@actions/core')
-const { InvalidArgumentException , utils , pax, github } = require('zowe-common')
+const { github } = require('zowe-common')
 const Debug = require('debug')
 const debug = Debug('zowe-actions:shared-actions:release')
-var glob = require("glob")
-var fs = require('fs')
 
 // get inputs
 var githubTagPrefix = core.getInput('github-tag-prefix')
