@@ -4625,9 +4625,8 @@ class github {
      * @param  repo            the repository name, required 
      * @param  dir             the directory name to do the clone, required
      * @param  branch          the branch name to be cloned, required
-     * @param  username        the username to be used for pushing changes
      */
-    static clone(repo, dir, branch, username) {
+    static clone(repo, dir, branch) {
         if (!repo || !dir || !branch) {
             console.warn('Clone operation skipped, must specify all three arguments: repo, dir and branch')
         } 
@@ -4636,8 +4635,7 @@ class github {
             if (branch) {
                 cmd += ` --single-branch --branch ${branch} `
             }
-            var fullRepo = `git@github.com:${username}/${repo}.git`
-            
+            var fullRepo = `https://github.com/${repo}.git/`
             cmd += fullRepo
             console.log(utils.sh(cmd))
         }
@@ -4649,12 +4647,12 @@ class github {
      * @param  branch          the branch to be pushed to, required
      * @param  dir             the working directory, required
      */
-    static push(branch, dir) {
+    static push(branch, dir, username, passwd, repo) {
         if (!branch) {
             console.warn('Push operation skipped, must specify argument: branch')
         } 
         else {
-            var cmd = `cd ${dir} && git push -u origin ${branch}`
+            var cmd = `cd ${dir} && git push https://${username}:${passwd}@github.com/${repo} ${branch}`
             console.log(utils.sh(cmd))
         }
     }
