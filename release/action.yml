@@ -8,6 +8,7 @@ inputs:
     description: 'flag to indicate if doing a generic version bump'
     required: false
 
+
 runs:
   using: 'node12'
   main: 'dist/index.js'
