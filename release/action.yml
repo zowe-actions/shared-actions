@@ -4,6 +4,10 @@ inputs:
   github-tag-prefix:
     description: 'tag prefix'
     required: false
+  generic-bump-version:
+    description: 'flag to indicate if doing a generic version bump'
+    required: false
+
 
 runs:
   using: 'node12'

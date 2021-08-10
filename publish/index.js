@@ -9,7 +9,7 @@
  */
 
 const core = require('@actions/core')
-const { InvalidArgumentException , utils , pax, github } = require('zowe-common')
+const { utils , github } = require('zowe-common')
 const Debug = require('debug')
 const debug = Debug('zowe-actions:shared-actions:publish')
 var glob = require("glob")
@@ -77,8 +77,10 @@ if (artifacts && artifacts.length > 0) {
     console.warn ('No artifacts to publish.')
 }
 
+core.exportVariable('PUBLISH_VERSION', macros.get('publishversion'))
 core.exportVariable('IS_RELEASE_BRANCH', isReleaseBranch)
-
+core.exportVariable('IS_FORMAL_RELEASE_BRANCH', isFormalReleaseBranch)
+core.exportVariable('PRE_RELEASE_STRING',preReleaseString)
 
 /* ========================================================================================================*/
 
