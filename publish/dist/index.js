@@ -7991,8 +7991,9 @@ class github {
      * @param  repo            the repository name, required 
      * @param  dir             the directory name to do the clone, required
      * @param  branch          the branch name to be cloned, required
+     * @param  username        the username to be used for pushing changes
      */
-    static clone(repo, dir, branch) {
+    static clone(repo, dir, branch, username) {
         if (!repo || !dir || !branch) {
             console.warn('Clone operation skipped, must specify all three arguments: repo, dir and branch')
         } 
@@ -8001,7 +8002,8 @@ class github {
             if (branch) {
                 cmd += ` --single-branch --branch ${branch} `
             }
-            var fullRepo = `https://github.com/${repo}.git/`
+            var fullRepo = `git@github.com:${username}/${repo}.git`
+            
             cmd += fullRepo
             console.log(utils.sh(cmd))
         }
