@@ -8026,7 +8026,7 @@ class github {
     /**
      * Check if current branch is synced with remote
      */
-    static isSync() {
+    static isSync(branch) {
         // update remote
         utils.sh('git fetch origin')
         // get last hash
