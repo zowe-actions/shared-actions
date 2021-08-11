@@ -30,8 +30,8 @@ None
 ```
 uses: zowe-actions/shared-actions/permission-check@main
 with:
-  user:
-  github-repo:
-  github-user:
-  github-passwd:
+  user: random-userid
+  github-repo: user/project
+  github-user: myuserid
+  github-passwd: mypassword
 ```
