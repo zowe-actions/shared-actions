@@ -1,18 +1,18 @@
 # Generic Setup
 
 This action processes manifest file then export as an environment variable for future use
-<br /><br />
+<br />
 
 ## Inputs
 #### `manifest`
 **Optional** - Custom manifest file name (in project root directory) to overwrite default manifest exists in project
 #### `extra-init`
 **Optional** - Extra initialization code to run (javascript)
-<br /><br />
+<br />
 
 ## Outputs
 None
-<br /><br />
+<br />
 
 ## Exported environment variables 
 (global env vars - for subsequent workflow steps to consume)
@@ -27,7 +27,7 @@ MANIFEST_INFO: {
   "description": "This is my newly created component"
 }
 ```
-<br /><br />
+<br />
 
 ## Example usage
 (this is a minimal set of inputs you need to provide)
