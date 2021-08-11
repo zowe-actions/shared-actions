@@ -4,15 +4,15 @@ This action runs a script, passed as an argument, on a system that's connected t
 
 ## Inputs
 
-### Host
+### `Host`
 
 **Required** - The hostname of the system to connect to.
 
-### User
+### `User`
 
 **Required** - The user name of the account to connect to the system with.
 
-### Password
+### `Password`
 
 **Required** - The password of the account to connect to the system with.
 
@@ -20,9 +20,9 @@ This action runs a script, passed as an argument, on a system that's connected t
 
 ```
 uses: ./custom-workflow
-    with:
-        host: host.domain.com
-        user: myUsername
-        password: myPassword
-        script: "echo This Workflow is Awesome!"
+with:
+  host: host.domain.com
+  user: myUsername
+  password: myPassword
+  script: "echo This Workflow is Awesome!"
 ```
