@@ -3,6 +3,8 @@
 This action does publishing step for Zowe projects.\
 It determines if current branch is a release branch, or formal release branch, then based on if current workflow is doing a 'PERFORM RELEASE', make decisions and finally produce a JSON file (in root project directory) that contains upload specs for jFrog Artifactory. \
 Later steps in your workflow can use this JSON file for jFrog to consume that does the upload.
+#### Note:
+The properties of a branch (eg. if it is a release branch or formal release branch) can be found at [defaultBranches.json](https://github.com/zowe-actions/shared-actions/blob/main/envvars-global/defaultBranches.json)
 <br />
 
 ## Inputs
@@ -29,7 +31,7 @@ Note: If there is no artifacts to upload, value of this environment variable wil
 The version pattern of the artifact on Artifactory. Will follow this pattern `{version}{prerelease}{branchtag}{buildnumber}{timestamp}`\
 Example: `PUBLISH_VERSION: 1.0.2-my-dev-branch-210-20210810194022`
 #### `IS_RELEASE_BRANCH`
-Flag to indicate if current branch is a release branch, value will be either `true` or `false`.
+Flag to indicate if current branch is a release branch, value will be either `true` or `false`.\
 #### `IS_FORMAL_RELEASE_BRANCH`
 Flag to indicate if current branch is a formal release branch, value will be either `true` or `false`.
 #### `PRE_RELEASE_STRING`
