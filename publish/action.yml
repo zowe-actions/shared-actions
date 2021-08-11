@@ -6,7 +6,7 @@ inputs:
     required: true
   perform-release:
     description: 'flag to perform steps to release'
-    required: false
+    required: true
   pre-release-string:
     description: 'pre-release string'
     required: false
