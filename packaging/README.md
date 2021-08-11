@@ -46,8 +46,8 @@ None
 ```
 uses: zowe-actions/shared-actions/packaging@main
 with:
-  pax-ssh-username:
-  pax-ssh-password:
+  pax-ssh-username: user
+  pax-ssh-password: mypassword
 ```
 To enable debug mode, append
 ```
