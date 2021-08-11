@@ -28,7 +28,7 @@ This action does packaging step for Zowe projects. It transfers files over to a 
 #### `extra-files`
 **Optional** - Extra artifacts will be generated and will be transferred back
 #### `keep-temp-folders`
-**Optional** - If we want to keep the temporary packaging folder on the remote machine for debugging purpose. Default is `FALSE`
+**Optional** - Flag to if we want to keep the temporary packaging folder on the remote machine for debugging purpose. Default is `FALSE`
 #### `extra-environment-vars`
 **Optional** - Extra environment variables to be parsed
 <br /><br />
