@@ -31,7 +31,7 @@ Note: If there is no artifacts to upload, value of this environment variable wil
 The version pattern of the artifact on Artifactory. Will follow this pattern `{version}{prerelease}{branchtag}{buildnumber}{timestamp}`\
 Example: `PUBLISH_VERSION: 1.0.2-my-dev-branch-210-20210810194022`
 #### `IS_RELEASE_BRANCH`
-Flag to indicate if current branch is a release branch, value will be either `true` or `false`.\
+Flag to indicate if current branch is a release branch, value will be either `true` or `false`.
 #### `IS_FORMAL_RELEASE_BRANCH`
 Flag to indicate if current branch is a formal release branch, value will be either `true` or `false`.
 #### `PRE_RELEASE_STRING`
