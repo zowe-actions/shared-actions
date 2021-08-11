@@ -48,7 +48,6 @@ uses: zowe-actions/shared-actions/packaging@main
 with:
   pax-ssh-username:
   pax-ssh-password:
-        
 ```
 To enable debug mode, append
 ```
