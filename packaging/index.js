@@ -41,8 +41,8 @@ if (!paxRemoteWorkspace){
 
 // get package name from manifest file if not entered through this action
 if (!paxName) {
-    var packageInfo = JSON.parse(process.env.PACKAGE_INFO)
-    paxName = packageInfo['name']
+    var manifestInfo = JSON.parse(process.env.MANIFEST_INFO)
+    paxName = manifestInfo['name']
 }
 if (!paxName) {
     core.setFailed('Package name is not provided through shared-actions/packaging or through manifest file')
