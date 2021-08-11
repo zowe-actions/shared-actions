@@ -46,8 +46,6 @@ None
 ```
 uses: zowe-actions/shared-actions/packaging@main
 with:
-  pax-name: 'my-component'
-  pax-options: '-o saveext'
   pax-ssh-username:
   pax-ssh-password:
         
