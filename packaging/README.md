@@ -1,7 +1,7 @@
 # Packaging Zowe projects
 
 This action does packaging step for Zowe projects. It transfers files over to a zOS machine to do pax then transfer files back. For more detailed process, please refer to the utility function [zowe-actions/zowe-common/lib/pax.js](https://github.com/zowe-actions/zowe-common/blob/main/lib/pax.js)
-<br /><br />
+<br />
 
 ## Inputs
 
