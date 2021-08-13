@@ -4,15 +4,27 @@ on:
   workflow_dispatch:
     inputs:
 #Ex https://zowe.jfrog.io/artifactory/docker-snapshot/ompzowe/base/0.0.1-ubi-amd64.users-jack-base-images-67
-      image_name:
+      image-name:
         description: 'The name of a container image in a registry in the form of [my.registry.address:port/]repositoryname/tag'
         required: true
-      node_version:
+      node-version:
         description: 'Version of nodejs to download source for. If not specified, no source is downloaded'
         required: false
+        default: ""
+      registry-username:
+        description: 'Username to login to the docker registry where the input image exists'
+        required: false
+      registry-password:
+        description: 'Password to login to the docker registry where the input image exists'
+        required: false
+      redhat-registry:
+        description: 'Username to login to the redhat container registry where the input image exists'
+        required: false
+      redhat-password:
+        description: 'Password to login to the redhat container registry where the input image exists'
 
 env:
-  IMAGE_NAME_FULL_REMOTE: ${{ github.event.input.image_name }}-source
+  IMAGE_NAME_FULL_REMOTE: ${{ github.event.input.image-name }}-source
         
 jobs:
   scan:
@@ -20,18 +32,20 @@ jobs:
     timeout-minutes: 120
 
     steps:
-      - name: Login Jfrog
-        uses: docker/login-action@v1
+      - name: Setup docker env
+        uses: zowe-actions/shared-actions/docker-prepare@main
         with:
-          registry: zowe-docker-snapshot.jfrog.io
-          username: ${{ secrets.ARTIFACTORY_X_USERNAME }}
-          password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
+          registry-user: ${{ github.event.inputs.registry-user }}
+          registry-password: ${{ github.event.inputs.registry-password }}
+          base-directory: ${{github.action_path}}
+          redhat-registry-user:
+          redhat-registry-password:
           
       - name: Make Bill of Materials
         uses: actions/tern-action@v1
         id: scan
         with:
-          image: ${{ github.event.inputs.image_name }}
+          image: ${{ github.event.inputs.image-name }}
           format: json
 #TODO server-bundle.json is hardcoded in generate-attributions, so change this name later.
           output: server-bundle.json
@@ -43,8 +57,7 @@ jobs:
           
       - name: Transform Bill
         run: |
-          wget https://github.com/zowe/zowe-install-packaging/blob/84210fceed278601ca894afcb234c3aaed74b3c8/containers/utils/generate-attributions.js
-          node generate-attributions.js
+          node ${{ github.action_path }}/../utils/generate-attributions.js
 
       - uses: actions/upload-artifact@v2
         with:
@@ -58,20 +71,17 @@ jobs:
     timeout-minutes: 120
 
     steps:
-# Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
       - uses: actions/download-artifact@v2
         with:
           name: NOTICE.txt
           path: NOTICE.txt
           
       - name: Get node source
+        if: ${{ github.events.inputs.NODE_VERSION != "" }}
         run: |
-          if [ -n "${NODE_VERSION}" ]; then wget https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}.tar.xz; fi
+          wget https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}.tar.xz
 
       - uses: zowe-actions/shared-actions/docker-build-local@main
         with:
-          dockerfile: containers/utils/Dockerfile.sources
-          build-arg-list: IMAGE_NAME=${{ github.event.input.image_name }} NODE_VERSION=${{ github.event.input.node_version }}
+          dockerfile: ${{github.action_path}}/../utils/Dockerfile.sources
+          build-arg-list: IMAGE_NAME=${{ github.event.input.image-name }} NODE_VERSION=${{ github.event.input.node-version }}
