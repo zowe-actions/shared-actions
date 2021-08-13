@@ -32,9 +32,9 @@ runs:
       with:
         registry-user: ${{ github.event.inputs.registry-user }}
         registry-password: ${{ github.event.inputs.registry-password }}
-        base-directory: ${{github.action_path}}
-        redhat-registry-user:
-        redhat-registry-password:
+        base-directory: ${{github.action_path}}/../utils
+        redhat-registry-user: ${{ github.event.inputs.redhat-registry-user }}
+        redhat-registry-password: ${{ github.event.inputs.redhat-registry-password }}
             
     - name: Make Bill of Materials
       uses: actions/tern-action@v1
