@@ -73,14 +73,18 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: NOTICE.txt
-          path: NOTICE.txt
+          path: ${{ github.action_path }}/../utils/NOTICE.txt
+
+      - name: Copy EPL license for container
+        run: |
+          cp "${{ github.action_path }}/LICENSE" "${{ github.action_path }}/../utils/LICENSE.txt
           
       - name: Get node source
         if: ${{ github.events.inputs.NODE_VERSION != "" }}
         run: |
-          wget "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}.tar.xz"
+          wget "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}.tar.xz" -o "${{ github.action_path }}/../utils/node-v${NODE_VERSION}.tar.xz"
 
       - uses: zowe-actions/shared-actions/docker-build-local@main
         with:
-          dockerfile: ${{github.action_path}}/../utils/Dockerfile.sources
+          dockerfile: ${{ github.action_path }}/../utils/Dockerfile.sources
           build-arg-list: IMAGE_NAME=${{ github.event.input.image-name }} NODE_VERSION=${{ github.event.input.node-version }}
