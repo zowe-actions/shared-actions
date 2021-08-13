@@ -47,8 +47,7 @@ jobs:
         with:
           image: ${{ github.event.inputs.image-name }}
           format: json
-#TODO server-bundle.json is hardcoded in generate-attributions, so change this name later.
-          output: server-bundle.json
+          output: ${{ github.action_path }}/tern.json
 
       - name: Prepare nodejs
         uses: actions/setup-node@v2
@@ -57,7 +56,7 @@ jobs:
           
       - name: Transform Bill
         run: |
-          node ${{ github.action_path }}/../utils/generate-attributions.js
+          node "${{ github.action_path }}/../utils/generate-attributions.js" "${{ github.action_path }}/tern.json"
 
       - uses: actions/upload-artifact@v2
         with:
@@ -79,7 +78,7 @@ jobs:
       - name: Get node source
         if: ${{ github.events.inputs.NODE_VERSION != "" }}
         run: |
-          wget https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}.tar.xz
+          wget "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}.tar.xz"
 
       - uses: zowe-actions/shared-actions/docker-build-local@main
         with:

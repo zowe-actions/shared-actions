@@ -12,7 +12,7 @@ Copyright Contributors to the Zowe Project.
 //layers is first-to-last
 const fs = require('fs');
 
-let parent = JSON.parse(fs.readFileSync('server-bundle.json')).images;
+let parent = JSON.parse(fs.readFileSync(process.argv[2])).images;
 parent = parent[0].image;
 
 let packages = [];
