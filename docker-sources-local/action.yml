@@ -1,90 +1,73 @@
 name: Generate Source Image
 
-on:
-  workflow_dispatch:
-    inputs:
+inputs:
 #Ex https://zowe.jfrog.io/artifactory/docker-snapshot/ompzowe/base/0.0.1-ubi-amd64.users-jack-base-images-67
-      image-name:
-        description: 'The name of a container image in a registry in the form of [my.registry.address:port/]repositoryname/tag'
-        required: true
-      node-version:
-        description: 'Version of nodejs to download source for. If not specified, no source is downloaded'
-        required: false
-        default: ""
-      registry-username:
-        description: 'Username to login to the docker registry where the input image exists'
-        required: false
-      registry-password:
-        description: 'Password to login to the docker registry where the input image exists'
-        required: false
-      redhat-registry:
-        description: 'Username to login to the redhat container registry where the input image exists'
-        required: false
-      redhat-password:
-        description: 'Password to login to the redhat container registry where the input image exists'
+  image-name:
+    description: 'The name of a container image in a registry in the form of [my.registry.address:port/]repositoryname/tag'
+    required: true
+  node-version:
+    description: 'Version of nodejs to download source for. If not specified, no source is downloaded'
+    required: false
+    default: ""
+  registry-username:
+    description: 'Username to login to the docker registry where the input image exists'
+    required: false
+  registry-password:
+    description: 'Password to login to the docker registry where the input image exists'
+    required: false
+  redhat-registry:
+    description: 'Username to login to the redhat container registry where the input image exists'
+    required: false
+  redhat-password:
+    description: 'Password to login to the redhat container registry where the input image exists'
 
 env:
   IMAGE_NAME_FULL_REMOTE: ${{ github.event.input.image-name }}-source
         
-jobs:
-  scan:
-    runs-on: ubuntu-latest
-    timeout-minutes: 120
+runs:
+  using: composite
+  steps:
+    - name: Setup docker env
+      uses: zowe-actions/shared-actions/docker-prepare@main
+      with:
+        registry-user: ${{ github.event.inputs.registry-user }}
+        registry-password: ${{ github.event.inputs.registry-password }}
+        base-directory: ${{github.action_path}}
+        redhat-registry-user:
+        redhat-registry-password:
+            
+    - name: Make Bill of Materials
+      uses: actions/tern-action@v1
+      id: scan
+      with:
+        image: ${{ github.event.inputs.image-name }}
+        format: json
+        output: ${{ github.action_path }}/tern.json
 
-    steps:
-      - name: Setup docker env
-        uses: zowe-actions/shared-actions/docker-prepare@main
-        with:
-          registry-user: ${{ github.event.inputs.registry-user }}
-          registry-password: ${{ github.event.inputs.registry-password }}
-          base-directory: ${{github.action_path}}
-          redhat-registry-user:
-          redhat-registry-password:
+    - name: Prepare nodejs
+      uses: actions/setup-node@v2
+      with:
+        node-version: '12'
           
-      - name: Make Bill of Materials
-        uses: actions/tern-action@v1
-        id: scan
-        with:
-          image: ${{ github.event.inputs.image-name }}
-          format: json
-          output: ${{ github.action_path }}/tern.json
+    - name: Transform Bill
+      run: |
+        node "${{ github.action_path }}/../utils/generate-attributions.js" "${{ github.action_path }}/tern.json"
 
-      - name: Prepare nodejs
-        uses: actions/setup-node@v2
-        with:
-          node-version: '12'
+    - uses: actions/upload-artifact@v2
+      with:
+        name: NOTICE.txt
+        path: ${{ github.action_path }}/../utils/NOTICE.txt
+
+    - name: Copy EPL license for container
+      run: |
+        cp "${{ github.action_path }}/LICENSE" "${{ github.action_path }}/../utils/LICENSE.txt
           
-      - name: Transform Bill
-        run: |
-          node "${{ github.action_path }}/../utils/generate-attributions.js" "${{ github.action_path }}/tern.json"
+    - name: Get node source
+      if: ${{ github.events.inputs.NODE_VERSION != "" }}
+      run: |
+        wget "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}.tar.xz" -o "${{ github.action_path }}/../utils/node-v${NODE_VERSION}.tar.xz"
 
-      - uses: actions/upload-artifact@v2
-        with:
-          name: NOTICE.txt
-          path: NOTICE.txt
-        
-          
-          
-  build:
-    runs-on: ubuntu-latest
-    timeout-minutes: 120
-
-    steps:
-      - uses: actions/download-artifact@v2
-        with:
-          name: NOTICE.txt
-          path: ${{ github.action_path }}/../utils/NOTICE.txt
-
-      - name: Copy EPL license for container
-        run: |
-          cp "${{ github.action_path }}/LICENSE" "${{ github.action_path }}/../utils/LICENSE.txt
-          
-      - name: Get node source
-        if: ${{ github.events.inputs.NODE_VERSION != "" }}
-        run: |
-          wget "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}.tar.xz" -o "${{ github.action_path }}/../utils/node-v${NODE_VERSION}.tar.xz"
-
-      - uses: zowe-actions/shared-actions/docker-build-local@main
-        with:
-          dockerfile: ${{ github.action_path }}/../utils/Dockerfile.sources
-          build-arg-list: IMAGE_NAME=${{ github.event.input.image-name }} NODE_VERSION=${{ github.event.input.node-version }}
+    - uses: zowe-actions/shared-actions/docker-build-local@main
+      with:
+        dockerfile: ${{ github.action_path }}/../utils/Dockerfile.sources
+        build-arg-list: IMAGE_NAME=${{ github.event.input.image-name }} NODE_VERSION=${{ github.event.input.node-version }}
