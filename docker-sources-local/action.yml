@@ -52,6 +52,7 @@ runs:
     - name: Transform Bill
       run: |
         node "${{ github.action_path }}/../utils/generate-attributions.js" "${{ github.action_path }}/tern.json"
+      shell: bash
 
     - uses: actions/upload-artifact@v2
       with:
@@ -61,11 +62,13 @@ runs:
     - name: Copy EPL license for container
       run: |
         cp "${{ github.action_path }}/LICENSE" "${{ github.action_path }}/../utils/LICENSE.txt
-          
+      shell: bash
+        
     - name: Get node source
       if: ${{ github.events.inputs.NODE_VERSION != "" }}
       run: |
         wget "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}.tar.xz" -o "${{ github.action_path }}/../utils/node-v${NODE_VERSION}.tar.xz"
+      shell: bash
 
     - uses: zowe-actions/shared-actions/docker-build-local@main
       with:
