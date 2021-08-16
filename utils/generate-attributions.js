@@ -33,10 +33,10 @@ packagenames.forEach((packagename)=> {
   let package = packages[packagename];
   text+= `\n----------------------------------------\n${package.name} version ${package.version}\n`
   if (package.proj_url) {
-    website +=`\nWebsite: ${package.proj_url}`
+    text +=`\nWebsite: ${package.proj_url}`
   }
   else if (package.download_url) {
-    website +=`\nWebsite: ${package.download_url}`
+    text +=`\nWebsite: ${package.download_url}`
   }
   text+= `\n\nCopyright:\n${package.copyright}\n`
 });
