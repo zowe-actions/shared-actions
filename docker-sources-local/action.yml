@@ -67,7 +67,12 @@ runs:
         cd ternenv
         source bin/activate
         pip install tern
-        tern report -o ${{ github.action_path }}/tern.json -i ${{ inputs.image-name }}
+        echo "${{ github.action_path }}"
+        ls -ltr ${{ github.action_path }}
+        echo "${{ github.workspace }}"
+        ls -ltr ${{ github.workspace }}
+        echo "${{ inputs.image-name }}"
+        tern report -o ${{ github.workspace }}/tern.json -i ${{ inputs.image-name }}
       shell: bash
             
 #    - name: Make Bill of Materials
@@ -85,7 +90,7 @@ runs:
           
     - name: Transform Bill
       run: |
-        node "${{ github.action_path }}/../utils/generate-attributions.js" "${{ github.action_path }}/tern.json"
+        node "${{ github.action_path }}/../utils/generate-attributions.js" "${{ github.workspace }}/tern.json"
       shell: bash
 
 #    - uses: actions/upload-artifact@v2
@@ -95,12 +100,13 @@ runs:
 
     - name: Copy EPL license for container
       run: |
-        cp "${{ github.action_path }}/LICENSE" "${{ github.action_path }}/../utils/LICENSE.txt
+        cp "${{ github.action_path }}/../LICENSE" "${{ github.action_path }}/../utils/LICENSE.txt"
+        cp -r "${{ github.action_path }}/../utils" "${{ github.workspace }}/docker-build-local"
       shell: bash
         
     - name: Get node source
       run: |
-        if [ -n "${{ github.events.inputs.NODE_VERSION }}" ]; then wget "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}.tar.xz" -o "${{ github.action_path }}/../utils/node-v${NODE_VERSION}.tar.xz"; fi
+        if [ -n "${{ inputs.node-version }}" ]; then wget "https://nodejs.org/dist/v${{ inputs.node-version }}/node-v${{ inputs.node-version }}.tar.xz" -o "${{ github.workspace }}/docker-build-local/node-v${{ inputs.node-version }}.tar.xz"; fi
       shell: bash
 
 #    - uses: zowe-actions/shared-actions/docker-build-local@main
