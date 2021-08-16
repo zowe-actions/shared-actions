@@ -62,17 +62,17 @@ runs:
       shell: bash
 
     - name: Make Bill of Materials with Tern
+#      run: |
+#        python3 -m venv ternenv
+#        cd ternenv
+#        source bin/activate
+#        pip install tern
+#        tern report -o ${{ github.workspace }}/tern.json -i ${{ inputs.image-name }}
       run: |
-        python3 -m venv ternenv
-        cd ternenv
-        source bin/activate
-        pip install tern
-        echo "${{ github.action_path }}"
-        ls -ltr ${{ github.action_path }}
-        echo "${{ github.workspace }}"
-        ls -ltr ${{ github.workspace }}
-        echo "${{ inputs.image-name }}"
-        tern report -o ${{ github.workspace }}/tern.json -i ${{ inputs.image-name }}
+        git clone https://github.com/tern-tools/tern.git
+        cd tern
+        docker build -f docker/Dockerfile -t ternd .
+        ./docker_run.sh ternd "report -f json -i ${{ inputs.image-name }}" > ${{ github.workspace }}/tern.json
       shell: bash
             
 #    - name: Make Bill of Materials
