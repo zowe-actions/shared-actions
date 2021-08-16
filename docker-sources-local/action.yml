@@ -56,7 +56,7 @@ runs:
         cd ternenv
         source bin/activate
         pip install tern
-        tern report -o ${{ github.action_path }}/tern.json -i ${{ github.even t.inputs.image-name }}
+        tern report -o ${{ github.action_path }}/tern.json -i ${{ github.event.inputs.image-name }}
       shell: bash
             
 #    - name: Make Bill of Materials
