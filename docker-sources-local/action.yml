@@ -21,12 +21,12 @@ inputs:
     description: 'Version of nodejs to download source for. If not specified, no source is downloaded'
     required: false
     default: ""
-#  registry-username:
-#    description: 'Username to login to the docker registry where the input image exists'
-#    required: false
-#  registry-password:
-#    description: 'Password to login to the docker registry where the input image exists'
-#    required: false
+  registry-user:
+    description: 'Username to login to the docker registry where the input image exists'
+    required: false
+  registry-password:
+    description: 'Password to login to the docker registry where the input image exists'
+    required: false
 #  redhat-registry:
 #    description: 'Username to login to the redhat container registry where the input image exists'
 #    required: false
@@ -44,6 +44,17 @@ runs:
 #        base-directory: ${{ github.action_path }}/../utils
 #        redhat-registry-user: ${{ github.event.inputs.redhat-registry-user }}
 #        redhat-registry-password: ${{ github.event.inputs.redhat-registry-password }}
+
+    - name: Login to registry
+      run: |
+        echo "${{ inputs.registry-password }}" | docker login --username "${{ inputs.registry-user }}" --password-stdin ${{ env.ZOWE_DOCKER_REGISTRY }}
+      shell: bash
+
+    - name: Login to Redhat registry
+      run: |
+        [ -n "${{ inputs.redhat-registry }}" ] && echo "${{ inputs.redhat-registry-password }}" | docker login --username "${{ inputs.redhat-registry-user }}" --password-stdin ${{ inputs.redhat-registry }}
+        exit 0
+      shell: bash
 
     - name: Set tag by env
       run: |
