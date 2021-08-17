@@ -23,17 +23,16 @@ runs:
         rm envvars.env
         mv envvars.env.new envvars.env
         cat envvars.env >> $GITHUB_ENV
-      working-directory: ${{github.action_path}}
+      working-directory: ${{ github.action_path }}
       shell: bash
 
     - name: 'process default branches json' 
       run: |
-        cd ${{github.action_path}} 
         # Default branches pulled from json file
         echo 'DEFAULT_BRANCHES_JSON_TEXT<<EOF' >> $GITHUB_ENV
         cat defaultBranches.json >> $GITHUB_ENV
         echo 'EOF' >> $GITHUB_ENV
-      working-directory: ${{github.action_path}}
+      working-directory: ${{ github.action_path }}
       shell: bash
 
     - name: 'determine current branch or PR'
