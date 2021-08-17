@@ -3,7 +3,12 @@
 This action exports environment variables for the whole workflow to be used. It is suggested to be run at the very top of the workflow.
 
 ## Inputs
-None
+#### `github-user`
+**Required** - github user used to do authentication
+#### `github-password`
+**Required** - github password associated with the above user
+#### `github-email`
+**Required** - github email used to record pushes
 
 ## Outputs
 None
@@ -12,6 +17,10 @@ None
 (global env vars - for subsequent workflow steps to consume)
 - Environment variables as defined in [envvars.env](./envvars.env)
 - JSON files to be transformed to String then exported as environment variables 
+- `CURRENT_BRANCH` the branch where workflow is triggered
+- `GITHUB_USER` github user
+- `GITHUB_PASSWORD` github password
+- `GITHUB_REPOSITORY` the repository where workflow is triggered
 <br /><br />
 
 ## Example usage
