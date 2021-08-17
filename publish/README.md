@@ -8,7 +8,6 @@ The properties of a branch (eg. if it is a release branch or formal release bran
 <br />
 
 ## Inputs
-
 #### `artifacts`
 **Required** - Artifacts to be sent over jFrog Artifactory. Can have multiple line inputs here.
 #### `perform-release`
@@ -24,9 +23,6 @@ None
 <br /><br />
 
 ## Exported environment variables 
-#### `JFROG_UPLOAD_SPEC_JSON`
-The filename of jfrog upload spec json file. It is designed to be placed under project root directory.\
-Note: If there is no artifacts to upload, value of this environment variable will be empty.
 #### `PUBLISH_VERSION`
 The version pattern of the artifact on Artifactory. Will follow this pattern `{version}{prerelease}{branchtag}{buildnumber}{timestamp}`\
 Example: `PUBLISH_VERSION: 1.0.2-my-dev-branch-210-20210810194022`

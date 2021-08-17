@@ -72,7 +72,7 @@ if (isPerformingRelease) {
 // upload artifacts if provided
 if (artifacts && artifacts.length > 0) {
     uploadArtifacts()
-    core.exportVariable('JFROG_UPLOAD_SPEC_JSON',temporaryUploadSpecName)
+    console.log(utils.sh(`jfrog rt upload --spec ${temporaryUploadSpecName}`))
 } else {
     console.warn ('No artifacts to publish.')
 }
