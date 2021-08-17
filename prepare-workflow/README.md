@@ -1,14 +1,14 @@
-# Importing global environment variables
+# Prepare workflow
 
-This action exports environment variables for the whole workflow to be used. It is suggested to be run at the very top of the workflow.
+This action does several things including exports certain environment variables for the whole workflow to be used. It is suggested to be run at the very top of the workflow.
 
 ## Inputs
 #### `github-user`
-**Required** - github user used to do authentication
+**Optional** - github user used to do authentication. Will be exported to env vars if provided.
 #### `github-password`
-**Required** - github password associated with the above user
+**Optional** - github password associated with the above user. Will be exported to env vars if provided.
 #### `github-email`
-**Required** - github email used to record pushes
+**Optional** - github email used to record pushes.
 
 ## Outputs
 None
@@ -18,8 +18,8 @@ None
 - Environment variables as defined in [envvars.env](./envvars.env)
 - JSON files to be transformed to String then exported as environment variables 
 - `CURRENT_BRANCH` the branch where workflow is triggered
-- `GITHUB_USER` github user
-- `GITHUB_PASSWORD` github password
+- `GITHUB_USER` github user if provided as inputs
+- `GITHUB_PASSWORD` github password if provided as inputs
 - `GITHUB_REPOSITORY` the repository where workflow is triggered
 <br /><br />
 
