@@ -58,7 +58,7 @@ runs:
 
     - name: Set tag by env
       run: |
-        echo "IMAGE_NAME_FULL_REMOTE=${{ github.event.inputs.image-name }}-source" >> $GITHUB_ENV
+        echo "IMAGE_NAME_FULL_REMOTE=${{ inputs.image-name }}-source" >> $GITHUB_ENV
       shell: bash
 
     - name: Make Bill of Materials with Tern
