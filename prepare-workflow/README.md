@@ -9,23 +9,57 @@ This action does several things including exports certain environment variables 
 **Optional** - github password associated with the above user. Will be exported to env vars if provided.
 #### `github-email`
 **Optional** - github email used to record pushes.
+#### `manifest`
+**Optional** - Custom manifest file name (in project root directory) to overwrite default manifest exists in project
+#### `extra-init`
+**Optional** - Extra initialization code to run (javascript)
 
 ## Outputs
 None
 
 ## Exported environment variables 
 (global env vars - for subsequent workflow steps to consume)
-- Environment variables as defined in [envvars.env](./envvars.env)
-- JSON files to be transformed to String then exported as environment variables 
-- `CURRENT_BRANCH` the branch where workflow is triggered
-- `GITHUB_USER` github user if provided as inputs
-- `GITHUB_PASSWORD` github password if provided as inputs
-- `GITHUB_REPOSITORY` the repository where workflow is triggered
+#### `envvars.env`
+Environment variables as defined in [envvars.env](./envvars.env)
+#### `DEFAULT_BRANCHES_JSON_TEXT`
+defaultBranches.json transformed to String then exported as environment variable
+#### `CURRENT_BRANCH` 
+the branch where workflow is triggered
+#### `GITHUB_USER` 
+github user if provided as inputs
+#### `GITHUB_PASSWORD` 
+github password if provided as inputs
+#### `GITHUB_REPOSITORY` 
+the repository where workflow is triggered
+#### `MANIFEST_INFO` 
+Selected infomation in manifest file in JSON string format <br />
+Example:
+```
+MANIFEST_INFO: {
+  "name": "my-component",
+  "id": "org.zowe.my-component",
+  "title": "My component",
+  "description": "This is my newly created component"
+}
+```
+#### `IS_RELEASE_BRANCH`
+Flag to indicate if current branch is a release branch, value will be either `true` or `false`.
+#### `IS_FORMAL_RELEASE_BRANCH`
+Flag to indicate if current branch is a formal release branch, value will be either `true` or `false`.
 <br /><br />
 
 ## Example usage
 ```
 uses: zowe-actions/shared-actions/envvars-global@main
+```
+Formating on `extra-init`:
+```
+with:
+  extra-init: |
+    (your javascript code here)
+    //Example:
+    console.log('1234')
+    console.log('5678') 
 ```
 #### Note:
 - If you wish to add more global environment variables, please add them in [envvars.env](./envvars.env)\

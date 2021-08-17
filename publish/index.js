@@ -26,7 +26,6 @@ const artifactoryUploadTargetFile = '{filename}-{publishversion}{fileext}'
 const temporaryUploadSpecName = '.tmp-pipeline-publish-spec.json'
 
 // Gets inputs
-const defaultBranchesJsonText = process.env.DEFAULT_BRANCHES_JSON_TEXT
 const artifacts = core.getMultilineInput('artifacts') //array form
 const performRelease = core.getInput('perform-release')
 const currentBranch = process.env.CURRENT_BRANCH
@@ -36,23 +35,8 @@ const manifestInfo = JSON.parse(process.env.MANIFEST_INFO)
 var publishTargetPath = core.getInput('publish-target-path')
 
 // main
-var isReleaseBranch = false
-var isFormalReleaseBranch = false
-var isPerformingRelease = `${ performRelease ? true : false }`
-var defaultBranchesJsonObject = JSON.parse(defaultBranchesJsonText)
-
+var isPerformingRelease = `${ performRelease == 'true' ? true : false }`
 var matchedBranch = searchDefaultBranches()
-if (matchedBranch) {
-    if (matchedBranch.hasOwnProperty('allowRelease')) {
-        isReleaseBranch = matchedBranch.allowRelease
-    }
-    if (matchedBranch.hasOwnProperty('allowFormalRelease')) {
-        isFormalReleaseBranch = matchedBranch.allowFormalRelease
-    }
-}
-   
-console.log(`Current branch ${currentBranch} is release branch? ${isReleaseBranch}`)
-console.log(`Current branch ${currentBranch} is formal release branch? ${isFormalReleaseBranch}`)
 console.log(`Are we performing a release? ${isPerformingRelease}`)
 
 var macros = new Map()
@@ -76,12 +60,8 @@ if (artifacts && artifacts.length > 0) {
 } else {
     console.warn ('No artifacts to publish.')
 }
-
 core.exportVariable('PUBLISH_VERSION', macros.get('publishversion'))
-core.exportVariable('IS_RELEASE_BRANCH', isReleaseBranch)
-core.exportVariable('IS_FORMAL_RELEASE_BRANCH', isFormalReleaseBranch)
 core.exportVariable('PRE_RELEASE_STRING',preReleaseString)
-
 /* ========================================================================================================*/
 
 /**
@@ -276,7 +256,6 @@ function getBranchTag(branch) {
     }
     return newMacros
 }
-
 
 function searchDefaultBranches() {
     for (var i=0; i < defaultBranchesJsonObject.length; i++) {
