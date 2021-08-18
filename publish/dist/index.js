@@ -8824,6 +8824,7 @@ function getBuildStringMacros() {
     if (!macros.has('repository')) {
         macros.set('repository', release ? REPOSITORY_RELEASE : REPOSITORY_SNAPSHOT)
     }
+    debug(`macros.repository is ${macros.get('repository')}`)
     if (!macros.has('package')) {
         var package = manifestInfo['id'] ? manifestInfo['id'] : ''
         if (package) {
