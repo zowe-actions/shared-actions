@@ -9453,10 +9453,13 @@ var _manifestFormat
 var _manifestObject
 var manifestInfo
 
+// run extra init code first
+utils.sh(`echo "${extraInit}" > extra-init.js`)
+console.log(utils.sh('node extra-init.js && rm extra-init.js'))
+
 var mjson = `${projectRootPath}/manifest.json`
 var myaml = `${projectRootPath}/manifest.yaml`
 var myml = `${projectRootPath}/manifest.yml`
-
 
 // find and check manifest file
 if (manifest) {
@@ -9531,10 +9534,6 @@ console.log(`Current branch ${currentBranch} is release branch? ${isReleaseBranc
 console.log(`Current branch ${currentBranch} is formal release branch? ${isFormalReleaseBranch}`)
 core.exportVariable('IS_RELEASE_BRANCH', isReleaseBranch)
 core.exportVariable('IS_FORMAL_RELEASE_BRANCH', isFormalReleaseBranch)
-
-// run extra init code
-utils.sh(`echo "${extraInit}" > extra-init.js`)
-console.log(utils.sh('node extra-init.js && rm extra-init.js'))
 
 
 function searchDefaultBranches() {

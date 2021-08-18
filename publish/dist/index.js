@@ -8817,7 +8817,7 @@ function uploadArtifacts() {
  * @return               updated macro list.
  */
 function getBuildStringMacros() {
-    var release = isReleaseBranch && isPerformingRelease
+    var release = process.env.IS_RELEASE_BRANCH && isPerformingRelease
 
     if (!macros.has('repository')) {
         macros.set('repository', release ? REPOSITORY_RELEASE : REPOSITORY_SNAPSHOT)
