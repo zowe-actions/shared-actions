@@ -2,33 +2,63 @@ name: "Create docker manifest"
 description: "This action helps to create and publish docker manifest."
 inputs:
   linux-distro:
-    description: "Linux distro name. This should be the second level folder name."
+    description: "Current Linux distro name."
+    required: false
+    default: "ubuntu"
+  primary-linux-distro:
+    description: "Primary Linux distro name. 'latest' will be tagged same as 'latest-<primary-linux-distro>'."
     required: false
     default: "ubuntu"
   cpu-arch-list:
     description: "CPU architecture name list seperated by space."
     required: false
     default: "amd64 s390x"
-  extra-manifests:
-    description: "If we want to create extra manifests when it's a formal release. Use {major}, {minor} and {patch} special variables for special manifest based on current version."
+  snapshot-manifests:
+    description: "If we want to create extra snapshot manifests when it's a formal release. Use {major}, {minor}, {patch}, {version}, {distro} and {branch} special variables for special manifest based on current version."
     required: false
-    default: ""
+    default: "{version}-{distro}.{branch}"
+  release-manifests:
+    description: "If we want to create extra release manifests when it's a formal release. Use {major}, {minor}, {patch}, {version}, {distro} and {branch} special variables for special manifest based on current version."
+    required: false
+    default: "latest-{distro} {major}-{distro} {major}.{minor}-{distro}"
+  primary-release-manifests:
+    description: "If we want to create extra primary release manifests when it's a formal release and 'linux-distro' is 'primary-linux-distro'. Use {major}, {minor}, {patch}, {version}, {distro} and {branch} special variables for special manifest based on current version."
+    required: false
+    default: "latest {major} {major}.{minor} {major}.{minor}.{patch}"
 
 runs:
   using: "composite"
   steps:
-    - name: Define extra manifests for release
+    - name: Define extra manifests
       run: |
-        if [ "${{ inputs.extra-manifests }}" != "" -a "${{ env.IMAGE_RELEASE }}" = "true" ]; then
-          extras=
-          for manifest in ${{ inputs.extra-manifests }}
+        manifests=
+        if [ "${{ inputs.snapshot-manifests }}" != "" -a "${{ env.IMAGE_RELEASE }}" != "true" ]; then
+          for manifest in ${{ inputs.snapshot-manifests }}
           do
-            manifest=$(echo "${manifest}" | sed -e "s/{major}/${{ env.IMAGE_VERSION_MAJOR }}/" -e "s/{minor}/${{ env.IMAGE_VERSION_MINOR }}/" -e "s/{patch}/${{ env.IMAGE_VERSION_PATCH }}/")
-            echo "************ extra manifest: ${manifest}"
-            extras="${extras} ${{ env.ZOWE_DOCKER_REGISTRY }}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${{ env.IMAGE_NAME }}:${manifest}"
+            manifests="${manifests} ${manifest}"
           done
-          echo "IMAGE_MANIFEST_EXTRAS=${extras}" >> $GITHUB_ENV
         fi
+        if [ "${{ inputs.release-manifests }}" != "" -a "${{ env.IMAGE_RELEASE }}" = "true" ]; then
+          for manifest in ${{ inputs.release-manifests }}
+          do
+            manifests="${manifests} ${manifest}"
+          done
+        fi
+        if [ "${{ inputs.primary-release-manifests }}" != "" -a "${{ env.IMAGE_RELEASE }}" = "true" -a "${{ inputs.linux-distro }}" = "${{ inputs.primary-linux-distro}}" ]; then
+          for manifest in ${{ inputs.primary-release-manifests }}
+          do
+            manifests="${manifests} ${manifest}"
+          done
+        fi
+        manifests=$(echo "${manifests}" | sed -e "s/{major}/${{ env.IMAGE_VERSION_MAJOR }}/g" -e "s/{minor}/${{ env.IMAGE_VERSION_MINOR }}/g" -e "s/{patch}/${{ env.IMAGE_VERSION_PATCH }}/g" -e "s/{version}/${{ env.IMAGE_VERSION }}/" -e "s/{distro}/${{ inputs.linux-distro }}/g" -e "s/{branch}/${{ env.BRANCH_NAME }}/g")
+
+        extras=
+        for manifest in ${manifests}
+        do
+          echo "************ extra manifest: ${manifest}"
+          extras="${extras} ${{ env.ZOWE_DOCKER_REGISTRY }}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${{ env.IMAGE_NAME }}:${manifest}"
+        done
+        echo "IMAGE_MANIFEST_EXTRAS=${extras}" >> $GITHUB_ENV
       shell: bash
 
     - name: Create and publish manifests

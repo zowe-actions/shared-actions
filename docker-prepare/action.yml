@@ -69,6 +69,16 @@ runs:
       env:
         GITHUB_PR_ID: ${{ github.event.pull_request.number }}
       shell: bash
+    
+    - name: calcualte branch name
+      run: |
+        BRANCH_NAME=
+        [ -n "${{ github.event.pull_request.number }}" ] && BRANCH_NAME=pr-${{ github.event.pull_request.number }}
+        [ -z "${BRANCH_NAME}" ] && BRANCH_NAME=${GITHUB_REF#refs/heads/}
+        [ "${BRANCH_NAME}" = "master" -o "${BRANCH_NAME}" = "main" ] && BRANCH_NAME=snapshot
+        BRANCH_NAME=$(echo "${BRANCH_NAME}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/\-/g')
+        echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
+      shell: bash
 
     - name: Set image name, version and metadata
       run: |
@@ -91,13 +101,10 @@ runs:
         echo "IMAGE_VERSION_MINOR=${IMAGE_VERSION_MINOR}" >> $GITHUB_ENV
         echo "IMAGE_VERSION_PATCH=${IMAGE_VERSION_PATCH}" >> $GITHUB_ENV
         IMAGE_METADATA=
-        [ -n "${{ github.event.pull_request.number }}" ] && IMAGE_METADATA=pr-${{ github.event.pull_request.number }}
-        [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF#refs/heads/}
-        [ "${IMAGE_METADATA}" = "master" ] && IMAGE_METADATA=snapshot
-        IMAGE_METADATA=$(echo "${IMAGE_METADATA}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/\-/g')
-        [ "${{ inputs.release }}" = "true" ] && IMAGE_METADATA=
-        [ -n "${IMAGE_METADATA}" ] && IMAGE_METADATA=.${IMAGE_METADATA}-${GITHUB_RUN_NUMBER}
-        [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=${IMAGE_METADATA}" >> $GITHUB_ENV
+        if [ "${{ inputs.release }}" != "true" ]; then
+          IMAGE_METADATA=.${{ env.BRANCH_NAME }}-${GITHUB_RUN_NUMBER}
+          echo "IMAGE_METADATA=${IMAGE_METADATA}" >> $GITHUB_ENV
+        fi
         IMAGE_TAG=${IMAGE_VERSION}-${{ inputs.linux-distro }}-${{ inputs.cpu-arch }}${IMAGE_METADATA}
         echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
         echo "IMAGE_NAME_FULL_LOCAL=${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${IMAGE_NAME}:${IMAGE_TAG}" >> $GITHUB_ENV
