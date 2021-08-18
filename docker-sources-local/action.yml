@@ -90,7 +90,8 @@ runs:
           
     - name: Transform Bill
       run: |
-        node "${{ github.action_path }}/../utils/generate-attributions.js" "${{ github.workspace }}/tern.json"
+        cd "${{ github.action_path }}/../utils"
+        node "generate-attributions.js" "${{ github.workspace }}/tern.json"
       shell: bash
 
 #    - uses: actions/upload-artifact@v2
