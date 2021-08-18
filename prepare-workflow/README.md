@@ -32,7 +32,7 @@ github password if provided as inputs
 #### `GITHUB_REPOSITORY` 
 the repository where workflow is triggered
 #### `MANIFEST_INFO` 
-Selected infomation in manifest file in JSON string format <br />
+Selected infomation in manifest file in JSON string format. Only available when manifest is provided or found. <br />
 Example:
 ```
 MANIFEST_INFO: {
@@ -42,6 +42,8 @@ MANIFEST_INFO: {
   "description": "This is my newly created component"
 }
 ```
+#### `P_VERSION`
+Project version number. Only available when manifest is provided or found.
 #### `IS_RELEASE_BRANCH`
 Flag to indicate if current branch is a release branch, value will be either `true` or `false`.
 #### `IS_FORMAL_RELEASE_BRANCH`

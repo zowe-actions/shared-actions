@@ -81,6 +81,7 @@ else {
         });
 
         if (_manifestObject['version']) {
+            core.exportVariable("P_VERSION", _manifestObject['version'])
             manifestInfo['versionTrunks'] = utils.parseSemanticVersion(_manifestObject['version'])
         }
     }
