@@ -50,9 +50,10 @@ runs:
             manifests="${manifests} ${manifest}"
           done
         fi
+        manifests=$(echo "${manifests}" | sed -e "s/{major}/${{ env.IMAGE_VERSION_MAJOR }}/g" -e "s/{minor}/${{ env.IMAGE_VERSION_MINOR }}/g" -e "s/{patch}/${{ env.IMAGE_VERSION_PATCH }}/g" -e "s/{version}/${{ env.IMAGE_VERSION }}/" -e "s/{distro}/${{ inputs.linux-distro }}/g" -e "s/{branch}/${{ env.BRANCH_NAME }}/g")
 
         extras=
-        for manifest in $(echo "${manifests}" | sed -e "s/{major}/${{ env.IMAGE_VERSION_MAJOR }}/g" -e "s/{minor}/${{ env.IMAGE_VERSION_MINOR }}/g" -e "s/{patch}/${{ env.IMAGE_VERSION_PATCH }}/g" -e "s/{version}/${{ env.IMAGE_VERSION }}/ -e "s/{distro}/${{ inputs.linux-distro }}/g" -e "s/{branch}/${{ env.BRANCH_NAME }}/g")
+        for manifest in ${manifests}
         do
           echo "************ extra manifest: ${manifest}"
           extras="${extras} ${{ env.ZOWE_DOCKER_REGISTRY }}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${{ env.IMAGE_NAME }}:${manifest}"
