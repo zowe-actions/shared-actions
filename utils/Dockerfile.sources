@@ -1,11 +1,11 @@
 ARG IMAGE_NAME
-ARG NODE_VERSION
+ARG NODE_SOURCE_VERSION
 
 # In the form of  [my.registry.address:port/]repositoryname/tag
 FROM ${IMAGE_NAME}
 
 COPY NOTICE.txt LICENSE.txt /root/
-COPY node-v${NODE_VERSION}.tar.xz /root/sources/
+COPY node-v${NODE_SOURCE_VERSION}.tar.xz /root/sources/
 
 RUN mkdir -p /root/sources/utils
 COPY get-deb-sources.sh get-dnf-sources.sh /root/sources/utils/
