@@ -45,48 +45,52 @@ if (manifest) {
 }
 
 if (!manifest) {
-    console.error(`Can't find "${projectRootPath}/manifest.json" 
+    console.warn(`Can't find "${projectRootPath}/manifest.json" 
 or "${projectRootPath}/manifest.yaml" 
 or "${projectRootPath}/manifest.yml"
-`)
-}
-console.log(`manifest file: ${manifest}`)
+Manifest processing skipped.
+`)} 
+else {
+    console.log(`manifest file: ${manifest}`)
 
-// determine manifest format
-if (manifest.endsWith('.json')) {
-    _manifestFormat = 'json'
-} else if (manifest.endsWith('.yaml') || manifest.endsWith('.yml')) {
-    _manifestFormat = 'yaml'
-} else {
-    throw new Error(`Unknown manifest format ${manifest}`)
-}
-
-// read file
-if (_manifestFormat == 'json') {
-    _manifestObject = JSON.parse(fs.readFileSync(manifest))
-} else if (_manifestFormat == 'yaml') {
-    _manifestObject = yaml.load(fs.readFileSync(manifest))
-}
-
-// import information we need
-if (_manifestObject) {
-    var manifestInfo = {}
-    var properties = [ 'name','id','title','description','version' ]
-
-    properties.forEach((x, i) => {
-        if (_manifestObject[x]) {
-            manifestInfo[x]=_manifestObject[x]
-        }
-    });
-
-    if (_manifestObject['version']) {
-        manifestInfo['versionTrunks'] = utils.parseSemanticVersion(_manifestObject['version'])
+    // determine manifest format
+    if (manifest.endsWith('.json')) {
+        _manifestFormat = 'json'
+    } else if (manifest.endsWith('.yaml') || manifest.endsWith('.yml')) {
+        _manifestFormat = 'yaml'
+    } else {
+        throw new Error(`Unknown manifest format ${manifest}`)
     }
+
+    // read file
+    if (_manifestFormat == 'json') {
+        _manifestObject = JSON.parse(fs.readFileSync(manifest))
+    } else if (_manifestFormat == 'yaml') {
+        _manifestObject = yaml.load(fs.readFileSync(manifest))
+    }
+
+    // import information we need
+    if (_manifestObject) {
+        var manifestInfo = {}
+        var properties = [ 'name','id','title','description','version' ]
+
+        properties.forEach((x, i) => {
+            if (_manifestObject[x]) {
+                manifestInfo[x]=_manifestObject[x]
+            }
+        });
+
+        if (_manifestObject['version']) {
+            manifestInfo['versionTrunks'] = utils.parseSemanticVersion(_manifestObject['version'])
+        }
+    }
+
+    debug(JSON.stringify(manifestInfo, null, 2))
+    var manifestInfoText = JSON.stringify(manifestInfo, null, 2)
+    core.exportVariable("MANIFEST_INFO", manifestInfoText)
 }
 
-debug(JSON.stringify(manifestInfo, null, 2))
-var manifestInfoText = JSON.stringify(manifestInfo, null, 2)
-core.exportVariable("MANIFEST_INFO", manifestInfoText)
+
 
 // determine branch information
 var isReleaseBranch = false
