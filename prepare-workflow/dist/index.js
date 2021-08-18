@@ -9472,7 +9472,10 @@ if (manifest) {
 }
 
 if (!manifest) {
-    console.err('something wrong with manifest file')
+    console.error(`Can't find "${projectRootPath}/manifest.json" 
+or "${projectRootPath}/manifest.yaml" 
+or "${projectRootPath}/manifest.yml"
+`)
 }
 console.log(`manifest file: ${manifest}`)
 
