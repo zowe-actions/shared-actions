@@ -1,10 +1,8 @@
 name: Generate Source Image
 
-# Note: github actions are not very powerful or good. There doesn't seem to be a good way to
+# Note: github actions are not very powerful. There doesn't seem to be a good way to
 #       enforce that you run other actions before this one. So, please do run these first,
 #       in this order, so that something doesn't blow up:
-#       zowe-actions/shared-actions/docker-prepare@main
-####       actions/tern-action@v1
 #       actions/setup-node@v2
 #       then run:
 #       zowe-actions/shared-actions/docker-build-local@main
@@ -27,23 +25,15 @@ inputs:
   registry-password:
     description: 'Password to login to the docker registry where the input image exists'
     required: false
-#  redhat-registry:
-#    description: 'Username to login to the redhat container registry where the input image exists'
-#    required: false
-#  redhat-password:
-#    description: 'Password to login to the redhat container registry where the input image exists'
+  redhat-registry:
+    description: 'Username to login to the redhat container registry where the input image exists'
+    required: false
+  redhat-password:
+    description: 'Password to login to the redhat container registry where the input image exists'
 
 runs:
   using: composite
   steps:
-#    - name: Setup docker env
-#      uses: zowe-actions/shared-actions/docker-prepare@main
-#      with:
-#        registry-user: ${{ github.event.inputs.registry-user }}
-#        registry-password: ${{ github.event.inputs.registry-password }}
-#        base-directory: ${{ github.action_path }}/../utils
-#        redhat-registry-user: ${{ github.event.inputs.redhat-registry-user }}
-#        redhat-registry-password: ${{ github.event.inputs.redhat-registry-password }}
 
     - name: Login to registry
       run: |
@@ -62,42 +52,18 @@ runs:
       shell: bash
 
     - name: Make Bill of Materials with Tern
-#      run: |
-#        python3 -m venv ternenv
-#        cd ternenv
-#        source bin/activate
-#        pip install tern
-#        tern report -o ${{ github.workspace }}/tern.json -i ${{ inputs.image-name }}
       run: |
         git clone https://github.com/tern-tools/tern.git
         cd tern
         docker build -f docker/Dockerfile -t ternd .
         ./docker_run.sh ternd "report -f json -i ${{ inputs.image-name }}" > ${{ github.workspace }}/tern.json
       shell: bash
-            
-#    - name: Make Bill of Materials
-#      uses: actions/tern-action@v1
-#      id: scan
-#      with:
-#        image: ${{ github.event.inputs.image-name }}
-#        format: json
-#        output: ${{ github.action_path }}/tern.json
-
-#    - name: Prepare nodejs
-#      uses: actions/setup-node@v2
-#      with:
-#        node-version: '12'
           
     - name: Transform Bill
       run: |
         cd "${{ github.action_path }}/../utils"
         node "generate-attributions.js" "${{ github.workspace }}/tern.json"
       shell: bash
-
-#    - uses: actions/upload-artifact@v2
-#      with:
-#        name: NOTICE.txt
-#        path: ${{ github.action_path }}/../utils/NOTICE.txt
 
     - name: Copy EPL license for container
       run: |
@@ -111,7 +77,3 @@ runs:
         if [ -n "${NODE_SOURCE_VERSION}" ]; then wget "https://nodejs.org/dist/v${{ inputs.node-version }}/node-v${{ inputs.node-version }}.tar.xz" -o "${{ github.workspace }}/docker-build-local/node.tar.xz"; fi
       shell: bash
 
-#    - uses: zowe-actions/shared-actions/docker-build-local@main
-#      with:
-#        dockerfile: ${{ github.action_path }}/../utils/Dockerfile.sources
-#        build-arg-list: IMAGE_NAME=${{ github.event.inputs.image-name }} NODE_SOURCE_VERSION=${{ github.event.inputs.node-version }}
