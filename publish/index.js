@@ -118,7 +118,7 @@ function getBuildStringMacros() {
     debug(`If we are doing a release? ${release}`)
 
     if (!macros.has('repository')) {
-        macros.set('repository', release ? REPOSITORY_RELEASE : REPOSITORY_SNAPSHOT)
+        macros.set('repository', release == true ? REPOSITORY_RELEASE : REPOSITORY_SNAPSHOT)
     }
     debug(`macros.repository is ${macros.get('repository')}`)
     if (!macros.has('package')) {
@@ -135,24 +135,24 @@ function getBuildStringMacros() {
         macros.set('version', packageInfo['version'] ? packageInfo['version'] : '')
     }
     if (!macros.has('prerelease')) {
-        macros.set('prerelease', release ? preReleaseString : '')
+        macros.set('prerelease', release == true ? preReleaseString : '')
     }
     if (!macros.has('branchtag')) {
         var tag = getBranchTag()
         if (!tag) {
             tag = ''
         }
-        macros.set('branchtag', release ? '' : tag)
+        macros.set('branchtag', release == true ? '' : tag)
     }
     if (!macros.has('timestamp')) {
-        macros.set('timestamp', release ? '' : utils.dateTimeNow())
+        macros.set('timestamp', release == true ? '' : utils.dateTimeNow())
     }
     if (!macros.has('buildnumber')) {
         var buildNumber = process.env.JFROG_CLI_BUILD_NUMBER
         if (!buildNumber) {
             buildNumber = ''
         }
-        macros.set('buildnumber', release ? '' : buildNumber)
+        macros.set('buildnumber', release == true ? '' : buildNumber)
     }
 
     // some mandatory field checks
