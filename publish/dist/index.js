@@ -8739,6 +8739,7 @@ const manifestInfo = JSON.parse(process.env.MANIFEST_INFO)
 var publishTargetPath = core.getInput('publish-target-path')
 
 // main
+var isReleaseBranch = `${ process.env.IS_RELEASE_BRANCH == 'true' ? true : false }`
 var isPerformingRelease = `${ performRelease == 'true' ? true : false }`
 var matchedBranch = searchDefaultBranches()
 console.log(`Are we performing a release? ${isPerformingRelease}`)
@@ -8817,7 +8818,8 @@ function uploadArtifacts() {
  * @return               updated macro list.
  */
 function getBuildStringMacros() {
-    var release = process.env.IS_RELEASE_BRANCH && isPerformingRelease
+    var release = isReleaseBranch && isPerformingRelease
+    debug(`If we are doing a release? ${release}`)
 
     if (!macros.has('repository')) {
         macros.set('repository', release ? REPOSITORY_RELEASE : REPOSITORY_SNAPSHOT)
