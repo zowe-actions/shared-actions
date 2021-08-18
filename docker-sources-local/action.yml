@@ -107,8 +107,8 @@ runs:
         
     - name: Get node source
       run: |
-        if [ -n "${{ inputs.node-version }}" ]; then wget "https://nodejs.org/dist/v${{ inputs.node-version }}/node-v${{ inputs.node-version }}.tar.xz" -o "${{ github.workspace }}/docker-build-local/node-v${{ inputs.node-version }}.tar.xz"; fi
-        ls -ltr "${{ github.workspace }}/docker-build-local"
+        if [ -n "${{ inputs.node-version }}" ]; then export NODE_VERSION=${{ inputs.node-version }} && echo "NODE_VERSION=${{ inputs.node-version }}" >> $GITHUB_ENV; fi
+        if [ -n "${NODE_VERSION}" ]; then wget "https://nodejs.org/dist/v${{ inputs.node-version }}/node-v${{ inputs.node-version }}.tar.xz" -o "${{ github.workspace }}/docker-build-local/node-v${{ inputs.node-version }}.tar.xz"; fi
       shell: bash
 
 #    - uses: zowe-actions/shared-actions/docker-build-local@main
