@@ -43,7 +43,7 @@ MANIFEST_INFO: {
 }
 ```
 #### `P_VERSION`
-Project version number. Only available when manifest is provided or found.
+Project/package version number. Only available when manifest is provided or found.
 #### `IS_RELEASE_BRANCH`
 Flag to indicate if current branch is a release branch, value will be either `true` or `false`.
 #### `IS_FORMAL_RELEASE_BRANCH`
