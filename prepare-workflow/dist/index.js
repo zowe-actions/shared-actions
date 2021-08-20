@@ -9455,7 +9455,7 @@ var manifestInfo
 
 // run extra init code first
 utils.sh(`echo "${extraInit}" > extra-init.js`)
-debug(`extra-init.js content will be: ${utils.sh('cat extra-init.js')}`)
+debug(`extra-init.js content will be: ${console.log(utils.sh('cat extra-init.js'))}`)
 console.log(utils.sh('node extra-init.js && rm extra-init.js'))
 
 var mjson = `${projectRootPath}/manifest.json`
