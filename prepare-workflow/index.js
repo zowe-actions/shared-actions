@@ -24,9 +24,10 @@ var _manifestObject
 var manifestInfo
 
 // run extra init code first
-utils.sh(`echo "${extraInit}" > extra-init.js`)
-debug('extra-init.js content will be: '+ console.log(utils.sh('cat extra-init.js')))
-console.log(utils.sh('node extra-init.js && rm extra-init.js'))
+utils.sh(`cd ${process.env.RUNNER_TEMP} && echo "${extraInit}" > extra-init.js`)
+debug('extra-init.js content will be: ')
+debug(utils.sh(`cat ${process.env.RUNNER_TEMP}/extra-init.js`))
+console.log(utils.sh(`cd ${process.env.RUNNER_TEMP} && node extra-init.js && rm extra-init.js`))
 
 var mjson = `${projectRootPath}/manifest.json`
 var myaml = `${projectRootPath}/manifest.yaml`
