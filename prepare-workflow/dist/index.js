@@ -9445,8 +9445,8 @@ const debug = Debug('zowe-actions:shared-actions:prepare-workflow')
 const yaml = __nccwpck_require__(9423)
 const fs = __nccwpck_require__(5747)
 
-var manifest = core.getInput('manifest')
-var extraInit = core.getInput('extra-init')
+var manifest = core.getInput('MANIFEST')
+var extraInit = core.getInput('EXTRA_INIT')
 var projectRootPath = process.env.GITHUB_WORKSPACE
 const currentBranch = process.env.CURRENT_BRANCH
 var _manifestFormat
