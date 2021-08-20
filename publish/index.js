@@ -217,7 +217,7 @@ function getBranchTag(branch) {
             // eg. branch=master, matchedBranch = master, tag=snapshot
             // replacedTag = 'master'.replaceAll('master','snapshot') => 'snapshot'
             // finalTag = 'snapshot'
-            var replacedTag = branch.replaceAll(matchedBranch.name, tag)
+            var replacedTag = branch.replace(/`${matchedBranch.name}`/g, tag)
             if (branch != replacedTag) { // check to see if tag is really replaced
                 finalTag = replacedTag
             }
