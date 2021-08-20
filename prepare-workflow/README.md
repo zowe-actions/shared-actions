@@ -52,7 +52,7 @@ Flag to indicate if current branch is a formal release branch, value will be eit
 
 ## Example usage
 ```
-uses: zowe-actions/shared-actions/envvars-global@main
+uses: zowe-actions/shared-actions/prepare-workflow@main
 ```
 Formating on `extra-init`:
 ```
