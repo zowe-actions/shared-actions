@@ -6,7 +6,7 @@ This action does packaging step for Zowe projects. It transfers files over to a 
 ## Inputs
 
 #### `pax-name`
-**Optional** - The name of the pax to be made. If not provided, default will be pulled from PACKAGE_INFO. Refer [here](https://github.com/zowe-actions/shared-actions/tree/main/generic-setup#manifest_info) for more information
+**Optional** - The name of the pax to be made. If not provided, default will be pulled from PACKAGE_INFO. Refer [here](https://github.com/zowe-actions/shared-actions/tree/main/prepare-workflow#manifest_info) for more information
 #### `pax-ssh-host`
 **Optional** - The ssh zOS host for doing packaging. Default `zzow01.zowe.marist.cloud`
 #### `pax-ssh-port`

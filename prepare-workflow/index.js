@@ -11,7 +11,7 @@
 const core = require('@actions/core')
 const { utils } = require('zowe-common')
 const Debug = require('debug')
-const debug = Debug('zowe-actions:shared-actions:generic-setup')
+const debug = Debug('zowe-actions:shared-actions:prepare-workflow')
 const yaml = require('js-yaml')
 const fs = require('fs')
 
@@ -25,6 +25,7 @@ var manifestInfo
 
 // run extra init code first
 utils.sh(`echo "${extraInit}" > extra-init.js`)
+debug(`extra-init.js content will be: ${utils.sh('cat extra-init.js')}`)
 console.log(utils.sh('node extra-init.js && rm extra-init.js'))
 
 var mjson = `${projectRootPath}/manifest.json`

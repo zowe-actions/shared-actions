@@ -9441,7 +9441,7 @@ var __webpack_exports__ = {};
 const core = __nccwpck_require__(4562)
 const { utils } = __nccwpck_require__(386)
 const Debug = __nccwpck_require__(8797)
-const debug = Debug('zowe-actions:shared-actions:generic-setup')
+const debug = Debug('zowe-actions:shared-actions:prepare-workflow')
 const yaml = __nccwpck_require__(9423)
 const fs = __nccwpck_require__(5747)
 
@@ -9455,6 +9455,7 @@ var manifestInfo
 
 // run extra init code first
 utils.sh(`echo "${extraInit}" > extra-init.js`)
+debug(`extra-init.js content will be: ${utils.sh('cat extra-init.js')}`)
 console.log(utils.sh('node extra-init.js && rm extra-init.js'))
 
 var mjson = `${projectRootPath}/manifest.json`
