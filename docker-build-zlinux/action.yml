@@ -85,10 +85,12 @@ runs:
         cd "${{ env.ZLINUX_BUILD_WORKSPACE }}"
         tar zxf build-workspace.tar.gz
         rm build-workspace.tar.gz
-        echo "************ workspace prepared:"
+        echo "************ workspace prepared (root):"
+        ls -la
+        echo "************ workspace prepared (${{ env.IMAGE_DIRECTORY }}):"
+        cd ${{ env.IMAGE_DIRECTORY }}
         ls -la
         echo "************ build image"
-        cd ${{ env.IMAGE_DIRECTORY }}
         [ -n "${{ inputs.redhat-registry }}" ] && echo "${{ inputs.redhat-registry-password }}" | sudo docker login --username "${{ inputs.redhat-registry-user }}" --password-stdin ${{ inputs.redhat-registry }}
         sudo docker build --no-cache=true --pull=true ${{ env.IMAGE_BUILD_ARGS }} -f ${{ inputs.dockerfile }} -t ${{ env.IMAGE_NAME_FULL_LOCAL }} .
         sudo docker save -o zlinux-image.tar ${{ env.IMAGE_NAME_FULL_LOCAL }}
