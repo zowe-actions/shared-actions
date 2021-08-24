@@ -84,6 +84,7 @@ runs:
 
     - name: Set image name, version and metadata
       run: |
+        set +e
         echo ">>>>>> Set image name, version and metadata"
         [ "${{ inputs.release }}" = "true" ] && echo "IMAGE_RELEASE=true" >> $GITHUB_ENV
         [ "${{ inputs.release }}" = "true" ] && ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_RELEASE }}
