@@ -72,16 +72,20 @@ runs:
     
     - name: calcualte branch name
       run: |
+        echo ">>>>>> calcualte branch name"
         BRANCH_NAME=
         [ -n "${{ github.event.pull_request.number }}" ] && BRANCH_NAME=pr-${{ github.event.pull_request.number }}
         [ -z "${BRANCH_NAME}" ] && BRANCH_NAME=${GITHUB_REF#refs/heads/}
         [ "${BRANCH_NAME}" = "master" -o "${BRANCH_NAME}" = "main" ] && BRANCH_NAME=snapshot
         BRANCH_NAME=$(echo "${BRANCH_NAME}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/\-/g')
         echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
+        echo "- done with BRANCH_NAME=${BRANCH_NAME}"
       shell: bash
 
     - name: Set image name, version and metadata
       run: |
+        set +e
+        echo ">>>>>> Set image name, version and metadata"
         [ "${{ inputs.release }}" = "true" ] && echo "IMAGE_RELEASE=true" >> $GITHUB_ENV
         [ "${{ inputs.release }}" = "true" ] && ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_RELEASE }}
         [ "${{ inputs.release }}" != "true" ] && ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_SNAPSHOT }}
@@ -111,16 +115,33 @@ runs:
         echo "IMAGE_NAME_FULL_REMOTE=${ZOWE_DOCKER_REGISTRY}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${IMAGE_NAME}:${IMAGE_TAG}" >> $GITHUB_ENV
         echo "IMAGE_MANIFEST_AMEND=${ZOWE_DOCKER_REGISTRY}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${IMAGE_NAME}:${IMAGE_VERSION}-${{ inputs.linux-distro }}-{ARCH}${IMAGE_METADATA}" >> $GITHUB_ENV
         echo "IMAGE_MANIFEST=${ZOWE_DOCKER_REGISTRY}/${{ env.DEFAULT_ZOWE_IMAGE_PREFIX }}${IMAGE_NAME}:${IMAGE_VERSION}-${{ inputs.linux-distro }}${IMAGE_METADATA}" >> $GITHUB_ENV
+        echo "- done with"
+        echo "  - IMAGE_DIRECTORY=${IMAGE_DIRECTORY}"
+        echo "  - IMAGE_NAME=${IMAGE_NAME}"
+        echo "  - IMAGE_VERSION=${IMAGE_VERSION}"
+        echo "  - IMAGE_VERSION_MAJOR=${IMAGE_VERSION_MAJOR}"
+        echo "  - IMAGE_VERSION_MINOR=${IMAGE_VERSION_MINOR}"
+        echo "  - IMAGE_VERSION_PATCH=${IMAGE_VERSION_PATCH}"
+        echo "  - IMAGE_METADATA=${IMAGE_METADATA}"
+        echo "  - IMAGE_TAG=${IMAGE_TAG}"
+        echo "  - IMAGE_NAME_FULL_LOCAL=${IMAGE_NAME_FULL_LOCAL}"
+        echo "  - IMAGE_NAME_FULL_REMOTE=${IMAGE_NAME_FULL_REMOTE}"
+        echo "  - IMAGE_MANIFEST_AMEND=${IMAGE_MANIFEST_AMEND}"
+        echo "  - IMAGE_MANIFEST=${IMAGE_MANIFEST}"
         exit 0
       shell: bash
 
     - name: Login to registry
       run: |
+        echo ">>>>>> Login to ${{ env.ZOWE_DOCKER_REGISTRY }}"
         echo "${{ inputs.registry-password }}" | docker login --username "${{ inputs.registry-user }}" --password-stdin ${{ env.ZOWE_DOCKER_REGISTRY }}
       shell: bash
 
     - name: Login to Redhat registry
       run: |
-        [ -n "${{ inputs.redhat-registry }}" ] && echo "${{ inputs.redhat-registry-password }}" | docker login --username "${{ inputs.redhat-registry-user }}" --password-stdin ${{ inputs.redhat-registry }}
+        if [ -n "${{ inputs.redhat-registry }}" ]; then
+          echo ">>>>>> Login to ${{ inputs.redhat-registry }}"
+          echo "${{ inputs.redhat-registry-password }}" | docker login --username "${{ inputs.redhat-registry-user }}" --password-stdin ${{ inputs.redhat-registry }}
+        fi
         exit 0
       shell: bash
