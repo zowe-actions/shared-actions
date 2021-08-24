@@ -89,7 +89,7 @@ runs:
         ls -la
         echo "************ workspace prepared (${{ env.IMAGE_DIRECTORY }}):"
         cd ${{ env.IMAGE_DIRECTORY }}
-        ls -la
+        find . -maxdepth 2
         echo "************ build image"
         [ -n "${{ inputs.redhat-registry }}" ] && echo "${{ inputs.redhat-registry-password }}" | sudo docker login --username "${{ inputs.redhat-registry-user }}" --password-stdin ${{ inputs.redhat-registry }}
         sudo docker build --no-cache=true --pull=true ${{ env.IMAGE_BUILD_ARGS }} -f ${{ inputs.dockerfile }} -t ${{ env.IMAGE_NAME_FULL_LOCAL }} .
