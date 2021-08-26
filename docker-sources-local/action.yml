@@ -1,0 +1,79 @@
+name: Generate Source Image
+
+# Note: github actions are not very powerful. There doesn't seem to be a good way to
+#       enforce that you run other actions before this one. So, please do run these first,
+#       in this order, so that something doesn't blow up:
+#       actions/setup-node@v2
+#       then run:
+#       zowe-actions/shared-actions/docker-build-local@main
+#       with args:
+#        dockerfile: ${{ github.action_path }}/../utils/Dockerfile.sources
+#        build-arg-list: IMAGE_NAME=${{ github.event.inputs.image-name }} NODE_SOURCE_VERSION=${{ github.event.inputs.node-version }}  
+
+inputs:
+#Ex https://zowe.jfrog.io/artifactory/docker-snapshot/ompzowe/base/0.0.1-ubi-amd64.users-jack-base-images-67
+  image-name:
+    description: 'The name of a container image in a registry in the form of [my.registry.address:port/]repositoryname/tag'
+    required: true
+  node-version:
+    description: 'Version of nodejs to download source for. If not specified, no source is downloaded'
+    required: false
+    default: ""
+  registry-user:
+    description: 'Username to login to the docker registry where the input image exists'
+    required: false
+  registry-password:
+    description: 'Password to login to the docker registry where the input image exists'
+    required: false
+  redhat-registry:
+    description: 'Username to login to the redhat container registry where the input image exists'
+    required: false
+  redhat-password:
+    description: 'Password to login to the redhat container registry where the input image exists'
+
+runs:
+  using: composite
+  steps:
+
+    - name: Login to registry
+      run: |
+        echo "${{ inputs.registry-password }}" | docker login --username "${{ inputs.registry-user }}" --password-stdin ${{ env.ZOWE_DOCKER_REGISTRY }}
+      shell: bash
+
+    - name: Login to Redhat registry
+      run: |
+        [ -n "${{ inputs.redhat-registry }}" ] && echo "${{ inputs.redhat-registry-password }}" | docker login --username "${{ inputs.redhat-registry-user }}" --password-stdin ${{ inputs.redhat-registry }}
+        exit 0
+      shell: bash
+
+    - name: Set tag by env
+      run: |
+        echo "IMAGE_NAME_FULL_REMOTE=${{ inputs.image-name }}-source" >> $GITHUB_ENV
+      shell: bash
+
+    - name: Make Bill of Materials with Tern
+      run: |
+        git clone https://github.com/tern-tools/tern.git
+        cd tern
+        docker build -f docker/Dockerfile -t ternd .
+        ./docker_run.sh ternd "report -f json -i ${{ inputs.image-name }}" > ${{ github.workspace }}/tern.json
+      shell: bash
+          
+    - name: Transform Bill
+      run: |
+        cd "${{ github.action_path }}/../utils"
+        node "generate-attributions.js" "${{ github.workspace }}/tern.json"
+      shell: bash
+
+    - name: Copy EPL license for container
+      run: |
+        cp "${{ github.action_path }}/../LICENSE" "${{ github.action_path }}/../utils/LICENSE.txt"
+        cp -r "${{ github.action_path }}/../utils" "${{ github.workspace }}/docker-build-local"
+      shell: bash
+        
+    - name: Get node source
+      run: |
+        if [ -n "${{ inputs.node-version }}" ]; then export NODE_SOURCE_VERSION=${{ inputs.node-version }} && echo "NODE_SOURCE_VERSION=${{ inputs.node-version }}" >> $GITHUB_ENV; fi
+        if [ -n "${NODE_SOURCE_VERSION}" ]; then wget "https://nodejs.org/dist/v${{ inputs.node-version }}/node-v${{ inputs.node-version }}.tar.xz" -o "${{ github.workspace }}/docker-build-local/node.tar.xz"; fi
+      shell: bash
+

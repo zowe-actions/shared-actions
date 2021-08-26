@@ -1,0 +1,14 @@
+ARG IMAGE_NAME
+
+# In the form of  [my.registry.address:port/]repositoryname/tag
+FROM ${IMAGE_NAME}
+
+COPY NOTICE.txt LICENSE.txt /root/
+COPY node.tar.xz /root/sources/
+
+RUN mkdir -p /root/sources/utils
+COPY get-deb-sources.sh get-dnf-sources.sh /root/sources/utils/
+RUN chmod +x /root/sources/utils/*.sh
+RUN bash -c "type apt>/dev/null; if [ $? == '0' ]; then /root/sources/utils/get-deb-sources.sh; else /root/sources/utils/get-dnf-sources.sh; fi"
+
+
