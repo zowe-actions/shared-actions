@@ -3,7 +3,7 @@ description: "Publish to artifactory for all project builds"
 inputs:
   artifacts:
     description: 'artifacts to upload, also support multiple line inputs'
-    required: true
+    required: false
   perform-release:
     description: 'flag to perform steps to release'
     required: true

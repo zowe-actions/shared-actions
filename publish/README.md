@@ -7,7 +7,7 @@ Then utilize this newly created JSON file for jFrog to consume, finally does upl
 
 ## Inputs
 #### `artifacts`
-**Required** - Artifacts to be sent over jFrog Artifactory. Can have multiple line inputs here.
+**Optional** - Artifacts to be sent over jFrog Artifactory. Can have multiple line inputs here.
 #### `perform-release`
 **Required** - The flag to indicate if doing performing release
 #### `pre-release-string`
@@ -33,7 +33,6 @@ This will be the same as input `pre-release-string`. If pre-release string input
 ```
 uses: zowe-actions/shared-actions/publish@main
 with:
-  artifacts: path/to/artifact
   perform-release: false
 ```
 To have multiline input for artifacts:
