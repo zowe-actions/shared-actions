@@ -8822,7 +8822,7 @@ function getBuildStringMacros() {
     debug(`If we are doing a release? ${release}`)
 
     if (!macros.has('repository')) {
-        macros.set('repository', release == true ? REPOSITORY_RELEASE : REPOSITORY_SNAPSHOT)
+        macros.set('repository', release ? REPOSITORY_RELEASE : REPOSITORY_SNAPSHOT)
     }
     debug(`macros.repository is ${macros.get('repository')}`)
     if (!macros.has('package')) {
@@ -8921,11 +8921,11 @@ function getBranchTag(branch) {
             // eg. branch=master, matchedBranch = master, tag=snapshot
             // replacedTag = 'master'.replace('master','snapshot') => 'snapshot'
             // finalTag = 'snapshot'
-            var replacedTag = branch.replace(/`${matchedBranch.name}`/g, tag)
+            var regex = new RegExp(`#${matchedBranch.name}#`,'g')
+            var replacedTag = branch.replace(regex, tag)
             if (branch != replacedTag) { // check to see if tag is really replaced
                 finalTag = replacedTag
             }
-            
         }
     }
     finalTag = utils.sanitizeBranchName(finalTag)
