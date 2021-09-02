@@ -218,7 +218,7 @@ function getBranchTag(branch) {
             // eg. branch=master, matchedBranch = master, tag=snapshot
             // replacedTag = 'master'.replace('master','snapshot') => 'snapshot'
             // finalTag = 'snapshot'
-            var regex = new RegExp(`#${matchedBranch.name}#`,'g')
+            var regex = new RegExp(`${matchedBranch.name}`,'g')
             var replacedTag = branch.replace(regex, tag)
             debug(`In getBranchTag(), replacedTag is ${replacedTag}`)
             if (branch != replacedTag) { // check to see if tag is really replaced
