@@ -215,15 +215,18 @@ function getBranchTag(branch) {
         var tag = matchedBranch.releaseTag
         if (tag) { // has release tag defined
             // eg. branch=master, matchedBranch = master, tag=snapshot
-            // replacedTag = 'master'.replaceAll('master','snapshot') => 'snapshot'
+            // replacedTag = 'master'.replace('master','snapshot') => 'snapshot'
             // finalTag = 'snapshot'
             var replacedTag = branch.replace(/`${matchedBranch.name}`/g, tag)
             if (branch != replacedTag) { // check to see if tag is really replaced
                 finalTag = replacedTag
             }
+            
         }
     }
-    return utils.sanitizeBranchName(finalTag)
+    finalTag = utils.sanitizeBranchName(finalTag)
+    debug(`getBranchTag() returns ${finalTag}`)
+    return finalTag
 }
 
 
