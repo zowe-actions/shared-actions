@@ -135,24 +135,24 @@ function getBuildStringMacros() {
         macros.set('version', packageInfo['version'] ? packageInfo['version'] : '')
     }
     if (!macros.has('prerelease')) {
-        macros.set('prerelease', release == true ? preReleaseString : '')
+        macros.set('prerelease', release ? preReleaseString : '')
     }
     if (!macros.has('branchtag')) {
         var tag = getBranchTag()
         if (!tag) {
             tag = ''
         }
-        macros.set('branchtag', release == true ? '' : tag)
+        macros.set('branchtag', release ? '' : tag)
     }
     if (!macros.has('timestamp')) {
-        macros.set('timestamp', release == true ? '' : utils.dateTimeNow())
+        macros.set('timestamp', release ? '' : utils.dateTimeNow())
     }
     if (!macros.has('buildnumber')) {
         var buildNumber = process.env.JFROG_CLI_BUILD_NUMBER
         if (!buildNumber) {
             buildNumber = ''
         }
-        macros.set('buildnumber', release == true ? '' : buildNumber)
+        macros.set('buildnumber', release ? '' : buildNumber)
     }
 
     // some mandatory field checks
@@ -213,15 +213,18 @@ function getBranchTag(branch) {
     var finalTag = branch ? branch : DEFAULT_BRANCH_RELEASE_TAG
     if (branch && matchedBranch) {
         var tag = matchedBranch.releaseTag
+        debug(`In getBranchTag(), tag is ${tag}`)
         if (tag) { // has release tag defined
             // eg. branch=master, matchedBranch = master, tag=snapshot
             // replacedTag = 'master'.replace('master','snapshot') => 'snapshot'
             // finalTag = 'snapshot'
             var regex = new RegExp(`#${matchedBranch.name}#`,'g')
             var replacedTag = branch.replace(regex, tag)
+            debug(`In getBranchTag(), replacedTag is ${replacedTag}`)
             if (branch != replacedTag) { // check to see if tag is really replaced
                 finalTag = replacedTag
             }
+            debug(`In getBranchTag(), finalTag is ${finalTag}`)
         }
     }
     finalTag = utils.sanitizeBranchName(finalTag)
