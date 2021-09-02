@@ -5367,7 +5367,7 @@ else {
  * creating a tag {@code "v1.2.3-rc1"}.
  */
 function tagBranch() {
-    var tag = `${githubTagPrefix ? githubTagPrefix + '-' : ''}v${process.env.PUBLISH_VERSION}`
+    var tag = `${githubTagPrefix ? githubTagPrefix + '-' : ''}v${process.env.P_VERSION}`
     console.log(`Creating tag "${tag}" at "${process.env.GITHUB_REPOSITORY}:${process.env.CURRENT_BRANCH}`)
 
     github.tag(tag)
