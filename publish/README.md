@@ -1,8 +1,8 @@
 # Publishing Zowe projects
 
 This action does publishing step for Zowe projects.\
-Based on if current branch is a release branch, or formal release branch, if current workflow is doing a 'PERFORM RELEASE', this action make decisions and finally produce a JSON file (in root project directory) that contains upload specs for jFrog Artifactory. \
-Then utilize this newly created JSON file for jFrog to consume, finally does uploading.
+Based on if current branch is a release branch, or formal release branch, and if current workflow is doing a 'PERFORM RELEASE', this action makes decisions and finally produce a JSON file (in root project directory) that contains upload specs for jFrog Artifactory. \
+Then utilize this newly created JSON file for jFrog to consume, finally does uploading. Also supports upload customization to zowe artifactory.
 <br />
 
 ## Inputs
@@ -15,7 +15,7 @@ Then utilize this newly created JSON file for jFrog to consume, finally does upl
 #### `publish-target-path-pattern`
 **Optional** - Artifact publishing file pattern. Default `{repository}/{package}{subproject}/{version}{branchtag-uc}/`. This parameter can be customized to any format
 #### `publish-target-file-pattern`
-**Optional** - format for the file name published to artifactory. Default `{filename}-{publishversion}{fileext}`. This parameter can be customized to any format
+**Optional** - Format for the file name published to artifactory. Default format for zowe artifacts: `{filename}-{publishversion}{fileext}`. This parameter can be customized to any format
 <br /><br />
 
 ## Outputs
@@ -50,7 +50,7 @@ uses: zowe-actions/shared-actions/publish@main
       path/to/file1
       path/to/file2.json
       another/path/file3.txt
-    publish-target-path-pattern: 'com/example/my/dir'
+    publish-target-path-pattern: 'com/example/my/dir/'
     publish-target-file-pattern: '{filename}{fileext}'
 ```
 To enable debug mode, append
