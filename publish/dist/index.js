@@ -8990,11 +8990,13 @@ function getBranchTag(branch) {
 }
 
 function searchDefaultBranches() {
-    var defaultBranchesJsonObject = JSON.parse(process.env.DEFAULT_BRANCHES_JSON_TEXT)
-    for (var i=0; i < defaultBranchesJsonObject.length; i++) {
-        var branch = defaultBranchesJsonObject[i]
-        if (currentBranch === branch.name || currentBranch.match(branch.name)) {
-            return branch
+    if (process.env.DEFAULT_BRANCHES_JSON_TEXT) {
+        var defaultBranchesJsonObject = JSON.parse(process.env.DEFAULT_BRANCHES_JSON_TEXT)
+        for (var i=0; i < defaultBranchesJsonObject.length; i++) {
+            var branch = defaultBranchesJsonObject[i]
+            if (currentBranch === branch.name || currentBranch.match(branch.name)) {
+                return branch
+            }
         }
     }
 }
