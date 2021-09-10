@@ -8725,8 +8725,6 @@ const REPOSITORY_SNAPSHOT = 'libs-snapshot-local'
 const REPOSITORY_RELEASE = 'libs-release-local'
 const DEFAULT_BRANCH_RELEASE_TAG = 'snapshot'
 const publishTargetVersion = '{version}{prerelease}{branchtag}{buildnumber}{timestamp}'
-const defaultPublishTargetPath = '{repository}/{package}{subproject}/{version}{branchtag-uc}/'
-const artifactoryUploadTargetFile = '{filename}-{publishversion}{fileext}'
 const temporaryUploadSpecName = '.tmp-pipeline-publish-spec.json'
 
 // Gets inputs
@@ -8736,7 +8734,8 @@ const currentBranch = process.env.CURRENT_BRANCH
 const preReleaseString = core.getInput('pre-release-string')
 const packageInfo = JSON.parse(process.env.PACKAGE_INFO)
 const manifestInfo = JSON.parse(process.env.MANIFEST_INFO)
-var publishTargetPath = core.getInput('publish-target-path')
+var publishTargetPathPattern = core.getInput('publish-target-path-pattern')
+var publishTargetFilePattern = core.getInput('publish-target-file-pattern')
 
 // main
 var isReleaseBranch = `${ process.env.IS_RELEASE_BRANCH == 'true' ? true : false }`
@@ -8776,11 +8775,8 @@ core.exportVariable('PRE_RELEASE_STRING',preReleaseString)
  * is defined, those artifacts will be uploaded to artifactory with this method.</p>
  */
 function uploadArtifacts() {
-    if (!publishTargetPath) {
-        publishTargetPath = defaultPublishTargetPath
-    }
-    if (!publishTargetPath.endsWith('/')) {
-        publishTargetPath += '/'
+    if (!publishTargetPathPattern.endsWith('/')) {
+        publishTargetPathPattern += '/'
     }
 
     var uploadSpec = {"files":[]}
@@ -8790,7 +8786,7 @@ function uploadArtifacts() {
         utils.fileExists(fullFilePath)
         var files = glob.sync(fullFilePath)
         files.forEach( file => {
-            var targetFileFull = publishTargetPath + artifactoryUploadTargetFile
+            var targetFileFull = publishTargetPathPattern + publishTargetFilePattern
             var newMacros = extractArtifactoryUploadTargetFileMacros(file)
             debug('After extractArtifactoryUploadTargetFileMacros():')
             if (process.env.DEBUG) {
