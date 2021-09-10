@@ -7,13 +7,15 @@ Then utilize this newly created JSON file for jFrog to consume, finally does upl
 
 ## Inputs
 #### `artifacts`
-**Optional** - Artifacts to be sent over jFrog Artifactory. Can have multiple line inputs here.
+**Optional** - Artifacts to be sent over jFrog Artifactory. Can have multiple line inputs here (see example)
 #### `perform-release`
-**Required** - The flag to indicate if doing performing release
+**Optional** - The flag to indicate if doing performing release. If not provided, default to false.
 #### `pre-release-string`
 **Optional** - pre-release string
-#### `publish-target-path`
-**Optional** - Artifact publishing file pattern. Default `{repository}/{package}{subproject}/{version}{branchtag-uc}/`
+#### `publish-target-path-pattern`
+**Optional** - Artifact publishing file pattern. Default `{repository}/{package}{subproject}/{version}{branchtag-uc}/`. This parameter can be customized to any format
+#### `publish-target-file-pattern`
+**Optional** - format for the file name published to artifactory. Default `{filename}-{publishversion}{fileext}`. This parameter can be customized to any format
 <br /><br />
 
 ## Outputs
@@ -32,8 +34,6 @@ This will be the same as input `pre-release-string`. If pre-release string input
 (this is a minimal set of inputs you need to provide)
 ```
 uses: zowe-actions/shared-actions/publish@main
-with:
-  perform-release: false
 ```
 To have multiline input for artifacts:
 ```
@@ -41,6 +41,17 @@ with:
   artifacts: |
     path/to/artifact1
     path/to/artifact2
+```
+You can also customize artifactory upload target path and file, as an example:
+```
+uses: zowe-actions/shared-actions/publish@main
+  with:
+    artifacts: |
+      path/to/file1
+      path/to/file2.json
+      another/path/file3.txt
+    publish-target-path-pattern: 'com/example/my/dir'
+    publish-target-file-pattern: '{filename}{fileext}'
 ```
 To enable debug mode, append
 ```

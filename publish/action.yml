@@ -6,14 +6,18 @@ inputs:
     required: false
   perform-release:
     description: 'flag to perform steps to release'
-    required: true
+    required: false
   pre-release-string:
     description: 'pre-release string'
     required: false
-  publish-target-path:
+  publish-target-path-pattern:
     description: path format for publishing to artifactory
     required: false
     default: '{repository}/{package}{subproject}/{version}{branchtag-uc}/'
+  publish-target-file-pattern:
+    description: format for the file name published to artifactory
+    required: false
+    default: '{filename}-{publishversion}{fileext}'
 
 runs:
   using: 'node12'

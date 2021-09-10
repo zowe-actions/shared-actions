@@ -21,18 +21,24 @@ const REPOSITORY_SNAPSHOT = 'libs-snapshot-local'
 const REPOSITORY_RELEASE = 'libs-release-local'
 const DEFAULT_BRANCH_RELEASE_TAG = 'snapshot'
 const publishTargetVersion = '{version}{prerelease}{branchtag}{buildnumber}{timestamp}'
-const defaultPublishTargetPath = '{repository}/{package}{subproject}/{version}{branchtag-uc}/'
-const artifactoryUploadTargetFile = '{filename}-{publishversion}{fileext}'
 const temporaryUploadSpecName = '.tmp-pipeline-publish-spec.json'
+const defaultPublishTargetPathPattern = '{repository}/{package}{subproject}/{version}{branchtag-uc}/'
+const defaultPublishTargetFilePattern = '{filename}-{publishversion}{fileext}'
 
 // Gets inputs
 const artifacts = core.getMultilineInput('artifacts') //array form
 const performRelease = core.getInput('perform-release')
 const currentBranch = process.env.CURRENT_BRANCH
 const preReleaseString = core.getInput('pre-release-string')
-const packageInfo = JSON.parse(process.env.PACKAGE_INFO)
-const manifestInfo = JSON.parse(process.env.MANIFEST_INFO)
-var publishTargetPath = core.getInput('publish-target-path')
+const packageInfo = process.env.PACKAGE_INFO ? JSON.parse(process.env.PACKAGE_INFO) : ''
+const manifestInfo = process.env.MANIFEST_INFO ? JSON.parse(process.env.MANIFEST_INFO) : ''
+var publishTargetPathPattern = core.getInput('publish-target-path-pattern')
+var publishTargetFilePattern = core.getInput('publish-target-file-pattern')
+
+customUpload = false
+if (publishTargetPathPattern != defaultPublishTargetPathPattern || publishTargetFilePattern != defaultPublishTargetFilePattern) {
+    customUpload = true
+}
 
 // main
 var isReleaseBranch = `${ process.env.IS_RELEASE_BRANCH == 'true' ? true : false }`
@@ -72,11 +78,8 @@ core.exportVariable('PRE_RELEASE_STRING',preReleaseString)
  * is defined, those artifacts will be uploaded to artifactory with this method.</p>
  */
 function uploadArtifacts() {
-    if (!publishTargetPath) {
-        publishTargetPath = defaultPublishTargetPath
-    }
-    if (!publishTargetPath.endsWith('/')) {
-        publishTargetPath += '/'
+    if (!publishTargetPathPattern.endsWith('/')) {
+        publishTargetPathPattern += '/'
     }
 
     var uploadSpec = {"files":[]}
@@ -86,7 +89,7 @@ function uploadArtifacts() {
         utils.fileExists(fullFilePath)
         var files = glob.sync(fullFilePath)
         files.forEach( file => {
-            var targetFileFull = publishTargetPath + artifactoryUploadTargetFile
+            var targetFileFull = publishTargetPathPattern + publishTargetFilePattern
             var newMacros = extractArtifactoryUploadTargetFileMacros(file)
             debug('After extractArtifactoryUploadTargetFileMacros():')
             if (process.env.DEBUG) {
@@ -178,8 +181,8 @@ function getBuildStringMacros() {
         }
     }
 
-    // some mandatory field checks
-    if (!macros.get('package') || !macros.get('version')) {
+    // some mandatory field checks only applicable to regular zowe projects, not custom uploads
+    if (!customUpload && (!macros.get('package') || !macros.get('version'))) {
         throw new Error(`Package name and version must be set: package:${macros.get('package') ? macros.get('package') : '>>MISSING<<'}; version:${macros.get('version') ? macros.get('version') : '>>MISSING<<'}`)
     }
 
@@ -290,11 +293,13 @@ function getBranchTag(branch) {
 }
 
 function searchDefaultBranches() {
-    var defaultBranchesJsonObject = JSON.parse(process.env.DEFAULT_BRANCHES_JSON_TEXT)
-    for (var i=0; i < defaultBranchesJsonObject.length; i++) {
-        var branch = defaultBranchesJsonObject[i]
-        if (currentBranch === branch.name || currentBranch.match(branch.name)) {
-            return branch
+    if (process.env.DEFAULT_BRANCHES_JSON_TEXT) {
+        var defaultBranchesJsonObject = JSON.parse(process.env.DEFAULT_BRANCHES_JSON_TEXT)
+        for (var i=0; i < defaultBranchesJsonObject.length; i++) {
+            var branch = defaultBranchesJsonObject[i]
+            if (currentBranch === branch.name || currentBranch.match(branch.name)) {
+                return branch
+            }
         }
     }
 }
