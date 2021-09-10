@@ -22,6 +22,8 @@ const REPOSITORY_RELEASE = 'libs-release-local'
 const DEFAULT_BRANCH_RELEASE_TAG = 'snapshot'
 const publishTargetVersion = '{version}{prerelease}{branchtag}{buildnumber}{timestamp}'
 const temporaryUploadSpecName = '.tmp-pipeline-publish-spec.json'
+const defaultPublishTargetPathPattern = '{repository}/{package}{subproject}/{version}{branchtag-uc}/'
+const defaultPublishTargetFilePattern = '{filename}-{publishversion}{fileext}'
 
 // Gets inputs
 const artifacts = core.getMultilineInput('artifacts') //array form
@@ -32,6 +34,11 @@ const packageInfo = process.env.PACKAGE_INFO ? JSON.parse(process.env.PACKAGE_IN
 const manifestInfo = process.env.MANIFEST_INFO ? JSON.parse(process.env.MANIFEST_INFO) : ''
 var publishTargetPathPattern = core.getInput('publish-target-path-pattern')
 var publishTargetFilePattern = core.getInput('publish-target-file-pattern')
+
+customUpload = false
+if (publishTargetPathPattern != defaultPublishTargetPathPattern || publishTargetFilePattern != defaultPublishTargetFilePattern) {
+    customUpload = true
+}
 
 // main
 var isReleaseBranch = `${ process.env.IS_RELEASE_BRANCH == 'true' ? true : false }`
@@ -174,8 +181,8 @@ function getBuildStringMacros() {
         }
     }
 
-    // some mandatory field checks
-    if (!macros.get('package') || !macros.get('version')) {
+    // some mandatory field checks only applicable to regular zowe projects, not custom uploads
+    if (!customUpload && (!macros.get('package') || !macros.get('version'))) {
         throw new Error(`Package name and version must be set: package:${macros.get('package') ? macros.get('package') : '>>MISSING<<'}; version:${macros.get('version') ? macros.get('version') : '>>MISSING<<'}`)
     }
 
