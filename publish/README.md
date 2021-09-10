@@ -9,7 +9,7 @@ Then utilize this newly created JSON file for jFrog to consume, finally does upl
 #### `artifacts`
 **Optional** - Artifacts to be sent over jFrog Artifactory. Can have multiple line inputs here.
 #### `perform-release`
-**Required** - The flag to indicate if doing performing release
+**Optional** - The flag to indicate if doing performing release
 #### `pre-release-string`
 **Optional** - pre-release string
 #### `publish-target-path`
