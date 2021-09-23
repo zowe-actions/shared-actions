@@ -5,7 +5,8 @@
         "buildHistory"       : 20,
         "allowRelease"       : true,
         "allowFormalRelease" : true,
-        "releaseTag"         : "snapshot"
+        "releaseTag"         : "snapshot",
+        "npmTag"             : "latest"
     },
     {
         "name"               : "v[0-9]+\\.[0-9x]+(\\.[0-9x]+)?/master",
@@ -13,18 +14,21 @@
         "buildHistory"       : 20,
         "allowRelease"       : true,
         "allowFormalRelease" : true,
-        "releaseTag"         : "$1-snapshot"
+        "releaseTag"         : "$1-snapshot",
+        "npmTag"             : "$1-latest"
     },
     {
         "name"               : "staging",
         "isProtected"        : true,
         "buildHistory"       : 20,
-        "allowRelease"       : true
+        "allowRelease"       : true,
+        "npmTag"             : "dev"
     },
     {
         "name"               : "v[0-9]+\\.[0-9x]+(\\.[0-9x]+)?/staging",
         "isProtected"        : true,
         "buildHistory"       : 20,
-        "allowRelease"       : true
+        "allowRelease"       : true,
+        "npmTag"             : "$1-dev"
     }
 ]
