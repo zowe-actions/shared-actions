@@ -98,7 +98,7 @@ else {
 // determine branch information
 var isReleaseBranch = false
 var isFormalReleaseBranch = false
-var matchedBranch = searchDefaultBranches()
+var matchedBranch = utils.searchDefaultBranches()
 if (matchedBranch) {
     if (matchedBranch.hasOwnProperty('allowRelease')) {
         isReleaseBranch = matchedBranch.allowRelease
@@ -111,14 +111,3 @@ console.log(`Current branch ${currentBranch} is release branch? ${isReleaseBranc
 console.log(`Current branch ${currentBranch} is formal release branch? ${isFormalReleaseBranch}`)
 core.exportVariable('IS_RELEASE_BRANCH', isReleaseBranch)
 core.exportVariable('IS_FORMAL_RELEASE_BRANCH', isFormalReleaseBranch)
-
-
-function searchDefaultBranches() {
-    var defaultBranchesJsonObject = JSON.parse(process.env.DEFAULT_BRANCHES_JSON_TEXT)
-    for (var i=0; i < defaultBranchesJsonObject.length; i++) {
-        var branch = defaultBranchesJsonObject[i]
-        if (currentBranch === branch.name || currentBranch.match(branch.name)) {
-            return branch
-        }
-    }
-}

@@ -43,7 +43,7 @@ if (publishTargetPathPattern != defaultPublishTargetPathPattern || publishTarget
 // main
 var isReleaseBranch = `${ process.env.IS_RELEASE_BRANCH == 'true' ? true : false }`
 var isPerformingRelease = `${ performRelease == 'true' ? true : false }`
-var matchedBranch = searchDefaultBranches()
+var matchedBranch = utils.searchDefaultBranches()
 console.log(`Are we performing a release? ${isPerformingRelease}`)
 
 var macros = new Map()
@@ -290,16 +290,4 @@ function getBranchTag(branch) {
         }
     }
     return newMacros
-}
-
-function searchDefaultBranches() {
-    if (process.env.DEFAULT_BRANCHES_JSON_TEXT) {
-        var defaultBranchesJsonObject = JSON.parse(process.env.DEFAULT_BRANCHES_JSON_TEXT)
-        for (var i=0; i < defaultBranchesJsonObject.length; i++) {
-            var branch = defaultBranchesJsonObject[i]
-            if (currentBranch === branch.name || currentBranch.match(branch.name)) {
-                return branch
-            }
-        }
-    }
 }
