@@ -43,6 +43,10 @@ if (publishTargetPathPattern != defaultPublishTargetPathPattern || publishTarget
 // main
 var isReleaseBranch = `${ process.env.IS_RELEASE_BRANCH == 'true' ? true : false }`
 var isPerformingRelease = `${ performRelease == 'true' ? true : false }`
+var notStandardProject = false
+if (manifestInfo == '') {
+    notStandardProject = true //meaning this project is node or gradle project exclusively, which can bypass some mandatory check later
+}
 var matchedBranch = utils.searchDefaultBranches()
 console.log(`Are we performing a release? ${isPerformingRelease}`)
 
@@ -182,7 +186,7 @@ function getBuildStringMacros() {
     }
 
     // some mandatory field checks only applicable to regular zowe projects, not custom uploads
-    if (!customUpload && (!macros.get('package') || !macros.get('version'))) {
+    if (!customUpload && !notStandardProject && (!macros.get('package') || !macros.get('version'))) {
         throw new Error(`Package name and version must be set: package:${macros.get('package') ? macros.get('package') : '>>MISSING<<'}; version:${macros.get('version') ? macros.get('version') : '>>MISSING<<'}`)
     }
 
