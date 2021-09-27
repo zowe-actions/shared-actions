@@ -42,6 +42,15 @@ if (publishTargetPathPattern != defaultPublishTargetPathPattern || publishTarget
 
 // main
 var isReleaseBranch = `${ process.env.IS_RELEASE_BRANCH == 'true' ? true : false }`
+
+//debug
+if (isReleaseBranch == true) {
+    debug(`isReleaseBranch is a boolean, value is ${isReleaseBranch}`)
+}
+if (isReleaseBranch == 'true') {
+    debug(`isReleaseBranch is a string, value is ${isReleaseBranch}`)
+}
+
 var isPerformingRelease = `${ performRelease == 'true' ? true : false }`
 var notStandardProject = false
 if (manifestInfo == '') {
