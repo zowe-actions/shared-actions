@@ -15,7 +15,7 @@ Then utilize this newly created JSON file for jFrog to consume, finally does upl
 
 ### `perform-release`
 
-**Optional** - The flag to indicate if doing performing release. If not provided, default to false.
+**Required** - The flag to indicate if doing performing release.
 
 ### `pre-release-string`
 
