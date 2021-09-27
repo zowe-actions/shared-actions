@@ -41,7 +41,7 @@ if (publishTargetPathPattern != defaultPublishTargetPathPattern || publishTarget
 }
 
 // main
-var isReleaseBranch = `${ process.env.IS_RELEASE_BRANCH == 'true' ? true : false }`
+var isReleaseBranch = process.env.IS_RELEASE_BRANCH == 'true' ? true : false
 
 //debug
 if (isReleaseBranch == true) {
@@ -51,7 +51,7 @@ if (isReleaseBranch == 'true') {
     debug(`isReleaseBranch is a string, value is ${isReleaseBranch}`)
 }
 
-var isPerformingRelease = `${ performRelease == 'true' ? true : false }`
+var isPerformingRelease = performRelease == 'true' ? true : false
 var notStandardProject = false
 if (manifestInfo == '') {
     notStandardProject = true //meaning this project is node or gradle project exclusively, which can bypass some mandatory check later
