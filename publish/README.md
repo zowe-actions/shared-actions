@@ -47,6 +47,14 @@ Example: `PUBLISH_VERSION: 1.0.2-my-dev-branch-210-20210810194022`
 This will be the same as input `pre-release-string`. If pre-release string input is not provided, value here will be empty.
 <br /><br />
 
+## Pre-requisite
+
+Before you call this publish action, make sure you call [prepare-workflow](https://github.com/zowe-actions/shared-actions/tree/main/prepare-workflow). Sample usage would be:
+
+```yaml
+uses: zowe-actions/shared-actions/prepare-workflow@main
+```
+
 ## Example usage
 
 (this is a minimal set of inputs you need to provide)
