@@ -73,8 +73,6 @@ This will be the same as input `pre-release-string`. If pre-release string input
 
 ```yaml
 uses: zowe-actions/shared-actions/publish@main
-with:
-    perform-release:
 ```
 
 To have multiline input for artifacts:
