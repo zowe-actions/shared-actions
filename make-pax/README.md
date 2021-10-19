@@ -41,6 +41,14 @@ None
 None
 <br /><br />
 
+## Pre-requisite
+
+Before you call this action, make sure you call [shared-actions/prepare-workflow](https://github.com/zowe-actions/shared-actions/tree/main/prepare-workflow). Sample usage would be:
+
+```yaml
+uses: zowe-actions/shared-actions/prepare-workflow@main
+```
+
 ## Example usage
 (this is a minimal set of inputs you need to provide)
 ```

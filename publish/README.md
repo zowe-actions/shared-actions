@@ -49,11 +49,23 @@ This will be the same as input `pre-release-string`. If pre-release string input
 
 ## Pre-requisite
 
-Before you call this publish action, make sure you call [prepare-workflow](https://github.com/zowe-actions/shared-actions/tree/main/prepare-workflow). Sample usage would be:
+- Before you call this action, make sure you call [shared-actions/prepare-workflow](https://github.com/zowe-actions/shared-actions/tree/main/prepare-workflow) and [jfrog/setup-jfrog-cli](https://github.com/jfrog/setup-jfrog-cli) . Sample usage would be:
 
-```yaml
-uses: zowe-actions/shared-actions/prepare-workflow@main
-```
+    ```yaml
+    uses: jfrog/setup-jfrog-cli@v2
+    env:
+        JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+
+    uses: zowe-actions/shared-actions/prepare-workflow@main
+    ```
+
+- If you are implementing workflow for NodeJS project, be sure to also call [nodejs-actions/setup](https://github.com/zowe-actions/nodejs-actions/tree/main/setup). Sample usage would be:
+
+    ```yaml
+    uses: zowe-actions/nodejs-actions/setup@main
+    with:
+        package-name: 'org.zowe.mycomponent'
+    ```
 
 ## Example usage
 

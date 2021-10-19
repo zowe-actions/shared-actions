@@ -25,6 +25,9 @@ Environment variables as defined in [envvars.env](./envvars.env)
 defaultBranches.json transformed to String then exported as environment variable
 #### `CURRENT_BRANCH` 
 the branch where workflow is triggered
+
+#### `JFROG_CLI_BUILD_NAME`
+this is to overwrite jfrog build name while doing jfrog cli commands
 #### `GITHUB_USER` 
 github user if provided as inputs
 #### `GITHUB_PASSWORD` 
