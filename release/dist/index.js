@@ -5392,6 +5392,7 @@ if (process.env.IS_FORMAL_RELEASE_BRANCH == 'true' && process.env.PRE_RELEASE_ST
 } 
 else {
     console.log('No need to bump version.')
+    core.exportVariable("NO_NEED_BUMP_VERSION", true)
 }
 
 // send out notice
