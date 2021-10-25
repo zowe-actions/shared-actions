@@ -18,7 +18,7 @@ This action runs a script, passed as an argument, on a system that's connected t
 
 ## Example Usage
 
-```
+```yaml
 uses: ./custom-workflow
 with:
   host: host.domain.com
