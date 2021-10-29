@@ -113,7 +113,7 @@ function processEachPackageInManifest(packageName,definitions) {
 
     // now start to process pattern
     resultJsonObject.pattern = ''
-    if (definitions.hasOwnProperty('artifact') && definitions.artifact.contains('/')) {
+    if (definitions.hasOwnProperty('artifact') && definitions.artifact.includes('/')) {
         // assume this is a full path to the artifact
         resultJsonObject.pattern = definitions.artifact
     }
