@@ -12,6 +12,7 @@ const core = require('@actions/core')
 const { utils , InvalidArgumentException } = require('zowe-common')
 const Debug = require('debug')
 const debug = Debug('zowe-actions:shared-actions:jfrog-download')
+const fs = require('fs');
 
 // Defaults
 const projectRootPath = process.env.GITHUB_WORKSPACE
@@ -49,7 +50,7 @@ Please just have one of them, don't include both, then try again. Thanks!
 
 if (manifest2DownloadSpecDownload) {
     var downloadSpec = {"files":[]}
-    const manifestJsonObject = JSON.parse(manifestFilePath)
+    const manifestJsonObject = JSON.parse(fs.readFileSync(manifestFilePath))
     const binaryDependenciesObject = manifestJsonObject['binaryDependencies']
     // check to make sure binaryDependencies are present
     if (binaryDependenciesObject == '') {

@@ -5374,6 +5374,7 @@ const core = __nccwpck_require__(4562)
 const { utils , InvalidArgumentException } = __nccwpck_require__(386)
 const Debug = __nccwpck_require__(8797)
 const debug = Debug('zowe-actions:shared-actions:jfrog-download')
+const fs = __nccwpck_require__(5747);
 
 // Defaults
 const projectRootPath = process.env.GITHUB_WORKSPACE
@@ -5411,7 +5412,7 @@ Please just have one of them, don't include both, then try again. Thanks!
 
 if (manifest2DownloadSpecDownload) {
     var downloadSpec = {"files":[]}
-    const manifestJsonObject = JSON.parse(manifestFilePath)
+    const manifestJsonObject = JSON.parse(fs.readFileSync(manifestFilePath))
     const binaryDependenciesObject = manifestJsonObject['binaryDependencies']
     // check to make sure binaryDependencies are present
     if (binaryDependenciesObject == '') {
