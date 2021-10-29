@@ -1,0 +1,19 @@
+name: "Jfrog Download"
+description: "Download artifacts from jfrog"
+inputs:
+  manifest-file-path:
+    description: 'the location of the manifest file'
+    required: false
+  source-path:
+    description: 'the download source path (remote)'
+    required: false
+  default-target-path:
+    description: 'the default download target path (local). Can be overwritten by "target" property in any package in manifest file'
+    required: true
+  default-repository:
+    description: 'the default repository. Usually either libs-snapshot-local or libs-release-local'
+    required: false
+  
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
