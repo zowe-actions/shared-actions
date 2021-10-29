@@ -5419,7 +5419,7 @@ if (manifest2DownloadSpecDownload) {
         throw new Error (`There is no binaryDependencies present in your specified manifest file: ${manifestFilePath}, this is mandatory. Try again.`)
     }
     for (const [packageName, definitions] of Object.entries(binaryDependenciesObject)) {
-        downloadSpec.push(processEachPackageInManifest(packageName,definitions))
+        downloadSpec.files.push(processEachPackageInManifest(packageName,definitions))
     }
     var downloadSpecString=JSON.stringify(downloadSpec, null, 2)
     console.log(downloadSpecString)
