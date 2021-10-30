@@ -77,6 +77,7 @@ if (isPerformingRelease) {
 if (artifacts && artifacts.length > 0) {
     uploadArtifacts()
     console.log(utils.sh(`jfrog rt upload --spec ${temporaryUploadSpecName}`))
+    utils.sh('jfrog rt bp')
 } else {
     console.warn ('No artifacts to upload to jfrog, normal publish skipped.')
 }
