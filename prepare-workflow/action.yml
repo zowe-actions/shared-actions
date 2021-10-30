@@ -52,7 +52,7 @@ runs:
       shell: bash
     
     - name: 'overwrite jfrog build name'
-      run: echo JFROG_CLI_BUILD_NAME=${{ github.event.repository.name }}/${{ env.CURRENT_BRANCH }} >> $GITHUB_ENV
+      run: echo JFROG_CLI_BUILD_NAME=${{ github.event.repository.name }}-${{ env.CURRENT_BRANCH }} >> $GITHUB_ENV
       shell: bash
     
     - name: 'export github username and email'
