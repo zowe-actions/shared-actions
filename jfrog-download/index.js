@@ -22,8 +22,10 @@ const REPOSITORY_RELEASE = 'libs-release-local'
 // Gets inputs
 var manifestFilePath = core.getInput('manifest-file-path')
 var defaultTargetPath = core.getInput('default-target-path')
-var sourcePath = core.getInput('source-path')
+var sourcePathorPattern = core.getInput('source-path-or-pattern')
 var defaultRepository = core.getInput('default-repository')
+var extraOptions = core.getInput('extra-options')
+var expectedCount = core.getInput('expected-count')!= '' ? parseInt(core.getInput('expected-count')) : -1
 var simpleDownload = false   // meaning just a simple jfrog cli command download
 var manifest2DownloadSpecDownload = false // meaning we need to convert manifest to download spec then download
 
@@ -31,19 +33,19 @@ var manifest2DownloadSpecDownload = false // meaning we need to convert manifest
 if (!defaultTargetPath || defaultTargetPath == '') {
     throw new InvalidArgumentException('target-path')
 }
-if (sourcePath != '' && (!manifestFilePath || manifestFilePath == '')) {
+if (sourcePathorPattern != '' && (!manifestFilePath || manifestFilePath == '')) {
     simpleDownload = true
     console.log('Simple download!')
-    console.log(`Download source is ${sourcePath}, target is ${defaultTargetPath}`)
+    console.log(`Download source is ${sourcePathorPattern}, target is ${defaultTargetPath}`)
 }
-else if (manifestFilePath != '' && (!sourcePath || sourcePath == '')) {
+else if (manifestFilePath != '' && (!sourcePathorPattern || sourcePathorPattern == '')) {
     manifest2DownloadSpecDownload = true
     console.log('Need to process manifest and generate download spec then download!')
     console.log(`Manifest file is at ${manifestFilePath}, target is ${defaultTargetPath}`)
 }
-else { //meaning both manifest and sourcePath and provided, I am confused of what user wants to do. I give up!
-    throw new Error (```I see both sourcePath: ${sourcePath} and manifestFilePath: ${manifestFilePath} are provided.
-Do you want to simply download the ${sourcePath} or you want me to process manifest? I am confused.
+else { //meaning both manifest and sourcePathorPattern and provided, I am confused of what user wants to do. I give up!
+    throw new Error (```I see both sourcePathorPattern: ${sourcePathorPattern} and manifestFilePath: ${manifestFilePath} are provided.
+Do you want to simply download the ${sourcePathorPattern} or you want me to process manifest? I am confused.
 Please just have one of them, don't include both, then try again. Thanks!
 ```)
 }
@@ -59,8 +61,33 @@ if (manifest2DownloadSpecDownload) {
     for (const [packageName, definitions] of Object.entries(binaryDependenciesObject)) {
         downloadSpec.files.push(processEachPackageInManifest(packageName,definitions))
     }
+    var jfrogDownloadSpecJsonFilePath=`${process.env.RUNNER_TEMP}/jfrog-download-spec-${utils.dateTimeNow()}.json`
     var downloadSpecString=JSON.stringify(downloadSpec, null, 2)
-    console.log(downloadSpecString)
+    debug('================ download spec ================')
+    debug(downloadSpecString)
+    fs.writeFileSync(jfrogDownloadSpecJsonFilePath, downloadSpecString);
+    var responseInJsonText = utils.sh(`jfrog rt download --spec ${jfrogDownloadSpecJsonFilePath}`)
+    var responseInJsonObject = JSON.parse(responseInJsonText)
+    if (responseInJsonObject) {
+        var status = responseInJsonObject.status
+        var totalSuccess = responseInJsonObject.totals.success
+        var totalFailure = responseInJsonObject.totals.failure
+        if (!status || !totalSuccess || !totalFailure) {
+            throw new Error(`jfrog rt download response changed, or something went wrong with: jfrog rt download --spec ${jfrogDownloadSpecJsonFilePath}`)
+        }
+        console.log(`****************************\nDownload result: ${status}\nTotal Success:   ${totalSuccess}\nTotal Failure:   ${totalFailure}\n****************************`)
+
+        // validate download result
+        if (status != 'success' || parseInt(totalFailure) > 0) {
+            throw new Error('Artifact downloading has failure(s) or not successful.')
+        }
+
+        if (expectedCount > 0 && parseInt(totalSuccess) != expectedCount) {
+            throw new Error(`Expected ${expectedCount} artifact(s) to be downloaded but only got ${totalSuccess}.`)
+        }
+
+        console.log('Artifact downloading is successful.')
+    }
 }
 
 
