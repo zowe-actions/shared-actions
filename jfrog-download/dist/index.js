@@ -5429,12 +5429,14 @@ if (manifest2DownloadSpecDownload) {
     debug(downloadSpecString)
     fs.writeFileSync(jfrogDownloadSpecJsonFilePath, downloadSpecString);
     var responseInJsonText = utils.sh(`jfrog rt download --spec ${jfrogDownloadSpecJsonFilePath}`)
+    debug('================ download response ================')
+    debug(responseInJsonText)
     var responseInJsonObject = JSON.parse(responseInJsonText)
     if (responseInJsonObject) {
         var status = responseInJsonObject.status
         var totalSuccess = responseInJsonObject.totals.success
         var totalFailure = responseInJsonObject.totals.failure
-        if (!status || !totalSuccess || !totalFailure) {
+        if (status == '' || totalSuccess == '' || !totalFailure == '') {
             throw new Error(`jfrog rt download response changed, or something went wrong with: jfrog rt download --spec ${jfrogDownloadSpecJsonFilePath}`)
         }
         console.log(`****************************\nDownload result: ${status}\nTotal Success:   ${totalSuccess}\nTotal Failure:   ${totalFailure}\n****************************`)
