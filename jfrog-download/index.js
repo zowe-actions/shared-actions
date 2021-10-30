@@ -26,22 +26,23 @@ var sourcePathorPattern = core.getInput('source-path-or-pattern')
 var defaultRepository = core.getInput('default-repository')
 var extraOptions = core.getInput('extra-options')
 var expectedCount = core.getInput('expected-count')!= '' ? parseInt(core.getInput('expected-count')) : -1
-var simpleDownload = false   // meaning just a simple jfrog cli command download
-var manifest2DownloadSpecDownload = false // meaning we need to convert manifest to download spec then download
+
 
 // mandatory check
 if (!defaultTargetPath || defaultTargetPath == '') {
     throw new InvalidArgumentException('target-path')
 }
 if (sourcePathorPattern != '' && (!manifestFilePath || manifestFilePath == '')) {
-    simpleDownload = true
     console.log('Simple download!')
     console.log(`Download source is ${sourcePathorPattern}, target is ${defaultTargetPath}`)
+    // meaning just a simple jfrog cli command download
+    simpleDownload()
 }
 else if (manifestFilePath != '' && (!sourcePathorPattern || sourcePathorPattern == '')) {
-    manifest2DownloadSpecDownload = true
     console.log('Need to process manifest and generate download spec then download!')
     console.log(`Manifest file is at ${manifestFilePath}, target is ${defaultTargetPath}`)
+    // meaning we need to convert manifest to download spec then download
+    manifest2DownloadSpecDownload()
 }
 else { //meaning both manifest and sourcePathorPattern and provided, I am confused of what user wants to do. I give up!
     throw new Error (```I see both sourcePathorPattern: ${sourcePathorPattern} and manifestFilePath: ${manifestFilePath} are provided.
@@ -50,7 +51,17 @@ Please just have one of them, don't include both, then try again. Thanks!
 ```)
 }
 
-if (manifest2DownloadSpecDownload) {
+function simpleDownload() {
+    var commandString = 'jfrog rt download '
+    commandString += `\"${sourcePathorPattern}\"`
+    commandString += `\"${defaultTargetPath}\"`
+    if (extraOptions != '') {
+        commandString += `\"${extraOptions}\"`
+    }
+}
+
+
+function manifest2DownloadSpecDownload() {
     var downloadSpec = {"files":[]}
     const manifestJsonObject = JSON.parse(fs.readFileSync(manifestFilePath))
     const binaryDependenciesObject = manifestJsonObject['binaryDependencies']
@@ -71,27 +82,36 @@ if (manifest2DownloadSpecDownload) {
     debug(responseInJsonText)
     var responseInJsonObject = JSON.parse(responseInJsonText)
     if (responseInJsonObject) {
-        var status = responseInJsonObject.status
-        var totalSuccess = responseInJsonObject.totals.success
-        var totalFailure = responseInJsonObject.totals.failure
-        if (status == '' || totalSuccess == '' || !totalFailure == '') {
-            throw new Error(`jfrog rt download response changed, or something went wrong with: jfrog rt download --spec ${jfrogDownloadSpecJsonFilePath}`)
-        }
-        console.log(`****************************\nDownload result: ${status}\nTotal Success:   ${totalSuccess}\nTotal Failure:   ${totalFailure}\n****************************`)
-
-        // validate download result
-        if (status != 'success' || parseInt(totalFailure) > 0) {
-            throw new Error('Artifact downloading has failure(s) or not successful.')
-        }
-
-        if (expectedCount > 0 && parseInt(totalSuccess) != expectedCount) {
-            throw new Error(`Expected ${expectedCount} artifact(s) to be downloaded but only got ${totalSuccess}.`)
-        }
-
-        console.log('Artifact downloading is successful.')
+        validate(responseInJsonObject)
+    } 
+    else {
+        throw new Error(`jfrog rt download no response received`)
     }
 }
 
+
+
+
+function validate(response) {
+    var status = response.status
+    var totalSuccess = response.totals.success
+    var totalFailure = response.totals.failure
+    if (status == '' || totalSuccess == '' || !totalFailure == '') {
+        throw new Error(`jfrog rt download response changed, or something else went wrong`)
+    }
+    console.log(`****************************\nDownload result: ${status}\nTotal Success:   ${totalSuccess}\nTotal Failure:   ${totalFailure}\n****************************`)
+
+    // validate download result
+    if (status != 'success' || parseInt(totalFailure) > 0) {
+        throw new Error('Artifact downloading has failure(s) or not successful.')
+    }
+
+    if (expectedCount > 0 && parseInt(totalSuccess) != expectedCount) {
+        throw new Error(`Expected ${expectedCount} artifact(s) to be downloaded but only got ${totalSuccess}.`)
+    }
+
+    console.log('Artifact downloading is successful.')
+}
 
 function processEachPackageInManifest(packageName,definitions) {
     debug(`Processing ${packageName}:`)
