@@ -53,11 +53,12 @@ Please just have one of them, don't include both, then try again. Thanks!
 
 function simpleDownload() {
     var commandString = 'jfrog rt download '
-    commandString += `\"${sourcePathorPattern}\"`
-    commandString += `\"${defaultTargetPath}\"`
     if (extraOptions != '') {
         commandString += `\"${extraOptions}\"`
     }
+    commandString += `\"${sourcePathorPattern}\"`
+    commandString += `\"${defaultTargetPath}\"`
+    jfrogDownload(commandString)
 }
 
 
@@ -77,7 +78,14 @@ function manifest2DownloadSpecDownload() {
     debug('================ download spec ================')
     debug(downloadSpecString)
     fs.writeFileSync(jfrogDownloadSpecJsonFilePath, downloadSpecString);
-    var responseInJsonText = utils.sh(`jfrog rt download --spec ${jfrogDownloadSpecJsonFilePath}`)
+    var commandString = `jfrog rt download --spec ${jfrogDownloadSpecJsonFilePath}`
+    jfrogDownload(commandString)
+}
+
+
+function jfrogDownload(commandString) {
+    debug(`Command to execute: ${commandString}`)
+    var responseInJsonText = utils.sh(commandString)
     debug('================ download response ================')
     debug(responseInJsonText)
     var responseInJsonObject = JSON.parse(responseInJsonText)
@@ -88,8 +96,6 @@ function manifest2DownloadSpecDownload() {
         throw new Error(`jfrog rt download no response received`)
     }
 }
-
-
 
 
 function validate(response) {
