@@ -80,6 +80,7 @@ if (artifacts && artifacts.length > 0) {
 } else {
     console.warn ('No artifacts to upload to jfrog, normal publish skipped.')
 }
+core.exportVariable('PUBLISH_TARGET_PATH', parseString(publishTargetPathPattern, macros))
 core.exportVariable('PUBLISH_VERSION', macros.get('publishversion'))
 core.exportVariable('PRE_RELEASE_STRING',preReleaseString)
 /* ========================================================================================================*/
