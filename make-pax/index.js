@@ -58,7 +58,7 @@ else {
         var environmentText = ''
         if (extraEnvironmentVars && extraEnvironmentVars.length > 0) {
             extraEnvironmentVars.forEach( eachLine => {
-                if (!eachLine.match(/^.+=.+$/)) {
+                if (!eachLine.match(/^.+=.*$/)) {
                     throw new Error(`Environment provided ${eachLine} is not valid. Must be in the form KEY=VALUE`)
                 }
                 environmentText += `${eachLine} `
