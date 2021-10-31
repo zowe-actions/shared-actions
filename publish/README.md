@@ -79,6 +79,8 @@ This is the publish target path for the project.
 
 ```yaml
 uses: zowe-actions/shared-actions/publish@main
+with:
+  perform-release:
 ```
 
 To have multiline input for artifacts:
