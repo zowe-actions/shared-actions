@@ -29,7 +29,7 @@ var paxName = core.getInput('pax-name')
 const paxCompressOptions = core.getInput('pax-compress-options')
 const extraFiles = core.getInput('extra-files')
 const keepTempFolder = core.getInput('keep-temp-folders')
-const extraEnvironmentVars = core.getInput('extra-environment-vars')
+const extraEnvironmentVars = core.getMultilineInput('extra-environment-vars')
 
 paxLocalWorkspace = `${projectRootPath}/${paxLocalWorkspace}`
 
