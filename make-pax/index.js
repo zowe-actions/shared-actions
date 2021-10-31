@@ -45,7 +45,7 @@ if (!paxName) {
     paxName = manifestInfo['name']
 }
 if (!paxName) {
-    core.setFailed('Package name is not provided through shared-actions/packaging or through manifest file')
+    core.setFailed('Package name is not provided through shared-actions/make-pax or through manifest file')
 } 
 else {
     // set to default path if not passing through this action
