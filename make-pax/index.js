@@ -55,6 +55,16 @@ else {
     else {
         // normalize pax name to only contains letters, numbers or dashes
         paxName = utils.sanitizeBranchName(paxName)
+        var environmentText = ''
+        if (extraEnvironmentVars && extraEnvironmentVars.length > 0) {
+            extraEnvironmentVars.forEach( eachLine => {
+                if (!eachLine.match(/^.+=.+$/)) {
+                    throw new Error(`Environment provided ${eachLine} is not valid. Must be in the form KEY=VALUE`)
+                }
+                environmentText += `${eachLine} `
+            })
+            console.log(`Extra environments: ${environmentText}`)
+        }
         // Real work starts now
         console.log(`Prepare to package ${paxName}`)
         console.log(`Creating pax file "${paxName}" from workspace...`)
@@ -69,7 +79,7 @@ else {
         args.set('filename',paxNameFull)
         args.set('paxOptions',paxOptions)
         args.set('extraFiles',extraFiles)
-        args.set('environments',extraEnvironmentVars)
+        args.set('environments',environmentText)
         args.set('compress',paxCompress)
         args.set('compressOptions',paxCompressOptions)
         args.set('keepTempFolder',keepTempFolder)
