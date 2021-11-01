@@ -9438,7 +9438,7 @@ fi
             // Step 1: send to pax server
             var cmd = `put ${packageTar} ${paxRemoteWorkspace}
 put ${packageScriptFile} ${paxRemoteWorkspace}`
-            debug(utils.sftp(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd))
+            utils.sftp(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd)
             console.log(`[Step 1]: sftp put ${packageTar} and ${packageScriptFile} completed`)
 
             // Step 2: extract tar file, run pre/post hooks and create pax file
@@ -9447,7 +9447,7 @@ mv ${paxRemoteWorkspace}/${packageScriptFile}.new ${paxRemoteWorkspace}/${packag
 chmod +x ${paxRemoteWorkspace}/${packageScriptFile}
 . ${paxRemoteWorkspace}/${packageScriptFile}
 rm ${paxRemoteWorkspace}/${packageScriptFile}`
-            console.log(utils.ssh(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd2))
+            utils.ssh(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd2)
             console.log('[Step 2]: extract tar file, run pre/post hooks and create pax file completed')
 
             // Step 3: copy back pax files
@@ -9458,7 +9458,7 @@ get ${remoteWorkspaceFullPath}/${file} ${paxLocalWorkspace}`
             )
             var cmd3 = `get ${remoteWorkspaceFullPath}/${compressPax ? filePaxZ : filePax} ${paxLocalWorkspace}`
             cmd3 += extraGets
-            debug(utils.sftp(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd3))
+            utils.sftp(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd3)
             console.log('[Step 3]: copy back files completed')
         } catch (ex1) {
             // throw error
@@ -9484,7 +9484,7 @@ echo "${func}[ERROR] failed on catch-all hook"
 exit 1
 fi
 fi`
-                    debug(utils.ssh(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd4))
+                    utils.ssh(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd4)
                 } catch (ex3) {
                     // ignore errors for cleaning up
                     console.warn(`${func} running catch-all hooks failed: ${ex3}`)
@@ -9494,7 +9494,7 @@ fi`
                     // always clean up temporary files/folders
                     console.log(`${func} cleaning up remote workspace...`)
                     var cmdCleaning = `rm -fr ${remoteWorkspaceFullPath}*`
-                    debug(utils.ssh(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmdCleaning))
+                    utils.ssh(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmdCleaning)
                     console.log(`${func} cleaning up remote workspace success`)
                 } catch (ex2) {
                     // ignore errors for cleaning up
@@ -9538,7 +9538,7 @@ class utils {
     }
 
     static sh_heavyload(cmd) {
-        return spawnSync(cmd).toString().trim()
+        spawnSync(cmd, { stdio: 'inherit'})
     }
 
     static fileExists(path) {
@@ -9648,7 +9648,7 @@ class utils {
         var fullCMD = `SSHPASS=${passwd} sshpass -e sftp -o BatchMode=no -o StrictHostKeyChecking=no -P ${port} -b - ${username}@${host} <<EOF
 ${cmds}
 EOF`
-        return this.sh_heavyload(fullCMD)
+        this.sh_heavyload(fullCMD)
     }
 
     static ssh(host, port, username, passwd, cmds) {
@@ -9656,7 +9656,7 @@ EOF`
 ${cmds}
 exit 0
 EOF`
-        return this.sh_heavyload(fullCMD)
+        this.sh_heavyload(fullCMD)
     }
 
     static sshKeyFile(host, port, username, keyPassPhrase, keyfile, cmds) {
@@ -9664,7 +9664,7 @@ EOF`
 ${cmds}
 exit 0
 EOF`
-        return this.sh_heavyload(fullCMD)
+        this.sh_heavyload(fullCMD)
     }
 }
 
