@@ -6047,10 +6047,10 @@ fi
                 cmds.push(environmentText)
                 cmds.push(prepareWorkspaceScriptFullPath)
                 debug(cmds.join(' '))
-                console.log(utils.sh(cmds.join(' ')))    //use console to print output
+                console.log(utils.sh_heavyload(cmds.join(' ')))    //use console to print output
                 console.log('prepare workspace completed')
             }
-            console.log(utils.sh(`echo ${func} packaging contents: && find ${paxLocalWorkspace} -print`))
+            console.log(utils.sh_heavyload(`echo ${func} packaging contents: && find ${paxLocalWorkspace} -print`))
             
             // tar ascii folder if exists
             if (utils.fileExists(`${paxLocalWorkspace}/${PATH_ASCII}`)) {
@@ -6058,11 +6058,11 @@ fi
                 cmds.push(`tar -c -f ${paxLocalWorkspace}/${PATH_ASCII}.tar -C ${paxLocalWorkspace}/ ${PATH_ASCII}`)
                 cmds.push(`rm -fr ${paxLocalWorkspace}/${PATH_ASCII}`)
                 debug(cmds.join(' && '))
-                debug(utils.sh(cmds.join(' && ')))    // use debug to optional print output
+                debug(utils.sh_heavyload(cmds.join(' && ')))    // use debug to optional print output
             }
 
             // tar the whole workspace folder
-            debug(utils.sh(`tar -c -f ${packageTar} -C ${paxLocalWorkspace} .`))
+            debug(utils.sh_heavyload(`tar -c -f ${packageTar} -C ${paxLocalWorkspace} .`))
             fs.writeFileSync(packageScriptFile, packageScriptContent)
         } catch (ex0) {
             throw new Error(`Failed to prepare packaging workspace: ${ex0}`)
@@ -6157,7 +6157,7 @@ module.exports = pax;
  * Copyright IBM Corporation 2021
  */
 
-const { execSync } = __nccwpck_require__(3129)
+const { execSync, spawnSync } = __nccwpck_require__(3129)
 const fs = __nccwpck_require__(5747)
 const semver = __nccwpck_require__(4603)
 
@@ -6169,6 +6169,10 @@ class utils {
 
     static sh(cmd) {
         return execSync(cmd).toString().trim()
+    }
+
+    static sh_heavyload(cmd) {
+        return spawnSync(cmd).toString().trim()
     }
 
     static fileExists(path) {
@@ -6278,7 +6282,7 @@ class utils {
         var fullCMD = `SSHPASS=${passwd} sshpass -e sftp -o BatchMode=no -o StrictHostKeyChecking=no -P ${port} -b - ${username}@${host} <<EOF
 ${cmds}
 EOF`
-        return this.sh(fullCMD)
+        return this.sh_heavyload(fullCMD)
     }
 
     static ssh(host, port, username, passwd, cmds) {
@@ -6286,7 +6290,7 @@ EOF`
 ${cmds}
 exit 0
 EOF`
-        return this.sh(fullCMD)
+        return this.sh_heavyload(fullCMD)
     }
 
     static sshKeyFile(host, port, username, keyPassPhrase, keyfile, cmds) {
@@ -6294,7 +6298,7 @@ EOF`
 ${cmds}
 exit 0
 EOF`
-        return this.sh(fullCMD)
+        return this.sh_heavyload(fullCMD)
     }
 }
 
