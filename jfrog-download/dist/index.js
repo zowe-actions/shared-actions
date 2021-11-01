@@ -6640,9 +6640,9 @@ function processEachPackageInManifest(packageName,definitions) {
             resultJsonObject.pattern = `${repository}/${packagePath}/${m2[1]}.*${m2[4] ? m2[4] : ''}/`
         } else {
             // parse semantic version, this may throw exception if version is invalid
-            var semanticVersionMap = utils.parseSemanticVersion(definitions.version)
-            if (semanticVersionMap.has('prerelease') && semanticVersionMap.get('prerelease')!= '') {
-                resultJsonObject.pattern = `${repository ? repository : REPOSITORY_SNAPSHOT}/${packagePath}/${semanticVersionMap.get('major')}.${semanticVersionMap.get('minor')}.${semanticVersionMap.get('patch')}-${semanticVersionMap.get('prerelease')}/`
+            var semanticVersionJson = utils.parseSemanticVersion(definitions.version)
+            if (semanticVersionJson.prerelease) {
+                resultJsonObject.pattern = `${repository ? repository : REPOSITORY_SNAPSHOT}/${packagePath}/${semanticVersionJson.major}.${semanticVersionJson.minor}.${semanticVersionJson.patch}-${semanticVersionJson.prerelease}/`
             }
             else {
                 // this is formal release
