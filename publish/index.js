@@ -101,20 +101,21 @@ function uploadArtifacts() {
     artifacts.forEach( eachArtifact => {
         console.log(`- pattern ${eachArtifact}`)
         var fullFilePath = `${projectRootPath}/${eachArtifact}`
-        utils.fileExists(fullFilePath)
         var files = glob.sync(fullFilePath)
         files.forEach( file => {
-            var targetFileFull = publishTargetPathPattern + publishTargetFilePattern
-            var newMacros = extractArtifactoryUploadTargetFileMacros(file)
-            debug('After extractArtifactoryUploadTargetFileMacros():')
-            if (process.env.DEBUG) {
-                utils.printMap(newMacros)
+            if (utils.fileExists(file)) {    
+                var targetFileFull = publishTargetPathPattern + publishTargetFilePattern
+                var newMacros = extractArtifactoryUploadTargetFileMacros(file)
+                debug('After extractArtifactoryUploadTargetFileMacros():')
+                if (process.env.DEBUG) {
+                    utils.printMap(newMacros)
+                }
+                var mergedMacros = new Map([...macros, ...newMacros])
+                var t = parseString(targetFileFull, mergedMacros)
+                console.log(`- + found ${file} -> ${t}`)
+                var arr = [{"pattern": file, "target": t}]
+                uploadSpec['files'] = uploadSpec['files'].concat(arr)
             }
-            var mergedMacros = new Map([...macros, ...newMacros])
-            var t = parseString(targetFileFull, mergedMacros)
-            console.log(`- + found ${file} -> ${t}`)
-            var arr = [{"pattern": file, "target": t}]
-            uploadSpec['files'] = uploadSpec['files'].concat(arr)
         })
     })
 

@@ -6504,10 +6504,10 @@ else {
 function simpleDownload() {
     var commandString = 'jfrog rt download '
     if (extraOptions != '') {
-        commandString += `\"${extraOptions}\"`
+        commandString += extraOptions
     }
-    commandString += `\"${sourcePathorPattern}\"`
-    commandString += `\"${defaultTargetPath}\"`
+    commandString += ` \"${sourcePathorPattern}\"`
+    commandString += ` \"${defaultTargetPath}\"`
     jfrogDownload(commandString)
 }
 
