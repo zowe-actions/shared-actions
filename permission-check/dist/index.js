@@ -6213,14 +6213,14 @@ class utils {
     }
 
     static parseSemanticVersion(version) {
-        var versionMap = new Map()
-        versionMap.set('major', semver.major(version))
-        versionMap.set('minor', semver.minor(version))
-        versionMap.set('patch', semver.patch(version))
+        var versionJson = {}
+        versionJson['major'] = semver.major(version)
+        versionJson['minor'] = semver.minor(version)
+        versionJson['patch'] = semver.patch(version)
         var prerelease = semver.prerelease(version)
         if (prerelease)
-            versionMap.set('prerelease', ''+prerelease[0]+prerelease[1])
-        return versionMap
+            versionMap['prerelease'] = ''+prerelease[0]+prerelease[1]
+        return versionJson
     }
 
     static printMap (map) {
