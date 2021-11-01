@@ -88,7 +88,8 @@ else {
             manifestInfo['versionTrunks'] = utils.parseSemanticVersion(_manifestObject['version'])
         }
     }
-
+    console.log('package name is: ', packageName)
+    console.log('manifestInfo[id] is:', manifestInfo['id'])
     if (packageName != '' && !manifestInfo['id']) {
         manifestInfo['id'] = packageName
     }
