@@ -4,6 +4,10 @@ This action does several things including exports certain environment variables 
 
 ## Inputs
 
+### `package-name`
+
+**Optional** - package name. This will be utilized if there is no `id` in manifest file of your project. Will get ignored if `id` is present in your manifest file.
+
 ### `github-user`
 
 **Optional** - github user used to do authentication. Will be exported to env vars if provided.

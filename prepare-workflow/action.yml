@@ -1,6 +1,9 @@
 name: "Prepare build workflow action"
 description: "Getting prepare for running builds"
 inputs:
+  package-name:
+    description: 'package name'
+    required: false
   github-user:
     description: 'github user'
     required: false

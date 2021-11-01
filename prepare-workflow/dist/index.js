@@ -10570,6 +10570,7 @@ const debug = Debug('zowe-actions:shared-actions:prepare-workflow')
 const yaml = __nccwpck_require__(9423)
 const fs = __nccwpck_require__(5747)
 
+var packageName = core.getInput('package-name')
 var manifest = core.getInput('MANIFEST')
 var extraInit = core.getInput('EXTRA_INIT')
 var projectRootPath = process.env.GITHUB_WORKSPACE
@@ -10641,6 +10642,10 @@ else {
             core.exportVariable("P_VERSION", _manifestObject['version'])
             manifestInfo['versionTrunks'] = utils.parseSemanticVersion(_manifestObject['version'])
         }
+    }
+
+    if (packageName != '' && !manifestInfo['id']) {
+        manifestInfo['id'] = packageName
     }
 
     debug(JSON.stringify(manifestInfo, null, 2))
