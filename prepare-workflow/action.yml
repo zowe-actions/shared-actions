@@ -80,6 +80,7 @@ runs:
       run: node 'dist/index.js'
       working-directory: ${{ github.action_path }}
       env:
+        INPUT_PACKAGE_NAME: ${{ inputs.package-name }}
         INPUT_MANIFEST: ${{ inputs.manifest }}
         INPUT_EXTRA_INIT: ${{ inputs.extra-init }}
       shell: bash

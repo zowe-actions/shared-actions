@@ -15,7 +15,7 @@ const debug = Debug('zowe-actions:shared-actions:prepare-workflow')
 const yaml = require('js-yaml')
 const fs = require('fs')
 
-var packageName = core.getInput('package-name')
+var packageName = core.getInput('PACKAGE_NAME')
 var manifest = core.getInput('MANIFEST')
 var extraInit = core.getInput('EXTRA_INIT')
 var projectRootPath = process.env.GITHUB_WORKSPACE
@@ -88,8 +88,7 @@ else {
             manifestInfo['versionTrunks'] = utils.parseSemanticVersion(_manifestObject['version'])
         }
     }
-    console.log('package name is: ', packageName)
-    console.log('manifestInfo[id] is:', manifestInfo['id'])
+    
     if (packageName != '' && !manifestInfo['id']) {
         manifestInfo['id'] = packageName
     }
