@@ -6473,6 +6473,7 @@ var sourcePathorPattern = core.getInput('source-path-or-pattern')
 var defaultRepository = core.getInput('default-repository')
 var extraOptions = core.getInput('extra-options')
 var expectedCount = core.getInput('expected-count')!= '' ? parseInt(core.getInput('expected-count')) : -1
+var bypassValidation = core.getInput('bypass-validation') == 'true' ? true : false
 
 
 // mandatory check
@@ -6552,13 +6553,13 @@ function validate(response) {
     var status = response.status
     var totalSuccess = response.totals.success
     var totalFailure = response.totals.failure
-    if (status == '' || totalSuccess == '' || !totalFailure == '') {
+    console.log(`****************************\nDownload result: ${status}\nTotal Success:   ${totalSuccess}\nTotal Failure:   ${totalFailure}\n****************************`)
+    if (status == '' || totalSuccess == '' || totalFailure == '') {
         throw new Error(`jfrog rt download response changed, or something else went wrong`)
     }
-    console.log(`****************************\nDownload result: ${status}\nTotal Success:   ${totalSuccess}\nTotal Failure:   ${totalFailure}\n****************************`)
-
+    
     // validate download result
-    if (status != 'success' || parseInt(totalFailure) > 0) {
+    if ((status != 'success' || parseInt(totalFailure) > 0) && !bypassValidation) {
         throw new Error('Artifact downloading has failure(s) or not successful.')
     }
 

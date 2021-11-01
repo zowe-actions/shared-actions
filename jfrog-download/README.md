@@ -34,6 +34,10 @@ This action overall does jfrog download work. It has two modes:
 
 **Optional** - The expected number of downloaded artifacts
 
+### `bypass-validation`
+
+**Optional** - if the source on artifactory does not exist which is expected, we shall bypass the validation check
+
 <br />
 
 ## Outputs

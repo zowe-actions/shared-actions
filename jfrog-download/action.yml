@@ -19,6 +19,9 @@ inputs:
   expected-count:
     description: 'the expected number of downloaded artifacts'
     required: false
+  bypass-validation:
+    description: 'if the source on artifactory does not exist - expected, we shall bypass the validation check'
+    required: false
   
 runs:
   using: 'node12'
