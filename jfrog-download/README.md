@@ -53,7 +53,7 @@ Before you call this action, make sure you call [shared-actions/prepare-workflow
 ```yaml
 uses: jfrog/setup-jfrog-cli@v2
 env:
-    JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+    JF_ARTIFACTORY_1:
 
 uses: zowe-actions/shared-actions/prepare-workflow@main
 ```
