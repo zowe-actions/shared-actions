@@ -60,7 +60,7 @@ This is the publish target path for the project.
     ```yaml
     uses: jfrog/setup-jfrog-cli@v2
     env:
-        JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+        JF_ARTIFACTORY_1:
 
     uses: zowe-actions/shared-actions/prepare-workflow@main
     ```
