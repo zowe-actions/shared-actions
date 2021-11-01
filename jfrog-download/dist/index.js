@@ -6554,10 +6554,7 @@ function validate(response) {
     var totalSuccess = response.totals.success
     var totalFailure = response.totals.failure
     console.log(`****************************\nDownload result: ${status}\nTotal Success:   ${totalSuccess}\nTotal Failure:   ${totalFailure}\n****************************`)
-    if (status == '' || totalSuccess == '' || totalFailure == '') {
-        throw new Error(`jfrog rt download response changed, or something else went wrong`)
-    }
-    
+
     // validate download result
     if ((status != 'success' || parseInt(totalFailure) > 0) && !bypassValidation) {
         throw new Error('Artifact downloading has failure(s) or not successful.')
