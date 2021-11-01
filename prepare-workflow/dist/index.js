@@ -10155,10 +10155,10 @@ fi
                 cmds.push(environmentText)
                 cmds.push(prepareWorkspaceScriptFullPath)
                 debug(cmds.join(' '))
-                console.log(utils.sh_heavyload(cmds.join(' ')))    //use console to print output
+                utils.sh_heavyload(cmds.join(' '))   //use console to print output
                 console.log('prepare workspace completed')
             }
-            console.log(utils.sh_heavyload(`echo ${func} packaging contents: && find ${paxLocalWorkspace} -print`))
+            utils.sh_heavyload(`echo ${func} packaging contents: && find ${paxLocalWorkspace} -print`)
             
             // tar ascii folder if exists
             if (utils.fileExists(`${paxLocalWorkspace}/${PATH_ASCII}`)) {
@@ -10166,11 +10166,11 @@ fi
                 cmds.push(`tar -c -f ${paxLocalWorkspace}/${PATH_ASCII}.tar -C ${paxLocalWorkspace}/ ${PATH_ASCII}`)
                 cmds.push(`rm -fr ${paxLocalWorkspace}/${PATH_ASCII}`)
                 debug(cmds.join(' && '))
-                debug(utils.sh_heavyload(cmds.join(' && ')))    // use debug to optional print output
+                utils.sh_heavyload(cmds.join(' && '))    // use debug to optional print output
             }
 
             // tar the whole workspace folder
-            debug(utils.sh_heavyload(`tar -c -f ${packageTar} -C ${paxLocalWorkspace} .`))
+            utils.sh_heavyload(`tar -c -f ${packageTar} -C ${paxLocalWorkspace} .`)
             fs.writeFileSync(packageScriptFile, packageScriptContent)
         } catch (ex0) {
             throw new Error(`Failed to prepare packaging workspace: ${ex0}`)
@@ -10280,7 +10280,7 @@ class utils {
     }
 
     static sh_heavyload(cmd) {
-        spawnSync(cmd, { stdio: 'inherit'})
+        spawnSync(cmd, { stdio: 'inherit', shell: true})
     }
 
     static fileExists(path) {
