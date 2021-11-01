@@ -1,62 +1,40 @@
-# Make pax for Zowe projects
+# jfrog download action
 
-This action does packaging step for Zowe projects. It transfers files over to a zOS machine to do pax then transfer files back. For more detailed process, please refer to the utility function [zowe-actions/zowe-common/lib/pax.js](https://github.com/zowe-actions/zowe-common/blob/main/lib/pax.js)
+This action overall does jfrog download work. It has two modes:
+
+1. Simple download mode - by providing `source-path-or-pattern` and `default-target-path` (as source and target) with optional `extra-options`;
+
+2. manifest file to file spec mode - by providing `manifest-file-path` and `default-target-path`, this action processes and converts the manifest file specified to a jfrog file spec (.json), then initiate the download process.
+
 <br />
 
 ## Inputs
 
-### `pax-name`
+### `manifest-file-path`
 
-**Optional** - The name of the pax to be made. If not provided, default will be pulled from PACKAGE_INFO. Refer [here](https://github.com/zowe-actions/shared-actions/tree/main/prepare-workflow#manifest_info) for more information
+**Mandatory on condition** - The location of the manifest file. This becomes mandatory if `source-path-or-pattern` is not provided.
 
-### `pax-ssh-host`
+### `source-path-or-pattern`
 
-**Optional** - The ssh zOS host for doing packaging. Default `zzow04.zowe.marist.cloud`
+**Mandatory on condition** - The download source path of pattern (remote). This becomes mandatory if `manifest-file-path` is not provided.
 
-### `pax-ssh-port`
+### `default-target-path`
 
-**Optional** - The ssh zOS port. Default `22`
+**Required** - The default download target path (local). Can be overwritten by "target" property in any package in manifest file.
 
-### `pax-ssh-username`
+### `extra-options`
 
-**Required** - The ssh zOS login username
+**Optional** - jfrog rt command extra options.
 
-### `pax-ssh-password`
+### `default-repository`
 
-**Required** - The ssh zOS login password
+**Optional** - The default repository. Usually either `libs-snapshot-local` or `libs-release-local`
 
-### `pax-local-workspace`
+### `expected-count`
 
-**Optional** - The path to `.pax` folder that contains scripts required to do packaging. Default `./.pax`
+**Optional** - The expected number of downloaded artifacts
 
-### `pax-remote-workspace`
-
-**Optional** - Remote directory on zOS server to be used for packaging. Default `/ZOWE/tmp`
-
-### `pax-options`
-
-**Optional** - Extra options for `pax` command
-
-### `pax-compress`
-
-**Optional** - Flag to enable pax compression
-
-### `pax-compress-options`
-
-**Optional** - Compress command options for pax
-
-### `extra-files`
-
-**Optional** - Extra artifacts will be generated and will be transferred back. For multiple items, put them on a single line with comma separation.
-
-### `keep-temp-folders`
-
-**Optional** - Flag to if we want to keep the temporary packaging folder on the remote machine for debugging purpose. Default is `FALSE`
-
-### `extra-environment-vars`
-
-**Optional** - Extra environment variables to be parsed
-<br /><br />
+<br />
 
 ## Outputs
 
@@ -70,9 +48,13 @@ None
 
 ## Pre-requisite
 
-Before you call this action, make sure you call [shared-actions/prepare-workflow](https://github.com/zowe-actions/shared-actions/tree/main/prepare-workflow). Sample usage would be:
+Before you call this action, make sure you call [shared-actions/prepare-workflow](https://github.com/zowe-actions/shared-actions/tree/main/prepare-workflow) and [jfrog/setup-jfrog-cli](https://github.com/jfrog/setup-jfrog-cli) . Sample usage would be:
 
 ```yaml
+uses: jfrog/setup-jfrog-cli@v2
+env:
+    JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+
 uses: zowe-actions/shared-actions/prepare-workflow@main
 ```
 
@@ -81,16 +63,24 @@ uses: zowe-actions/shared-actions/prepare-workflow@main
 (this is a minimal set of inputs you need to provide)
 
 ```yaml
-uses: zowe-actions/shared-actions/make-pax@main
+uses: zowe-actions/shared-actions/jfrog-download@main
 with:
-  pax-ssh-username: user
-  pax-ssh-password: mypassword
+  default-target-path:
+  manifest-file-path:
+```
+
+or
+
+```yaml
+uses: zowe-actions/shared-actions/jfrog-download@main
+with:
+  default-target-path:
+  source-path-or-pattern:
 ```
 
 To enable debug mode, append
 
 ```yaml
 env:
-  DEBUG: 'zowe-actions:zowe-common:pax'
-  DEBUG: 'zowe-actions:shared-actions:packaging'
+  DEBUG: 'zowe-actions:shared-actions:jfrog-download'
 ```

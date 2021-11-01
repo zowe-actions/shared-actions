@@ -6477,7 +6477,7 @@ var expectedCount = core.getInput('expected-count')!= '' ? parseInt(core.getInpu
 
 // mandatory check
 if (!defaultTargetPath || defaultTargetPath == '') {
-    throw new InvalidArgumentException('target-path')
+    throw new InvalidArgumentException('default-target-path')
 }
 if (sourcePathorPattern != '' && (!manifestFilePath || manifestFilePath == '')) {
     console.log('Simple download!')
@@ -6491,11 +6491,14 @@ else if (manifestFilePath != '' && (!sourcePathorPattern || sourcePathorPattern 
     // meaning we need to convert manifest to download spec then download
     manifest2DownloadSpecDownload()
 }
-else { //meaning both manifest and sourcePathorPattern and provided, I am confused of what user wants to do. I give up!
+else if (manifestFilePath != '' && sourcePathorPattern != '') {
     throw new Error (```I see both sourcePathorPattern: ${sourcePathorPattern} and manifestFilePath: ${manifestFilePath} are provided.
 Do you want to simply download the ${sourcePathorPattern} or you want me to process manifest? I am confused.
-Please just have one of them, don't include both, then try again. Thanks!
+Please just have one of them - don't include both, then try again. Thanks!
 ```)
+}
+else { 
+    throw new Error ('I see neither of sourcePathorPattern or manifestFilePath is provided. You must provide one of them, then try again.') 
 }
 
 function simpleDownload() {
