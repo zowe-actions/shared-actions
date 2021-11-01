@@ -10104,7 +10104,7 @@ function getBranchTag(branch) {
  * the expected macros extracted are: {@code [filename: "my-artifact", fileext: "zip"]}</p>
  *
  * @param  file     original file name
- * @return          newMarco only contrans filename and fileext
+ * @return          newMarco only contains filename and fileext
  */
  function extractArtifactoryUploadTargetFileMacros(file) {
     var fileNameExt = utils.parseFileExtension(file)
@@ -10118,7 +10118,16 @@ function getBranchTag(branch) {
         if (packageInfo && packageInfo['versionTrunks']) {
             var semver = `${packageInfo['versionTrunks']['major']}.${packageInfo['versionTrunks']['minor']}.${packageInfo['versionTrunks']['patch']}`
             if (matches[2] == semver) {
-                // the artifact file name has version infromation
+                // the artifact file name has version information
+                console.log(`Version in artifact "${newMacros.get('filename')}" name is extracted as "${matches[1]}".`)
+                newMacros.set('filename',matches[1])
+            }
+        }
+        // like a zowe install packaging project, there is no packageInfo, only manifestInfo is available
+        else if (manifestInfo && manifestInfo['versionTrunks']) {
+            var semver = `${manifestInfo['versionTrunks']['major']}.${manifestInfo['versionTrunks']['minor']}.${manifestInfo['versionTrunks']['patch']}`
+            if (matches[2] == semver) {
+                // the artifact file name has version information
                 console.log(`Version in artifact "${newMacros.get('filename')}" name is extracted as "${matches[1]}".`)
                 newMacros.set('filename',matches[1])
             }
