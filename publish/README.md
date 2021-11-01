@@ -45,7 +45,13 @@ Example: `PUBLISH_VERSION: 1.0.2-my-dev-branch-210-20210810194022`
 ### `PRE_RELEASE_STRING`
 
 This will be the same as input `pre-release-string`. If pre-release string input is not provided, value here will be empty.
-<br /><br />
+
+
+### `PUBLISH_TARGET_PATH`
+
+This is the publish target path for the project.  
+
+<br />  
 
 ## Pre-requisite
 
@@ -73,6 +79,8 @@ This will be the same as input `pre-release-string`. If pre-release string input
 
 ```yaml
 uses: zowe-actions/shared-actions/publish@main
+with:
+  perform-release:
 ```
 
 To have multiline input for artifacts:

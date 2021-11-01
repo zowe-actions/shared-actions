@@ -81,6 +81,7 @@ if (artifacts && artifacts.length > 0) {
 } else {
     console.warn ('No artifacts to upload to jfrog, normal publish skipped.')
 }
+core.exportVariable('PUBLISH_TARGET_PATH', parseString(publishTargetPathPattern, macros))
 core.exportVariable('PUBLISH_VERSION', macros.get('publishversion'))
 core.exportVariable('PRE_RELEASE_STRING',preReleaseString)
 /* ========================================================================================================*/
@@ -156,7 +157,14 @@ function getBuildStringMacros() {
         macros.set('subproject', '')
     }
     if (!macros.has('version')) {
-        macros.set('version', packageInfo['version'] ? packageInfo['version'] : '')
+        var v = ''
+        if (!manifestInfo['version'] && packageInfo['version']) {
+            v = packageInfo['version']
+        }
+        else if (manifestInfo['version']) {
+            v = manifestInfo['version']
+        }
+        macros.set('version', v)
     }
     if (!macros.has('prerelease')) {
         if (release) {
