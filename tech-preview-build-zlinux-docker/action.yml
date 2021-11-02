@@ -1,0 +1,34 @@
+name: "Tech preview build zlinux docker"
+description: "An action to build zlinux docker tech preview"
+inputs:
+  run-number:
+    description: current workflow run number
+    required: true
+  zowe-pax-jfrog-upload-target:
+    description: full path of zowe.pax upload target
+    required: true
+  build-docker-sources:
+    description: flag to build docker build-docker-sources
+    required: true
+  dockerhub-user:
+    description: user to use on dockerhub
+    required: true
+  dockerhub-password:
+    description: password associated with user above
+    required: true
+  zlinux-host:
+    description: zlinux host
+    required: true
+  zlinux-ssh-key:
+    description: zlinux host
+    required: true
+  zlinux-ssh-user:
+    description: zlinux host
+    required: true
+  zlinux-ssh-passphrase:
+    description: zlinux host
+    required: true
+
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
