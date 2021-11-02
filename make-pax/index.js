@@ -71,7 +71,12 @@ else {
         var paxNameFull = paxCompress ? `${paxName}.pax.Z` : `${paxName}.pax`
 
         var args = new Map()
-        args.set('job',`pax-packaging-${paxName}`)
+        if (paxName == 'zowe' && extraFiles != '' && extraFiles.includes('zowe-smpe')) {
+            args.set('job',`smpe-packaging-${paxName}`)
+        }
+        else {
+            args.set('job',`pax-packaging-${paxName}`)
+        }
         args.set('paxSSHHost',paxSSHHost)
         args.set('paxSSHPort',paxSSHPort)
         args.set('paxSSHUsername',paxSSHUsername)
