@@ -9844,12 +9844,12 @@ const defaultPublishTargetFilePattern = '{filename}-{publishversion}{fileext}'
 
 // Gets inputs
 const artifacts = core.getMultilineInput('artifacts') //array form
-const performRelease = core.getInput('perform-release')
+const isPerformingRelease = core.getBooleanInput('perform-release')
 const currentBranch = process.env.CURRENT_BRANCH
 const preReleaseString = core.getInput('pre-release-string')
 const packageInfo = process.env.PACKAGE_INFO ? JSON.parse(process.env.PACKAGE_INFO) : ''
 const manifestInfo = process.env.MANIFEST_INFO ? JSON.parse(process.env.MANIFEST_INFO) : ''
-const skipUpload = core.getInput('skip-upload') == 'true' ? true : false
+const skipUpload = core.getBooleanInput('skip-upload')
 var publishTargetPathPattern = core.getInput('publish-target-path-pattern')
 var publishTargetFilePattern = core.getInput('publish-target-file-pattern')
 
@@ -9869,7 +9869,6 @@ if (isReleaseBranch == 'true') {
     debug(`isReleaseBranch is a string, value is ${isReleaseBranch}`)
 }
 
-var isPerformingRelease = performRelease == 'true' ? true : false
 var notStandardProject = false
 if (manifestInfo == '') {
     notStandardProject = true //meaning this project is node or gradle project exclusively, which can bypass some mandatory check later
@@ -9955,7 +9954,7 @@ function uploadArtifacts() {
  */
 function getBuildStringMacros() {
     var release = false
-    if (isReleaseBranch == true && isPerformingRelease == true) {
+    if (isReleaseBranch == true && isPerformingRelease) {
         release = true
     }
     debug(`If we are doing a release? ${release}`)

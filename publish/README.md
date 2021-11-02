@@ -15,7 +15,7 @@ Then utilize this newly created JSON file for jFrog to consume, finally does upl
 
 ### `perform-release`
 
-**Required** - The flag to indicate if doing performing release.
+**Required** - The flag to indicate if doing performing release. Input has to be either `true` or `false`. Default is `false`.
 
 ### `pre-release-string`
 
@@ -31,7 +31,7 @@ Then utilize this newly created JSON file for jFrog to consume, finally does upl
 
 ### `skip-upload`
 
-**Optional** - Always skip actual upload. Doesn't matter if `artifacts` is provided or not.
+**Optional** - Always skip actual upload. Doesn't matter if `artifacts` is provided or not. Input has to be either `true` or `false`. Default is `false`.
 <br /><br />
 
 ## Outputs
