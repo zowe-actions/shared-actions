@@ -22,13 +22,13 @@ const paxSSHPort = core.getInput('pax-ssh-port')
 const paxSSHUsername = core.getInput('pax-ssh-username')
 const paxSSHPassword = core.getInput('pax-ssh-password')
 const paxOptions = core.getInput('pax-options')
-const paxCompress = core.getInput('pax-compress') == 'true' ? true : false
+const paxCompress = core.getBooleanInput('pax-compress')
 var paxLocalWorkspace = core.getInput('pax-local-workspace')
 var paxRemoteWorkspace = core.getInput('pax-remote-workspace')
 var paxName = core.getInput('pax-name')
 const paxCompressOptions = core.getInput('pax-compress-options')
 const extraFiles = core.getInput('extra-files')
-const keepTempFolder = core.getInput('keep-temp-folders') == 'true' ? true : false
+const keepTempFolder = core.getBooleanInput('keep-temp-folders')
 const extraEnvironmentVars = core.getMultilineInput('extra-environment-vars')
 
 paxLocalWorkspace = `${projectRootPath}/${paxLocalWorkspace}`

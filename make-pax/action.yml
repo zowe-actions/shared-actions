@@ -33,6 +33,7 @@ inputs:
   pax-compress:
     description: 'flag to enable pax compression'
     required: false
+    default: 'false'
   pax-compress-options:
     description: 'compress command options for pax'
     required: false
@@ -40,8 +41,9 @@ inputs:
     description: 'extra artifacts will be generated and should be transferred back'
     required: false
   keep-temp-folders:
-    description: 'if we want to keep the temporary packaging folder on the remote machine for debugging purpose. Default is FALSE'
+    description: 'if we want to keep the temporary packaging folder on the remote machine for debugging purpose. Default is false'
     required: false
+    default: 'false'
   extra-environment-vars:
     description: 'extra environment variables to be parsed'
     required: false

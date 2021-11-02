@@ -39,7 +39,7 @@ This action does packaging step for Zowe projects. It transfers files over to a 
 
 ### `pax-compress`
 
-**Optional** - Flag to enable pax compression
+**Optional** - Flag to enable pax compression. Input has to be `true` or `false`. Default is `false`.
 
 ### `pax-compress-options`
 
@@ -51,7 +51,7 @@ This action does packaging step for Zowe projects. It transfers files over to a 
 
 ### `keep-temp-folders`
 
-**Optional** - Flag to if we want to keep the temporary packaging folder on the remote machine for debugging purpose. Default is `FALSE`
+**Optional** - Flag to if we want to keep the temporary packaging folder on the remote machine for debugging purpose. Input has to be `true` or `false`. Default is `false`.
 
 ### `extra-environment-vars`
 
