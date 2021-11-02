@@ -18,6 +18,9 @@ inputs:
     description: format for the file name published to artifactory
     required: false
     default: '{filename}-{publishversion}{fileext}'
+  skip-upload:
+    description: not doing an skip-upload
+    required: false
 
 runs:
   using: 'node12'

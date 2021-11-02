@@ -28,6 +28,10 @@ Then utilize this newly created JSON file for jFrog to consume, finally does upl
 ### `publish-target-file-pattern`
 
 **Optional** - Format for the file name published to artifactory. Default format for zowe artifacts: `{filename}-{publishversion}{fileext}`. This parameter can be customized to any format
+
+### `skip-upload`
+
+**Optional** - Always skip actual upload. Doesn't matter if `artifacts` is provided or not.
 <br /><br />
 
 ## Outputs

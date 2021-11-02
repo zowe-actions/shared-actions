@@ -9849,6 +9849,7 @@ const currentBranch = process.env.CURRENT_BRANCH
 const preReleaseString = core.getInput('pre-release-string')
 const packageInfo = process.env.PACKAGE_INFO ? JSON.parse(process.env.PACKAGE_INFO) : ''
 const manifestInfo = process.env.MANIFEST_INFO ? JSON.parse(process.env.MANIFEST_INFO) : ''
+const skipUpload = core.getInput('skip-upload') == 'true' ? true : false
 var publishTargetPathPattern = core.getInput('publish-target-path-pattern')
 var publishTargetFilePattern = core.getInput('publish-target-file-pattern')
 
@@ -9891,7 +9892,7 @@ if (isPerformingRelease) {
 }
 
 // upload artifacts if provided
-if (artifacts && artifacts.length > 0) {
+if (!skipUpload && artifacts && artifacts.length > 0) {
     uploadArtifacts()
     console.log(utils.sh(`jfrog rt upload --spec ${temporaryUploadSpecName}`))
     utils.sh('jfrog rt bp')
@@ -9932,6 +9933,9 @@ function uploadArtifacts() {
                 console.log(`- + found ${file} -> ${t}`)
                 var arr = [{"pattern": file, "target": t}]
                 uploadSpec['files'] = uploadSpec['files'].concat(arr)
+                if (file.includes('zowe.pax')) {
+                    core.setOutput('ZOWE_PAX_JFROG_UPLOAD_TARGET',t)
+                }
             }
         })
     })
