@@ -11,9 +11,6 @@
 const core = require('@actions/core')
 const { utils } = require('zowe-common')
 const Debug = require('debug')
-const debug = Debug('zowe-actions:shared-actions:tech-preview-build-zlinux-docker')
-var glob = require("glob")
-var fs = require('fs');
 
 // Defaults
 const projectRootPath = process.env.GITHUB_WORKSPACE
@@ -31,11 +28,11 @@ const zlinuxSSHUser= core.getInput('zlinux-ssh-user')
 const zlinuxSSHPassphrase= core.getInput('zlinux-ssh-passphrase')
 const zlinuxSSHPort = 22
 
-
+// main
 var cmd = `mkdir -p zowe-build/${currentBranch}_${buildNumber}`
 ssh(cmd)
 
-var cmd2 = `put containers zowe-build/${currentBranch}_${buildNumber}`
+var cmd2 = `put ${projectRootPath}/containers zowe-build/${currentBranch}_${buildNumber}`
 sftp(cmd2)
 
 var cmd3 = `cd zowe-build/${currentBranch}_${buildNumber}/containers/server-bundle
@@ -60,13 +57,15 @@ echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr server-bundle.*`
 ssh(cmd5)
 
 if (buildDockerSources) {
-    var cmd6 = `get zowe-build/${currentBranch}_${buildNumber}/containers/server-bundle/server-bundle.s390x.tar server-bundle.s390x.tar`
+    var cmd6 = `get zowe-build/${currentBranch}_${buildNumber}/containers/server-bundle/server-bundle.s390x.tar ${projectRootPath}/server-bundle.s390x.tar`
     sftp(cmd6)   
 }
 
 var cmd7 = `rm -rf zowe-build/${currentBranch}_${buildNumber}
 sudo docker system prune -f`
 ssh(cmd7)
+
+
 
 
 function ssh(cmd) {
