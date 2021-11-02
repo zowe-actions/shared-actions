@@ -117,7 +117,7 @@ function uploadArtifacts() {
                 var arr = [{"pattern": file, "target": t}]
                 uploadSpec['files'] = uploadSpec['files'].concat(arr)
                 if (file.includes('zowe.pax')) {
-                    core.setOutput('ZOWE_PAX_JFROG_UPLOAD_TARGET',t)
+                    core.exportVariable('ZOWE_PAX_JFROG_UPLOAD_TARGET',t)
                 }
             }
         })

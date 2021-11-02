@@ -50,10 +50,13 @@ Example: `PUBLISH_VERSION: 1.0.2-my-dev-branch-210-20210810194022`
 
 This will be the same as input `pre-release-string`. If pre-release string input is not provided, value here will be empty.
 
-
 ### `PUBLISH_TARGET_PATH`
 
 This is the publish target path for the project.  
+
+### `ZOWE_PAX_JFROG_UPLOAD_TARGET`
+
+This is the full path of zowe.pax upload destination
 
 <br />  
 
