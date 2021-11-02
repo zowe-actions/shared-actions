@@ -6,6 +6,7 @@ inputs:
     required: false
   generic-bump-version:
     description: 'flag to indicate if doing a generic version bump'
+    default: 'false'
     required: false
 
 
