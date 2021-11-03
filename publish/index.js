@@ -103,7 +103,7 @@ function makeUploadFileSpec() {
         var fullFilePath = `${projectRootPath}/${eachArtifact}`
         var files = glob.sync(fullFilePath)
         files.forEach( file => {
-            if (utils.fileExists(file)) {    
+            if (utils.fileExists(file) || file.includes('zowe.pax')) {    
                 var targetFileFull = publishTargetPathPattern + publishTargetFilePattern
                 var newMacros = extractArtifactoryUploadTargetFileMacros(file)
                 debug('After extractArtifactoryUploadTargetFileMacros():')
