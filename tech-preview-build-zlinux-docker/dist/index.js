@@ -6486,6 +6486,13 @@ const zlinuxSSHUser= core.getInput('zlinux-ssh-user')
 const zlinuxSSHPassphrase= core.getInput('zlinux-ssh-passphrase')
 const zlinuxSSHPort = 22
 
+// setup SSH key
+var sshKeyFile = '~/.ssh/zlinux.key'
+var sshSetupCmd = `mkdir -p ~/.ssh/ &&
+echo "${zlinuxSSHKey}" > ${sshKeyFile} &&
+chmod 600 ${sshKeyFile}`
+utils.sh(sshSetupCmd)
+
 // main
 var cmd = `mkdir -p zowe-build/${currentBranch}_${buildNumber}`
 ssh(cmd)
@@ -6527,11 +6534,11 @@ ssh(cmd7)
 
 
 function ssh(cmd) {
-    utils.sshKeyFile(zlinuxHost, zlinuxSSHPort, zlinuxSSHUser, zlinuxSSHPassphrase, zlinuxSSHKey, cmd)
+    utils.sshKeyFile(zlinuxHost, zlinuxSSHPort, zlinuxSSHUser, zlinuxSSHPassphrase, sshKeyFile, cmd)
 }
 
 function sftp(cmd) {
-    utils.sftpKeyFile(zlinuxHost, zlinuxSSHPort, zlinuxSSHUser, zlinuxSSHPassphrase, zlinuxSSHKey, cmd)
+    utils.sftpKeyFile(zlinuxHost, zlinuxSSHPort, zlinuxSSHUser, zlinuxSSHPassphrase, sshKeyFile, cmd)
 }
 })();
 
