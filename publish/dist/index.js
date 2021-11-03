@@ -9650,7 +9650,7 @@ ${cmds}
 EOF`
         this.sh_heavyload(fullCMD)
     }
-  
+
     static sftpKeyFile(server, keyPassPhrase, cmds) {
         var fullCMD = `SSHPASS=${keyPassPhrase} sshpass -e -P "passphrase for key" sftp ${server} <<EOF
 ${cmds}
