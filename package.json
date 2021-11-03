@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A project containing global setup code for zowe actions",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npm update && ./ncc-build-all.sh"
   },
   "repository": {
     "type": "git",

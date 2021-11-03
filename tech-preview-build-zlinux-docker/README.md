@@ -15,7 +15,7 @@ Then utilize this newly created JSON file for jFrog to consume, finally does upl
 
 ### `perform-release`
 
-**Optional** - The flag to indicate if doing performing release. Input has to be either `true` or `false`. Default is `false`.
+**Required** - The flag to indicate if doing performing release.
 
 ### `pre-release-string`
 
@@ -31,14 +31,12 @@ Then utilize this newly created JSON file for jFrog to consume, finally does upl
 
 ### `skip-upload`
 
-**Optional** - Always skip actual upload. Doesn't matter if `artifacts` is provided or not. Input has to be either `true` or `false`. Default is `false`.
+**Optional** - Always skip actual upload. Doesn't matter if `artifacts` is provided or not.
 <br /><br />
 
 ## Outputs
 
-### `zowe-pax-jfrog-upload-target`
-
-zowe pax jfrog upload target
+None
 <br /><br />
 
 ## Exported environment variables
@@ -55,6 +53,10 @@ This will be the same as input `pre-release-string`. If pre-release string input
 ### `PUBLISH_TARGET_PATH`
 
 This is the publish target path for the project.  
+
+### `ZOWE_PAX_JFROG_UPLOAD_TARGET`
+
+This is the full path of zowe.pax upload destination
 
 <br />  
 
