@@ -16,17 +16,11 @@ inputs:
   dockerhub-password:
     description: password associated with user above
     required: true
-  zlinux-host:
-    description: zlinux host
+  zlinux-ssh-server:
+    description: ssh key server that has setup in previous steps
     required: true
-  zlinux-ssh-key:
-    description: zlinux host
-    required: true
-  zlinux-ssh-user:
-    description: zlinux host
-    required: true
-  zlinux-ssh-passphrase:
-    description: zlinux host
+  zlinux-ssh-key-passphrase:
+    description: ssh key passphrase
     required: true
 
 runs:

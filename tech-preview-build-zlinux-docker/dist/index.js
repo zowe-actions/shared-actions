@@ -6285,8 +6285,8 @@ EOF`
         this.sh_heavyload(fullCMD)
     }
 
-    static sftpKeyFile(host, port, username, keyPassPhrase, keyfile, cmds) {
-        var fullCMD = `sshpass -P ${keyPassPhrase} sftp -o BatchMode=no -o StrictHostKeyChecking=no -P ${port} -b -i ${keyfile} ${username}@${host} <<EOF
+    static sftpKeyFile(server, keyPassPhrase, cmds) {
+        var fullCMD = `SSHPASS=${keyPassPhrase} sshpass -e -P "passphrase for key" sftp ${server} <<EOF
 ${cmds}
 exit 0
 EOF`
@@ -6301,8 +6301,8 @@ EOF`
         this.sh_heavyload(fullCMD)
     }
 
-    static sshKeyFile(host, port, username, keyPassPhrase, keyfile, cmds) {
-        var fullCMD = `sshpass -P ${keyPassPhrase} ssh -tt -o BatchMode=no -o StrictHostKeyChecking=no -p ${port} -i ${keyfile} ${username}@${host} <<EOF
+    static sshKeyFile(server, keyPassPhrase, cmds) {
+        var fullCMD = `SSHPASS=${keyPassPhrase} sshpass -e -P "passphrase for key" ssh ${server} <<EOF
 ${cmds}
 exit 0
 EOF`
@@ -6480,18 +6480,8 @@ const zowePaxJfrogUploadTarget = core.getInput('zowe-pax-jfrog-upload-target')
 const buildDockerSources = core.getBooleanInput('build-docker-sources')
 const dockerhubUser = core.getInput('dockerhub-user')
 const dockerhubPassword = core.getInput('dockerhub-password')
-const zlinuxHost = core.getInput('zlinux-host')
-const zlinuxSSHKey= core.getInput('zlinux-ssh-key')
-const zlinuxSSHUser= core.getInput('zlinux-ssh-user')
-const zlinuxSSHPassphrase= core.getInput('zlinux-ssh-passphrase')
-const zlinuxSSHPort = 22
-
-// setup SSH key
-var sshKeyFile = '~/.ssh/zlinux.key'
-var sshSetupCmd = `mkdir -p ~/.ssh/ &&
-echo "${zlinuxSSHKey}" > ${sshKeyFile} &&
-chmod 600 ${sshKeyFile}`
-utils.sh(sshSetupCmd)
+const zlinuxSSHServer = core.getInput('zlinux-ssh-server')
+const zlinuxSSHKeyPassphrase= core.getInput('zlinux-ssh-key-passphrase')
 
 // main
 var cmd = `mkdir -p zowe-build/${currentBranch}_${buildNumber}`
@@ -6534,11 +6524,11 @@ ssh(cmd7)
 
 
 function ssh(cmd) {
-    utils.sshKeyFile(zlinuxHost, zlinuxSSHPort, zlinuxSSHUser, zlinuxSSHPassphrase, sshKeyFile, cmd)
+    utils.sshKeyFile(zlinuxSSHServer, zlinuxSSHKeyPassphrase, cmd)
 }
 
 function sftp(cmd) {
-    utils.sftpKeyFile(zlinuxHost, zlinuxSSHPort, zlinuxSSHUser, zlinuxSSHPassphrase, sshKeyFile, cmd)
+    utils.sftpKeyFile(zlinuxSSHServer, zlinuxSSHKeyPassphrase, cmd)
 }
 })();
 
