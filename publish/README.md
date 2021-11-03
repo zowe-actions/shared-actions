@@ -11,7 +11,7 @@ Then utilize this newly created JSON file for jFrog to consume, finally does upl
 
 ### `artifacts`
 
-**Optional** - Artifacts to be sent over jFrog Artifactory. Can have multiple line inputs here (see example below). If you don't provide any artifacts, uploading to artifactory will be skipped.
+**Optional** - Artifacts to be sent over jFrog Artifactory. Can have multiple line inputs here (see example below). Path of each artifact is relative to project root directory. If you don't provide any artifacts, uploading to artifactory will be skipped.
 
 ### `perform-release`
 
