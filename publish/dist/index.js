@@ -9524,6 +9524,7 @@ module.exports = pax;
  */
 
 const { execSync, spawnSync } = __nccwpck_require__(3129)
+const InvalidArgumentException = __nccwpck_require__(1534)
 const fs = __nccwpck_require__(5747)
 const semver = __nccwpck_require__(4603)
 
@@ -9549,6 +9550,12 @@ class utils {
         } catch {
             console.warn(`${path} does not exist :(`)
             return false
+        }
+    }
+
+    static mandatoryInputCheck(varArg, inputName) {
+        if (!varArg || varArg == '') {
+            throw new InvalidArgumentException(inputName)
         }
     }
 

@@ -6158,6 +6158,7 @@ module.exports = pax;
  */
 
 const { execSync, spawnSync } = __nccwpck_require__(3129)
+const InvalidArgumentException = __nccwpck_require__(1534)
 const fs = __nccwpck_require__(5747)
 const semver = __nccwpck_require__(4603)
 
@@ -6183,6 +6184,12 @@ class utils {
         } catch {
             console.warn(`${path} does not exist :(`)
             return false
+        }
+    }
+
+    static mandatoryInputCheck(varArg, inputName) {
+        if (!varArg || varArg == '') {
+            throw new InvalidArgumentException(inputName)
         }
     }
 
@@ -6489,9 +6496,8 @@ var bypassValidation = core.getBooleanInput('bypass-validation')
 
 
 // mandatory check
-if (!defaultTargetPath || defaultTargetPath == '') {
-    throw new InvalidArgumentException('default-target-path')
-}
+utils.mandatoryInputCheck(defaultTargetPath,'default-target-path')
+
 if (sourcePathorPattern != '' && (!manifestFilePath || manifestFilePath == '')) {
     console.log('Simple download!')
     console.log(`Download source is ${sourcePathorPattern}, target is ${defaultTargetPath}`)

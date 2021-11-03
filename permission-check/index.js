@@ -9,12 +9,18 @@
  */
 
 const core = require('@actions/core')
-const { utils } = require('zowe-common')
+const { utils, InvalidArgumentException } = require('zowe-common')
 
 var user = core.getInput('user')
 var repo = core.getInput('github-repo')
 var g_user = core.getInput('github-user')
 var g_passwd = core.getInput('github-passwd')
+
+// null check
+utils.mandatoryInputCheck(user,'user')
+utils.mandatoryInputCheck(repo,'github-repo')
+utils.mandatoryInputCheck(g_user,'github-user')
+utils.mandatoryInputCheck(g_passwd,'github-passwd')
 
 if (user == 'dependabot[bot]'){
     console.log(`${user} is running this workflow now, manually approved - Bypassing permission check`)
