@@ -6285,6 +6285,14 @@ EOF`
         this.sh_heavyload(fullCMD)
     }
 
+    static sftpKeyFile(host, port, username, keyPassPhrase, keyfile, cmds) {
+        var fullCMD = `sshpass -P ${keyPassPhrase} sftp -o BatchMode=no -o StrictHostKeyChecking=no -P ${port} -b -i ${keyfile} ${username}@${host} <<EOF
+${cmds}
+exit 0
+EOF`
+        this.sh_heavyload(fullCMD)
+    }
+
     static ssh(host, port, username, passwd, cmds) {
         var fullCMD = `SSHPASS=${passwd} sshpass -e ssh -tt -o StrictHostKeyChecking=no -p ${port} ${username}@${host} <<EOF
 ${cmds}
@@ -6294,7 +6302,7 @@ EOF`
     }
 
     static sshKeyFile(host, port, username, keyPassPhrase, keyfile, cmds) {
-        var fullCMD = `sshpass -e -P ${keyPassPhrase} ssh -tt -o BatchMode=no -o StrictHostKeyChecking=no -p ${port} -i ${keyfile} ${username}@${host} <<EOF
+        var fullCMD = `sshpass -P ${keyPassPhrase} ssh -tt -o BatchMode=no -o StrictHostKeyChecking=no -p ${port} -i ${keyfile} ${username}@${host} <<EOF
 ${cmds}
 exit 0
 EOF`

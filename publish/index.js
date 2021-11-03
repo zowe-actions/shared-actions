@@ -27,7 +27,7 @@ const defaultPublishTargetFilePattern = '{filename}-{publishversion}{fileext}'
 
 // Gets inputs
 const artifacts = core.getMultilineInput('artifacts') //array form
-const isPerformingRelease = core.getBooleanInput('perform-release')
+const isPerformingRelease = core.getInput('perform-release') == 'true' ? true : false
 const currentBranch = process.env.CURRENT_BRANCH
 const preReleaseString = core.getInput('pre-release-string')
 const packageInfo = process.env.PACKAGE_INFO ? JSON.parse(process.env.PACKAGE_INFO) : ''
