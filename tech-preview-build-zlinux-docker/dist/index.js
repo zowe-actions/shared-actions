@@ -6468,7 +6468,7 @@ var __webpack_exports__ = {};
  */
 
 const core = __nccwpck_require__(4562)
-const { utils } = __nccwpck_require__(386)
+const { utils, InvalidArgumentException } = __nccwpck_require__(386)
 
 // Defaults
 const projectRootPath = process.env.GITHUB_WORKSPACE
@@ -6483,7 +6483,28 @@ const dockerhubPassword = core.getInput('dockerhub-password')
 const zlinuxSSHServer = core.getInput('zlinux-ssh-server')
 const zlinuxSSHKeyPassphrase= core.getInput('zlinux-ssh-key-passphrase')
 
-
+// null check
+if (!buildNumber || buildNumber == '') {
+    throw new InvalidArgumentException('run-number')
+}
+if (!zowePaxJfrogUploadTarget || zowePaxJfrogUploadTarget == '') {
+    throw new InvalidArgumentException('zowe-pax-jfrog-upload-target')
+}
+if (!buildDockerSources || buildDockerSources == '') {
+    throw new InvalidArgumentException('build-docker-sources')
+}
+if (!dockerhubUser || dockerhubUser == '') {
+    throw new InvalidArgumentException('dockerhub-user')
+}
+if (!dockerhubPassword || dockerhubPassword == '') {
+    throw new InvalidArgumentException('dockerhub-password')
+}
+if (!zlinuxSSHServer || zlinuxSSHServer == '') {
+    throw new InvalidArgumentException('zlinux-ssh-server')
+}
+if (!zlinuxSSHKeyPassphrase || zlinuxSSHKeyPassphrase == '') {
+    throw new InvalidArgumentException('zlinux-ssh-key-passphrase')
+}
 
 // main
 printLogDivider(`make directory of zowe-build/${currentBranch}_${buildNumber}`)

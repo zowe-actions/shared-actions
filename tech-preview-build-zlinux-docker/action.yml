@@ -10,6 +10,7 @@ inputs:
   build-docker-sources:
     description: flag to build docker build-docker-sources
     required: true
+    default: 'false'
   dockerhub-user:
     description: user to use on dockerhub
     required: true
