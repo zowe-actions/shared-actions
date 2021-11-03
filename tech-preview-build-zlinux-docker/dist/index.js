@@ -6483,13 +6483,18 @@ const dockerhubPassword = core.getInput('dockerhub-password')
 const zlinuxSSHServer = core.getInput('zlinux-ssh-server')
 const zlinuxSSHKeyPassphrase= core.getInput('zlinux-ssh-key-passphrase')
 
+
+
 // main
+printLogDivider(`make directory of zowe-build/${currentBranch}_${buildNumber}`)
 var cmd = `mkdir -p zowe-build/${currentBranch}_${buildNumber}`
 ssh(cmd)
 
+printLogDivider(`send relevant files - from: ${projectRootPath}/containers - to:zowe-build/${currentBranch}_${buildNumber}`)
 var cmd2 = `put -r ${projectRootPath}/containers zowe-build/${currentBranch}_${buildNumber}`
 sftp(cmd2)
 
+printLogDivider(`docker build server-bundle.s390x.tar`)
 var cmd3 = `cd zowe-build/${currentBranch}_${buildNumber}/containers/server-bundle
 wget "https://zowe.jfrog.io/zowe/${zowePaxJfrogUploadTarget}" -O zowe.pax
 mkdir -p utils && cp -r ../utils/* ./utils
@@ -6500,26 +6505,33 @@ sudo docker save -o server-bundle.s390x.tar ompzowe/server-bundle:s390x`
 ssh(cmd3)
 
 if (buildDockerSources) {
+    printLogDivider(`docker build server-bundle.s390x-sources.tar`)
     var cmd4 = `cd zowe-build/${currentBranch}_${buildNumber}/containers/server-bundle
 sudo docker build -f Dockerfile.sources --build-arg BUILD_PLATFORM=s390x -t ompzowe/server-bundle:s390x-sources .
 sudo docker save -o server-bundle.s390x-sources.tar ompzowe/server-bundle:s390x-sources`
     ssh(cmd4)
 }
 
+printLogDivider(`ls stuff matching server-bundle`)
 var cmd5 = `cd zowe-build/${currentBranch}_${buildNumber}/containers/server-bundle
 sudo chmod 777 *
 echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr server-bundle.*`
 ssh(cmd5)
 
+printLogDivider(`Get server-bundle.s390x.tar back`)
+var cmd6 = `get zowe-build/${currentBranch}_${buildNumber}/containers/server-bundle/server-bundle.s390x.tar ${projectRootPath}/server-bundle.s390x.tar`
+sftp(cmd6)
+
 if (buildDockerSources) {
-    var cmd6 = `get zowe-build/${currentBranch}_${buildNumber}/containers/server-bundle/server-bundle.s390x.tar ${projectRootPath}/server-bundle.s390x.tar`
-    sftp(cmd6)   
+    printLogDivider(`Get server-bundle.s390x-sources.tar back`)
+    var cmd7 = `get zowe-build/${currentBranch}_${buildNumber}/containers/server-bundle/server-bundle.s390x-sources.tar ${projectRootPath}/server-bundle.sources.s390x.tar`
+    sftp(cmd7)   
 }
 
-var cmd7 = `rm -rf zowe-build/${currentBranch}_${buildNumber}
+printLogDivider(`Docker system cleanup`)
+var cmd8 = `rm -rf zowe-build/${currentBranch}_${buildNumber}
 sudo docker system prune -f`
-ssh(cmd7)
-
+ssh(cmd8)
 
 
 
@@ -6529,6 +6541,16 @@ function ssh(cmd) {
 
 function sftp(cmd) {
     utils.sftpKeyFile(zlinuxSSHServer, zlinuxSSHKeyPassphrase, cmd)
+}
+function printLogDivider(msg) {
+    console.log(`
+
+********************************************
+${msg}
+********************************************
+
+
+`)
 }
 })();
 
