@@ -28,7 +28,7 @@ const zlinuxSSHKeyPassphrase= core.getInput('zlinux-ssh-key-passphrase')
 var cmd = `mkdir -p zowe-build/${currentBranch}_${buildNumber}`
 ssh(cmd)
 
-var cmd2 = `put ${projectRootPath}/containers zowe-build/${currentBranch}_${buildNumber}`
+var cmd2 = `put -r ${projectRootPath}/containers zowe-build/${currentBranch}_${buildNumber}`
 sftp(cmd2)
 
 var cmd3 = `cd zowe-build/${currentBranch}_${buildNumber}/containers/server-bundle
