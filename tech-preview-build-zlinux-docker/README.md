@@ -1,37 +1,39 @@
-# Publishing Zowe projects
+# Build zlinux docker technical preview
 
-This action does publishing step for Zowe projects.  
+This action does building for zowe zlinux docker tech preview.
 
-Based on if current branch is a release branch, or formal release branch, and if current workflow is doing a 'PERFORM RELEASE', this action makes decisions and finally produce a JSON file (in root project directory) that contains upload specs for jFrog Artifactory.  
-
-Then utilize this newly created JSON file for jFrog to consume, finally does uploading. Also supports upload customization to zowe artifactory.
 <br />
 
 ## Inputs
 
-### `artifacts`
+### `run-number`
 
-**Optional** - Artifacts to be sent over jFrog Artifactory. Can have multiple line inputs here (see example below). If you don't provide any artifacts, uploading to artifactory will be skipped.
+**Required** - Current workflow run number
 
-### `perform-release`
+### `zowe-pax-jfrog-upload-target`
 
-**Required** - The flag to indicate if doing performing release.
+**Required** - Full path of jfrog upload target for zowe.pax
 
-### `pre-release-string`
+### `build-docker-sources`
 
-**Optional** - pre-release string
+**Required** - Flag to enable build docker sources. Input has to be either `true` or `false`. Default is `false`.
 
-### `publish-target-path-pattern`
+### `dockerhub-user`
 
-**Optional** - Artifact publishing file pattern. Default `{repository}/{package}{subproject}/{version}{branchtag-uc}/`. This parameter can be customized to any format
+**Required** - username to login to dockerhub
 
-### `publish-target-file-pattern`
+### `dockerhub-password`
 
-**Optional** - Format for the file name published to artifactory. Default format for zowe artifacts: `{filename}-{publishversion}{fileext}`. This parameter can be customized to any format
+**Required** - password associated with above user
 
-### `skip-upload`
+### `zlinux-ssh-server`
 
-**Optional** - Always skip actual upload. Doesn't matter if `artifacts` is provided or not.
+**Required** - ssh server name configured
+
+### `zlinux-ssh-key-passphrase`
+
+**Required** - ssh server key passphrase
+
 <br /><br />
 
 ## Outputs
@@ -41,80 +43,50 @@ None
 
 ## Exported environment variables
 
-### `PUBLISH_VERSION`
-
-The version pattern of the artifact on Artifactory. Will follow this pattern `{version}{prerelease}{branchtag}{buildnumber}{timestamp}`\
-Example: `PUBLISH_VERSION: 1.0.2-my-dev-branch-210-20210810194022`
-
-### `PRE_RELEASE_STRING`
-
-This will be the same as input `pre-release-string`. If pre-release string input is not provided, value here will be empty.
-
-### `PUBLISH_TARGET_PATH`
-
-This is the publish target path for the project.  
-
-### `ZOWE_PAX_JFROG_UPLOAD_TARGET`
-
-This is the full path of zowe.pax upload destination
-
-<br />  
+None
+<br />
 
 ## Pre-requisite
 
-- Before you call this action, make sure you call [shared-actions/prepare-workflow](https://github.com/zowe-actions/shared-actions/tree/main/prepare-workflow) and [jfrog/setup-jfrog-cli](https://github.com/jfrog/setup-jfrog-cli) . Sample usage would be:
+Before you call this action, make sure you call (in order)
 
-    ```yaml
-    uses: jfrog/setup-jfrog-cli@v2
-    env:
-        JF_ARTIFACTORY_1:
+1. [jfrog/setup-jfrog-cli](https://github.com/jfrog/setup-jfrog-cli)
+2. [shared-actions/prepare-workflow](https://github.com/zowe-actions/shared-actions/tree/main/prepare-workflow)
+3. A custom step to configure SSH server
 
-    uses: zowe-actions/shared-actions/prepare-workflow@main
-    ```
+Sample usage would be:
 
-- If you are implementing workflow for NodeJS project, be sure to also call [nodejs-actions/setup](https://github.com/zowe-actions/nodejs-actions/tree/main/setup). Sample usage would be:
+```yaml
+uses: jfrog/setup-jfrog-cli@v2
+env:
+    JF_ARTIFACTORY_1:
 
-    ```yaml
-    uses: zowe-actions/nodejs-actions/setup@main
-    with:
-        package-name: 'org.zowe.mycomponent'
-    ```
+uses: zowe-actions/shared-actions/prepare-workflow@main
+
+run: |
+    cat >>~/.ssh/config <<END
+    Host ${server-name}
+    HostName ${YOUR_SSH_HOSTNAME}
+    User ${YOUR_SSH_USER}
+    IdentityFile ${YOUR_SSH_KEY_PATH}
+    StrictHostKeyChecking no
+    LogLevel QUIET
+    END
+shell: bash
+```
 
 ## Example usage
 
 (this is a minimal set of inputs you need to provide)
 
 ```yaml
-uses: zowe-actions/shared-actions/publish@main
+uses: zowe-actions/shared-actions/tech-preview-build-zlinux-docker@main
 with:
-  perform-release:
-```
-
-To have multiline input for artifacts:
-
-```yaml
-with:
-  artifacts: |
-    path/to/artifact1
-    path/to/artifact2
-```
-
-You can also customize artifactory upload target path and file, as an example:
-
-```yaml
-uses: zowe-actions/shared-actions/publish@main
-  with:
-    artifacts: |
-      path/to/file1
-      path/to/file2.json
-      another/path/file3.txt
-    publish-target-path-pattern: 'com/example/my/dir/'
-    publish-target-file-pattern: '{filename}{fileext}'
-```
-
-To enable debug mode, append
-
-```yaml
-env:
-  DEBUG: 'zowe-actions:shared-actions:publish'
+  run-number:
+  zowe-pax-jfrog-upload-target:
+  build-docker-sources:
+  dockerhub-user:
+  dockerhub-password:
+  zlinux-ssh-server: ${server-name}
+  zlinux-ssh-key-passphrase:
 ```
