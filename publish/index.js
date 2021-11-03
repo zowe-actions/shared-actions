@@ -108,7 +108,7 @@ function makeUploadFileSpec() {
         }
         if (files) {
             files.forEach( file => {
-                if (utils.fileExists(file)) {    
+                if (utils.fileExists(file) || file.includes('zowe.pax')) {    
                     var targetFileFull = publishTargetPathPattern + publishTargetFilePattern
                     var newMacros = extractArtifactoryUploadTargetFileMacros(file)
                     debug('After extractArtifactoryUploadTargetFileMacros():')
@@ -120,6 +120,9 @@ function makeUploadFileSpec() {
                     console.log(`- + found ${file} -> ${t}`)
                     var arr = [{"pattern": file, "target": t}]
                     uploadSpec['files'] = uploadSpec['files'].concat(arr)
+                    if (file.includes('zowe.pax')) {
+                        core.exportVariable('ZOWE_PAX_JFROG_UPLOAD_TARGET', t)
+                    }
                 }
             })
         }
