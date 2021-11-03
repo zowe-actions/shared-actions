@@ -22,6 +22,7 @@ inputs:
   bypass-validation:
     description: 'if the source on artifactory does not exist - expected, we shall bypass the validation check'
     required: false
+    default: 'false'
   
 runs:
   using: 'node12'

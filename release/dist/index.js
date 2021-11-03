@@ -6474,7 +6474,7 @@ const debug = Debug('zowe-actions:shared-actions:release')
 
 // get inputs
 var githubTagPrefix = core.getInput('github-tag-prefix')
-var genericBumpVersion = core.getInput('generic-bump-version')
+var genericBumpVersion = core.getBooleanInput('generic-bump-version')
 
 // main
 tagBranch()

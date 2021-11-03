@@ -36,7 +36,7 @@ This action overall does jfrog download work. It has two modes:
 
 ### `bypass-validation`
 
-**Optional** - if the source on artifactory does not exist which is expected, we shall bypass the validation check
+**Optional** - if the source on artifactory does not exist which is expected, we shall bypass the validation check. Type in `true` or `false`
 
 <br />
 

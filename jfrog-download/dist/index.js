@@ -6285,8 +6285,10 @@ EOF`
         this.sh_heavyload(fullCMD)
     }
 
+
     static sftpKeyFile(server, keyPassPhrase, cmds) {
         var fullCMD = `SSHPASS=${keyPassPhrase} sshpass -e -P "passphrase for key" sftp ${server} <<EOF
+
 ${cmds}
 exit 0
 EOF`
@@ -6485,7 +6487,7 @@ var sourcePathorPattern = core.getInput('source-path-or-pattern')
 var defaultRepository = core.getInput('default-repository')
 var extraOptions = core.getInput('extra-options')
 var expectedCount = core.getInput('expected-count')!= '' ? parseInt(core.getInput('expected-count')) : -1
-var bypassValidation = core.getInput('bypass-validation') == 'true' ? true : false
+var bypassValidation = core.getBooleanInput('bypass-validation')
 
 
 // mandatory check

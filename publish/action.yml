@@ -6,7 +6,8 @@ inputs:
     required: false
   perform-release:
     description: 'flag to perform steps to release'
-    required: true
+    required: false
+    default: 'false'
   pre-release-string:
     description: 'pre-release string'
     required: false
@@ -21,6 +22,7 @@ inputs:
   skip-upload:
     description: not doing an skip-upload
     required: false
+    default: 'false'
 
 runs:
   using: 'node12'

@@ -9650,7 +9650,7 @@ ${cmds}
 EOF`
         this.sh_heavyload(fullCMD)
     }
-
+  
     static sftpKeyFile(server, keyPassPhrase, cmds) {
         var fullCMD = `SSHPASS=${keyPassPhrase} sshpass -e -P "passphrase for key" sftp ${server} <<EOF
 ${cmds}
@@ -9852,12 +9852,12 @@ const defaultPublishTargetFilePattern = '{filename}-{publishversion}{fileext}'
 
 // Gets inputs
 const artifacts = core.getMultilineInput('artifacts') //array form
-const performRelease = core.getInput('perform-release')
+const isPerformingRelease = core.getInput('perform-release') == 'true' ? true : false
 const currentBranch = process.env.CURRENT_BRANCH
 const preReleaseString = core.getInput('pre-release-string')
 const packageInfo = process.env.PACKAGE_INFO ? JSON.parse(process.env.PACKAGE_INFO) : ''
 const manifestInfo = process.env.MANIFEST_INFO ? JSON.parse(process.env.MANIFEST_INFO) : ''
-const skipUpload = core.getInput('skip-upload') == 'true' ? true : false
+const skipUpload = core.getBooleanInput('skip-upload')
 var publishTargetPathPattern = core.getInput('publish-target-path-pattern')
 var publishTargetFilePattern = core.getInput('publish-target-file-pattern')
 
@@ -9877,7 +9877,6 @@ if (isReleaseBranch == 'true') {
     debug(`isReleaseBranch is a string, value is ${isReleaseBranch}`)
 }
 
-var isPerformingRelease = performRelease == 'true' ? true : false
 var notStandardProject = false
 if (manifestInfo == '') {
     notStandardProject = true //meaning this project is node or gradle project exclusively, which can bypass some mandatory check later
@@ -9899,9 +9898,9 @@ if (isPerformingRelease) {
     }
 }
 
+makeUploadFileSpec()
 // upload artifacts if provided
 if (!skipUpload && artifacts && artifacts.length > 0) {
-    uploadArtifacts()
     console.log(utils.sh(`jfrog rt upload --spec ${temporaryUploadSpecName}`))
     utils.sh('jfrog rt bp')
 } else {
@@ -9913,12 +9912,12 @@ core.exportVariable('PRE_RELEASE_STRING',preReleaseString)
 /* ========================================================================================================*/
 
 /**
- * Upload artifacts.
+ * Make upload file spec
  *
  * <p>This is a part of publish stage default behavior. If {@link PublishStageArguments#artifacts}
  * is defined, those artifacts will be uploaded to artifactory with this method.</p>
  */
-function uploadArtifacts() {
+function makeUploadFileSpec() {
     if (!publishTargetPathPattern.endsWith('/')) {
         publishTargetPathPattern += '/'
     }
@@ -9963,7 +9962,7 @@ function uploadArtifacts() {
  */
 function getBuildStringMacros() {
     var release = false
-    if (isReleaseBranch == true && isPerformingRelease == true) {
+    if (isReleaseBranch == true && isPerformingRelease) {
         release = true
     }
     debug(`If we are doing a release? ${release}`)

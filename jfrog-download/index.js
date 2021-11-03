@@ -26,7 +26,7 @@ var sourcePathorPattern = core.getInput('source-path-or-pattern')
 var defaultRepository = core.getInput('default-repository')
 var extraOptions = core.getInput('extra-options')
 var expectedCount = core.getInput('expected-count')!= '' ? parseInt(core.getInput('expected-count')) : -1
-var bypassValidation = core.getInput('bypass-validation') == 'true' ? true : false
+var bypassValidation = core.getBooleanInput('bypass-validation')
 
 
 // mandatory check

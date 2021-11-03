@@ -15,7 +15,7 @@ This action does releasing step for Zowe projects. It tags the branch and create
 
 ### `generic-bump-version`
 
-**Optional** - Indicate if we are doing a generic version bump. Do not set this input if you are doing a nodejs or gradle version bump.
+**Optional** - Indicate if we are doing a generic version bump. Do not set this input if you are doing a nodejs or gradle version bump. Input has to be either `true` or `false`. Default is `false`
 <br />
 
 ## Outputs
