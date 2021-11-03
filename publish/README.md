@@ -36,7 +36,9 @@ Then utilize this newly created JSON file for jFrog to consume, finally does upl
 
 ## Outputs
 
-None
+### `zowe-pax-jfrog-upload-target`
+
+zowe pax jfrog upload target
 <br /><br />
 
 ## Exported environment variables
@@ -53,10 +55,6 @@ This will be the same as input `pre-release-string`. If pre-release string input
 ### `PUBLISH_TARGET_PATH`
 
 This is the publish target path for the project.  
-
-### `ZOWE_PAX_JFROG_UPLOAD_TARGET`
-
-This is the full path of zowe.pax upload destination
 
 <br />  
 

@@ -24,6 +24,10 @@ inputs:
     required: false
     default: 'false'
 
+outputs:
+  zowe-pax-jfrog-upload-target:
+    description: zowe pax jfrog upload target
+    
 runs:
   using: 'node12'
   main: 'dist/index.js'

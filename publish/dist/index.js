@@ -9934,13 +9934,9 @@ function makeUploadFileSpec() {
         console.log(`- pattern ${eachArtifact}`)
         var fullFilePath = `${projectRootPath}/${eachArtifact}`
         var files = glob.sync(fullFilePath)
-        if (fullFilePath.includes('zowe.pax')) {
-            //meaning zowe.pax does not exist but we still want to know zowe.pax potential jfrog upload location
-            files.push(fullFilePath)
-        }
         if (files) {
             files.forEach( file => {
-                if (utils.fileExists(file) || file.includes('zowe.pax')) {    
+                if (utils.fileExists(file)) {    
                     var targetFileFull = publishTargetPathPattern + publishTargetFilePattern
                     var newMacros = extractArtifactoryUploadTargetFileMacros(file)
                     debug('After extractArtifactoryUploadTargetFileMacros():')
@@ -9953,7 +9949,7 @@ function makeUploadFileSpec() {
                     var arr = [{"pattern": file, "target": t}]
                     uploadSpec['files'] = uploadSpec['files'].concat(arr)
                     if (file.includes('zowe.pax')) {
-                        core.exportVariable('ZOWE_PAX_JFROG_UPLOAD_TARGET', t)
+                        core.setOutput('zowe-pax-jfrog-upload-target', t)
                     }
                 }
             })
