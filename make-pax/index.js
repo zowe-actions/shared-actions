@@ -28,7 +28,7 @@ var paxRemoteWorkspace = core.getInput('pax-remote-workspace')
 var paxName = core.getInput('pax-name')
 const paxCompressOptions = core.getInput('pax-compress-options')
 const extraFiles = core.getInput('extra-files')
-const keepTempFolder = core.getBooleanInput('keep-temp-folders')
+const keepTempFolder = core.getInput('keep-temp-folders') == 'true' ? true : false
 const extraEnvironmentVars = core.getMultilineInput('extra-environment-vars')
 
 paxLocalWorkspace = `${projectRootPath}/${paxLocalWorkspace}`
