@@ -6158,6 +6158,7 @@ module.exports = pax;
  */
 
 const { execSync, spawnSync } = __nccwpck_require__(3129)
+const InvalidArgumentException = __nccwpck_require__(1534)
 const fs = __nccwpck_require__(5747)
 const semver = __nccwpck_require__(4603)
 
@@ -6183,6 +6184,12 @@ class utils {
         } catch {
             console.warn(`${path} does not exist :(`)
             return false
+        }
+    }
+
+    static mandatoryInputCheck(varArg, inputName) {
+        if (!varArg || varArg == '') {
+            throw new InvalidArgumentException(inputName)
         }
     }
 
@@ -6285,8 +6292,8 @@ EOF`
         this.sh_heavyload(fullCMD)
     }
 
-    static sftpKeyFile(host, port, username, keyPassPhrase, keyfile, cmds) {
-        var fullCMD = `sshpass -P ${keyPassPhrase} sftp -o BatchMode=no -o StrictHostKeyChecking=no -P ${port} -b -i ${keyfile} ${username}@${host} <<EOF
+    static sftpKeyFile(server, keyPassPhrase, cmds) {
+        var fullCMD = `SSHPASS=${keyPassPhrase} sshpass -e -P "passphrase for key" sftp ${server} <<EOF
 ${cmds}
 exit 0
 EOF`
@@ -6301,8 +6308,8 @@ EOF`
         this.sh_heavyload(fullCMD)
     }
 
-    static sshKeyFile(host, port, username, keyPassPhrase, keyfile, cmds) {
-        var fullCMD = `sshpass -P ${keyPassPhrase} ssh -tt -o BatchMode=no -o StrictHostKeyChecking=no -p ${port} -i ${keyfile} ${username}@${host} <<EOF
+    static sshKeyFile(server, keyPassPhrase, cmds) {
+        var fullCMD = `SSHPASS=${keyPassPhrase} sshpass -e -P "passphrase for key" ssh ${server} <<EOF
 ${cmds}
 exit 0
 EOF`
@@ -6468,12 +6475,18 @@ var __webpack_exports__ = {};
  */
 
 const core = __nccwpck_require__(4562)
-const { utils } = __nccwpck_require__(386)
+const { utils, InvalidArgumentException } = __nccwpck_require__(386)
 
 var user = core.getInput('user')
 var repo = core.getInput('github-repo')
 var g_user = core.getInput('github-user')
 var g_passwd = core.getInput('github-passwd')
+
+// null check
+utils.mandatoryInputCheck(user,'user')
+utils.mandatoryInputCheck(repo,'github-repo')
+utils.mandatoryInputCheck(g_user,'github-user')
+utils.mandatoryInputCheck(g_passwd,'github-passwd')
 
 if (user == 'dependabot[bot]'){
     console.log(`${user} is running this workflow now, manually approved - Bypassing permission check`)

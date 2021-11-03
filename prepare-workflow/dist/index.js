@@ -10266,6 +10266,7 @@ module.exports = pax;
  */
 
 const { execSync, spawnSync } = __nccwpck_require__(3129)
+const InvalidArgumentException = __nccwpck_require__(1534)
 const fs = __nccwpck_require__(5747)
 const semver = __nccwpck_require__(4603)
 
@@ -10291,6 +10292,12 @@ class utils {
         } catch {
             console.warn(`${path} does not exist :(`)
             return false
+        }
+    }
+
+    static mandatoryInputCheck(varArg, inputName) {
+        if (!varArg || varArg == '') {
+            throw new InvalidArgumentException(inputName)
         }
     }
 
@@ -10393,8 +10400,8 @@ EOF`
         this.sh_heavyload(fullCMD)
     }
 
-    static sftpKeyFile(host, port, username, keyPassPhrase, keyfile, cmds) {
-        var fullCMD = `sshpass -P ${keyPassPhrase} sftp -o BatchMode=no -o StrictHostKeyChecking=no -P ${port} -b -i ${keyfile} ${username}@${host} <<EOF
+    static sftpKeyFile(server, keyPassPhrase, cmds) {
+        var fullCMD = `SSHPASS=${keyPassPhrase} sshpass -e -P "passphrase for key" sftp ${server} <<EOF
 ${cmds}
 exit 0
 EOF`
@@ -10409,8 +10416,8 @@ EOF`
         this.sh_heavyload(fullCMD)
     }
 
-    static sshKeyFile(host, port, username, keyPassPhrase, keyfile, cmds) {
-        var fullCMD = `sshpass -P ${keyPassPhrase} ssh -tt -o BatchMode=no -o StrictHostKeyChecking=no -p ${port} -i ${keyfile} ${username}@${host} <<EOF
+    static sshKeyFile(server, keyPassPhrase, cmds) {
+        var fullCMD = `SSHPASS=${keyPassPhrase} sshpass -e -P "passphrase for key" ssh ${server} <<EOF
 ${cmds}
 exit 0
 EOF`

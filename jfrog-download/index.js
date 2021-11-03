@@ -30,9 +30,8 @@ var bypassValidation = core.getBooleanInput('bypass-validation')
 
 
 // mandatory check
-if (!defaultTargetPath || defaultTargetPath == '') {
-    throw new InvalidArgumentException('default-target-path')
-}
+utils.mandatoryInputCheck(defaultTargetPath,'default-target-path')
+
 if (sourcePathorPattern != '' && (!manifestFilePath || manifestFilePath == '')) {
     console.log('Simple download!')
     console.log(`Download source is ${sourcePathorPattern}, target is ${defaultTargetPath}`)

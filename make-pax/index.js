@@ -33,6 +33,10 @@ const extraEnvironmentVars = core.getMultilineInput('extra-environment-vars')
 
 paxLocalWorkspace = `${projectRootPath}/${paxLocalWorkspace}`
 
+// null check
+utils.mandatoryInputCheck(paxSSHUsername, 'pax-ssh-username')
+utils.mandatoryInputCheck(paxSSHPassword, 'pax-ssh-password')
+
 core.setSecret(paxSSHUsername.toUpperCase())  //this is to prevent uppercased username to be showing in the log
 
 if (!paxRemoteWorkspace){
