@@ -14,7 +14,10 @@
 BASE_DIR=$(pwd)
 
 # consider must have been released for a week
-safe_release_date=$(TZ=GMT date -v-7d +'%Y-%m-%dT%H:%M:%S.000Z')
+safe_release_date=$(TZ=GMT date --date '- 7 days' +'%Y-%m-%dT%H:%M:%S.000Z' 2>/dev/null)
+if [ $? -ne 0 ]; then
+  safe_release_date=$(TZ=GMT date -v-7d +'%Y-%m-%dT%H:%M:%S.000Z' 2>/dev/null)
+fi
 echo "Safe release date is before ${safe_release_date}"
 echo
 
