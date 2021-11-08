@@ -13,6 +13,11 @@
 
 BASE_DIR=$(pwd)
 
+# consider must have been released for a week
+safe_release_date=$(TZ=GMT date -v-7d +'%Y-%m-%dT%H:%M:%S.000Z')
+echo "Safe release date is before ${safe_release_date}"
+echo
+
 package_jsons=$(find . -name package.json)
 while read -r package; do
   package=$(echo "${package}" | xargs)
@@ -31,7 +36,8 @@ while read -r package; do
   for category in ${categories}; do
     echo "- ${category}"
     dependencies=$(cat package.json | jq -r ".${category} | to_entries[] | .key + \" \" + .value")
-    if [ "${?}" = "0" ]; then
+    dependencies_rc=$?
+    if [ -n "${dependencies}" -a "${dependencies}" != "null" -a "${dependencies_rc}" = "0" ]; then
       while read -r dependency; do
         package=$(echo "${dependency}" | awk '{print $1;}')
         version=$(echo "${dependency}" | awk '{print $2;}')
@@ -41,41 +47,22 @@ while read -r package; do
           >&2 echo "Error: ${package}@${version} is not imported with static version."
           exit 1
         fi
+        time=$(npm view "${package}@${version}" time --json 2>/dev/null | jq -r ".\"${version}\"")
+        time_rc=$?
+        echo "    - ${time}"
+        if [ -z "${time}" -o "${time}" = "null" -o "${time_rc}" != "0" ]; then
+          >&2 echo "Error: cannot find release date of ${package}@${version}"
+          exit 1
+        fi
+        if [[ "${time}" > "${safe_release_date}" ]]; then
+          >&2 echo "Error: ${package}@${version} is released at ${time}, which is not considered safe."
+          exit 1
+        fi
       done <<EOFD
 $(echo "${dependencies}")
 EOFD
     fi
   done
-  echo "All passed!"
-  echo
-
-  echo "----------------------------------------------------"
-  echo "Validate dependency release dates:"
-
-  # consider must have been released for a week
-  safe_release_date=$(TZ=GMT date -v-7d +'%Y-%m-%dT%H:%M:%S.000Z')
-  echo "Safe release date is before ${safe_release_date}"
-  echo
-
-  dependencies=$(npm list --depth=0 --json | jq -r '.dependencies | to_entries[] | .key + " " + .value.version')
-  while read -r dependency; do
-    package=$(echo "${dependency}" | awk '{print $1;}')
-    version=$(echo "${dependency}" | awk '{print $2;}')
-    echo "- ${package}@${version}:"
-    time=$(npm view "${package}@${version}" time --json | jq -r ".\"${version}\"")
-    time_rc=$?
-    echo "  * ${time}"
-    if [ -z "${time}" -o "${time_rc}" != "0" ]; then
-      >&2 echo "Error: cannot find release date of ${package}@${version}"
-      exit 1
-    fi
-    if [[ "${time}" > "${safe_release_date}" ]]; then
-      >&2 echo "Error: ${package}@${version} is released at ${time}, which is not considered safe."
-      exit 1
-    fi
-    done <<EOFD
-$(echo "${dependencies}")
-EOFD
   echo "All passed!"
   echo
 
