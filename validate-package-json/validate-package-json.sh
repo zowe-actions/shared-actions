@@ -33,6 +33,11 @@ while read -r package; do
   package_dir=$(dirname "${package}")
   cd "${BASE_DIR}" && cd "${package_dir}"
 
+  if [ ! -f package-lock.json -a ! -f package-shrinkwrap.json -a ! -f yarn.lock ]; then
+    >&2 echo "Error: no matching package-lock.json, package-shrinkwrap.json, or yarn.lock found in the directory ${package_dir}."
+    exit 1
+  fi
+
   echo "----------------------------------------------------"
   echo "Validate static dependency versions:"
   categories="dependencies devDependencies optionalDependencies"
