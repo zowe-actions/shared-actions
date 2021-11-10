@@ -1,0 +1,9 @@
+name: "Validate package.json"
+description: "This action helps to validate if package.json is following Zowe project security guidance."
+
+runs:
+  using: "composite"
+  steps:
+    - name: Validate pacakge.json
+      run: ${{ github.action_path }}/validate-package-json.sh
+      shell: bash

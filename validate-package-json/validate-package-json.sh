@@ -46,9 +46,14 @@ while read -r package; do
         version=$(echo "${dependency}" | awk '{print $2;}')
         echo "  * ${package}@${version}"
         version_first_char=$(echo "${version}" | cut -c 1-1)
+        version_first_3chars=$(echo "${version}" | cut -c 1-3)
         if [ "${version_first_char}" = "^" -o "${version_first_char}" = "~" ]; then
           >&2 echo "Error: ${package}@${version} is not imported with static version."
           exit 1
+        fi
+        if [ "${version_first_3chars}" = "git" ]; then
+          >&2 echo "Warning: cannot validate version of ${package}@${version}."
+          continue
         fi
         time=$(npm view "${package}@${version}" time --json 2>/dev/null | jq -r ".\"${version}\"")
         time_rc=$?
