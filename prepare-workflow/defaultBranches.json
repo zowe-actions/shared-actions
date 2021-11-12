@@ -26,5 +26,13 @@
         "isProtected"        : true,
         "buildHistory"       : 20,
         "allowRelease"       : true
+    },
+    {
+        "name"               : "test",
+        "isProtected"        : true,
+        "buildHistory"       : 20,
+        "allowRelease"       : true,
+        "allowFormalRelease" : true,
+        "releaseTag"         : "snapshot"
     }
 ]
