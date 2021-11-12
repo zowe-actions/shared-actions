@@ -25,7 +25,7 @@ if (user == 'dependabot[bot]'){
 }
 else {
     var cmds = new Array()
-    cmds.push(`curl -u`)
+    cmds.push(`curl`)
     cmds.push(`-H "Accept: application/vnd.github.v3+json"`)
     cmds.push(`-H "Authorization: Bearer ${g_token}"`)
     cmds.push(`-X GET`)
