@@ -6479,15 +6479,11 @@ const { utils } = __nccwpck_require__(386)
 
 var user = core.getInput('user')
 var repo = core.getInput('github-repo')
-// var g_user = core.getInput('github-user')
-// var g_passwd = core.getInput('github-passwd')
 var g_token = core.getInput('github-token')
 
 // null check
 utils.mandatoryInputCheck(user,'user')
 utils.mandatoryInputCheck(repo,'github-repo')
-// utils.mandatoryInputCheck(g_user,'github-user')
-// utils.mandatoryInputCheck(g_passwd,'github-passwd')
 utils.mandatoryInputCheck(g_token,'github-token')
 
 if (user == 'dependabot[bot]'){
@@ -6496,8 +6492,6 @@ if (user == 'dependabot[bot]'){
 else {
     var cmds = new Array()
     cmds.push(`curl -u`)
-    // cmds.push(`"${g_user}:${g_passwd}"`)
-    cmds.push(`-sS`)
     cmds.push(`-H "Accept: application/vnd.github.v3+json"`)
     cmds.push(`-H "Authorization: Bearer ${g_token}"`)
     cmds.push(`-X GET`)
