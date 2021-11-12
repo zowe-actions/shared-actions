@@ -7,11 +7,8 @@ inputs:
   github-repo:
     description: 'github repository'
     required: true
-  github-user: 
-    description: 'github user for authenticating api requests'
-    required: true
-  github-passwd:
-    description: 'github passwd for authenticating api requests'
+  github-token:
+    description: 'github token for authenticating api requests'
     required: true
 
 runs:
