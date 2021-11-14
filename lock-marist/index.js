@@ -21,17 +21,30 @@ var lockID = core.getInput('lock-id')
 var environment = core.getInput('environment')
 var repositoryId = core.getInput('repository-id')
 var githubToken = core.getInput('github-token')
+var whatToDo = core.getInput('what-to-do')
 
 utils.mandatoryInputCheck(lockID,'lock-id')
 utils.mandatoryInputCheck(environment,'environment')
 utils.mandatoryInputCheck(repositoryId,'repository-id')
 utils.mandatoryInputCheck(githubToken,'github-token')
+utils.mandatoryInputCheck(whatToDo,'what-to-do')
+
+if (whatToDo != 'lock' && whatToDo != 'unlock') {
+    throw new Error('input "what-to-do" must be either "lock" or "unlock"')
+}
 
 const publicKeyJson = getEnvPubKey() //contains key and key_id
 
 // main
-if (!isLockAcquired()) {
-    acquireLock()
+
+if (whatToDo == 'lock') {
+    if (!isLockAcquired()) {
+        acquireLock()
+    }
+}
+else if (whatToDo == 'unlock') {
+//TODO
+
 }
 
 function getEnvPubKey() {

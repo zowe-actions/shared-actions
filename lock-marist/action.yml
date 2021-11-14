@@ -13,6 +13,9 @@ inputs:
   environment:
     description: 'environment name'
     required: true
+  what-to-do:
+    description: 'either doing lock or unlock'
+    required: true
 
 runs:
   using: 'node12'
