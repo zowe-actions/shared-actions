@@ -55,7 +55,6 @@ function getEnvPubKey() {
 }
 
 function acquireLock() {
-
     // Convert the message and key to Uint8Array's (Buffer implements that interface)
     const messageBytes = Buffer.from(lockID);
     const keyBytes = Buffer.from(publicKeyJson.key, 'base64');
@@ -74,9 +73,9 @@ function acquireLock() {
     cmds.push(`-X PUT`)
     cmds.push(`"https://api.github.com/repositories/${repositoryId}/environments/${environment}/secrets/TEST_RUN_LOCK_${lockID}"`)
     cmds.push(`-d '{"encrypted_value":"${encrypted}","key_id":"${publicKeyJson.key_id}"}'`)
-    var output = utils.sh(cmds.join(' '))
+    utils.sh(cmds.join(' '))
 
-    //TODO maybe add a check lock again to make sure it gets created correctly
+    isLockCreatedSuccessfully()
 }
 
 
@@ -103,6 +102,25 @@ function isLockAcquired() {
         }
     }
     return lockAcquired
+}
+
+function isLockCreatedSuccessfully() {
+    var cmds = new Array()
+    cmds.push(`curl`)
+    cmds.push(`-sS`)
+    cmds.push(`-H "Authorization: Bearer ${githubToken}"`)
+    cmds.push(`-H "Accept: application/vnd.github.v3+json"`)
+    cmds.push(`-X GET`)
+    cmds.push(`"https://api.github.com/repositories/${repositoryId}/environments/${environment}/secrets/TEST_RUN_LOCK_${lockID}"`)
+    var output = utils.sh(cmds.join(' '))
+    var outputJson = JSON.parse(output)
+    if (outputJson.name && outputJson.name == `TEST_RUN_LOCK_${lockID}`) {
+        console.log(`TEST_RUN_LOCK_${lockID} created successfully`)
+        return true
+    }
+    else {
+        throw new Error(`Failed to create TEST_RUN_LOCK_${lockID}`)
+    }
 }
 
 
