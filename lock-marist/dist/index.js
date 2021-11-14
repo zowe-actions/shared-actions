@@ -9968,6 +9968,9 @@ function acquireLock() {
     cmds.push(`-X PUT`)
     cmds.push(`"https://api.github.com/repositories/${repositoryId}/environments/${environment}/secrets/TEST_RUN_LOCK_${lockID}"`)
     cmds.push(`-d '{"encrypted_value":"${encrypted}","key_id":"${publicKeyJson.key_id}"}'`)
+    var output = utils.sh(cmds.join(' '))
+
+    //TODO maybe add a check lock again to make sure it gets created correctly
 }
 
 
