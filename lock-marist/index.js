@@ -13,6 +13,8 @@ const { utils } = require('zowe-common')
 const Debug = require('debug')
 const debug = Debug('zowe-actions:shared-actions:lock-marist')
 const fs = require('fs');
+const sodium = require('tweetsodium');
+
 
 // Gets inputs
 var lockID = core.getInput('lock-id')
@@ -25,24 +27,79 @@ utils.mandatoryInputCheck(environment,'environment')
 utils.mandatoryInputCheck(repositoryId,'repository-id')
 utils.mandatoryInputCheck(githubToken,'github-token')
 
+const publicKeyJson = getEnvPubKey() //contains key and key_id
+
 // main
-isLockAcquired()
+if (!isLockAcquired()) {
+    acquireLock()
+}
+
+function getEnvPubKey() {
+    var cmds = new Array()
+    cmds.push(`curl`)
+    cmds.push(`-sS`)
+    cmds.push(`-H "Authorization: Bearer ${githubToken}"`)
+    cmds.push(`-H "Accept: application/vnd.github.v3+json"`)
+    cmds.push(`-X GET`)
+    cmds.push(`"https://api.github.com/repositories/${repositoryId}/environments/${environment}/secrets/public-key"`)
+    var output = utils.sh(cmds.join(' '))
+    var outputJson = JSON.parse(output)
+    
+    if (outputJson.key && outputJson.key_id) {
+        return outputJson
+    }
+    else {
+        console.log(output)
+        throw new Error('something wrong with get environment public key API')
+    }
+}
+
+function acquireLock() {
+
+    // Convert the message and key to Uint8Array's (Buffer implements that interface)
+    const messageBytes = Buffer.from(lockID);
+    const keyBytes = Buffer.from(publicKeyJson.key, 'base64');
+
+    // Encrypt using LibSodium.
+    const encryptedBytes = sodium.seal(messageBytes, keyBytes);
+
+    // Base64 the encrypted secret
+    const encrypted = Buffer.from(encryptedBytes).toString('base64');
+
+    var cmds = new Array()
+    cmds.push(`curl`)
+    cmds.push(`-sS`)
+    cmds.push(`-H "Authorization: Bearer ${githubToken}"`)
+    cmds.push(`-H "Accept: application/vnd.github.v3+json"`)
+    cmds.push(`-X PUT`)
+    cmds.push(`"https://api.github.com/repositories/${repositoryId}/environments/${environment}/secrets/TEST_RUN_LOCK_${lockID}"`)
+    cmds.push(`-d '{"encrypted_value":"${encrypted}","key_id":"${publicKeyJson.key_id}"}'`)
+}
+
 
 function isLockAcquired() {
     var cmds = new Array()
     cmds.push(`curl`)
-    cmds.push(`-H 'Authorization: Bearer ${githubToken}'`)
+    cmds.push(`-sS`)
+    cmds.push(`-H "Authorization: Bearer ${githubToken}"`)
     cmds.push(`-H "Accept: application/vnd.github.v3+json"`)
     cmds.push(`-X GET`)
-    cmds.push(`"https://api.github.com/repositories/${repositoryId}/environments/${environment}/secrets/TEST_RUN_LOCK"`)
+    cmds.push(`"https://api.github.com/repositories/${repositoryId}/environments/${environment}/secrets"`)
     var output = utils.sh(cmds.join(' '))
     var outputJson = JSON.parse(output)
-    if (outputJson.message && outputJson.message == 'Not Found') {
-        console.log('Lock not found')
+    if (outputJson.secrets) {
+        var lockAcquired = false
+        outputJson.secrets.forEach((eachSecret) => {
+            if (eachSecret.name && eachSecret.name.includes('TEST_RUN_LOCK')) {
+                console.log(`${environment} lock is acquired`)
+                lockAcquired = true
+            }
+        })
+        if (!lockAcquired) {
+            console.log(`${environment} lock is free`)
+        }
     }
-    else if (outputJson.name && outputJson.name == 'TEST_RUN_LOCK') {
-        console.log('Lock found')
-    }
+    return lockAcquired
 }
 
 
