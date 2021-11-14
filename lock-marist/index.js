@@ -78,7 +78,6 @@ function acquireLock() {
     isLockCreatedSuccessfully()
 }
 
-
 function isLockAcquired() {
     var cmds = new Array()
     cmds.push(`curl`)
