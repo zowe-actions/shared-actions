@@ -1,0 +1,19 @@
+name: "Lock Marist Server"
+description: "Acquire lock on one of marist servers"
+inputs:
+  repository-id:
+    description: 'reposiroty id'
+    required: true
+  github-token:
+    description: 'github api access token'
+    required: true
+  lock-id:
+    description: 'the lock id of this lock to be acquired'
+    required: true
+  environment:
+    description: 'environment name'
+    required: true
+
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
