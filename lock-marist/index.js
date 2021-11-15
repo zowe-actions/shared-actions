@@ -41,7 +41,7 @@ if (whatToDo == 'lock') {
     // each test job enters here should wait for random number of seconds to avoid acquiring the first lock at the same time
     var randomWaitTime = Math.floor(Math.random() * 30) + 1; //wait 1-30 seconds
     console.log(`wait for ${randomWaitTime} seconds to avoid congestion of acquiring locks...`)
-    sleep(randomWaitTime*1000)
+    utils.sleep(randomWaitTime*1000)
     console.log(`wait done`)
 
     if (!isLockAcquired()) {
@@ -50,15 +50,6 @@ if (whatToDo == 'lock') {
 }
 else if (whatToDo == 'unlock') {
     //TODO
-}
-
-
-function sleep(ms){
-    var now = new Date().getTime();
-    var end = now + ms
-    while( now < end){
-        now = new Date().getTime();
-    }
 }
 
 function getEnvPubKey() {
