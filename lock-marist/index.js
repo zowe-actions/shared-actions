@@ -38,13 +38,27 @@ const publicKeyJson = getEnvPubKey() //contains key and key_id
 // main
 
 if (whatToDo == 'lock') {
+    // each test job enters here should wait for random number of seconds to avoid acquiring the first lock at the same time
+    var randomWaitTime = Math.floor(Math.random() * 20) + 1; //wait 1-20 seconds
+    console.log(`wait for ${randomWaitTime} seconds`)
+    sleep(randomWaitTime*1000)
+    console.log(`wait done`)
+
     if (!isLockAcquired()) {
         acquireLock()
     }
 }
 else if (whatToDo == 'unlock') {
-//TODO
+    //TODO
+}
 
+
+function sleep(ms){
+    var now = new Date().getTime();
+    var end = now + ms
+    while( now < end){
+        now = new Date().getTime();
+    }
 }
 
 function getEnvPubKey() {
