@@ -9933,8 +9933,8 @@ const publicKeyJson = getEnvPubKey() //contains key and key_id
 
 if (whatToDo == 'lock') {
     // each test job enters here should wait for random number of seconds to avoid acquiring the first lock at the same time
-    var randomWaitTime = Math.floor(Math.random() * 20) + 1; //wait 1-20 seconds
-    console.log(`wait for ${randomWaitTime} seconds`)
+    var randomWaitTime = Math.floor(Math.random() * 30) + 1; //wait 1-30 seconds
+    console.log(`wait for ${randomWaitTime} seconds to avoid congestion of acquiring locks...`)
     sleep(randomWaitTime*1000)
     console.log(`wait done`)
 
