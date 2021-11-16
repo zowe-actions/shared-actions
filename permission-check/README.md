@@ -15,13 +15,9 @@ This action is created to prevent protected workflow jobs running from unauthori
 
 **Required** - github repository
 
-### `github-user`
+### `github-token`
 
-**Required** - github user to be used for authentication to run github API
-
-### `github-passwd`
-
-**Required** - password associated to the user above
+**Required** - token associated to authenticate GITHUB API
 <br />
 
 ## Outputs
@@ -43,6 +39,5 @@ uses: zowe-actions/shared-actions/permission-check@main
 with:
   user: random-userid
   github-repo: user/project
-  github-user: myuserid
-  github-passwd: mypassword
+  github-token: example-token-here
 ```

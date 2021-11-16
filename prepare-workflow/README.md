@@ -12,10 +12,6 @@ This action does several things including exports certain environment variables 
 
 **Optional** - github user used to do authentication. Will be exported to env vars if provided.
 
-### `github-password`
-
-**Optional** - github password associated with the above user. Will be exported to env vars if provided.
-
 ### `github-email`
 
 **Optional** - github email used to record pushes.
@@ -51,14 +47,6 @@ the branch where workflow is triggered
 ### `JFROG_CLI_BUILD_NAME`
 
 this is to overwrite jfrog build name while doing jfrog cli commands
-
-### `GITHUB_USER`
-
-github user if provided as inputs
-
-### `GITHUB_PASSWORD`
-
-github password if provided as inputs
 
 ### `GITHUB_REPOSITORY`
 

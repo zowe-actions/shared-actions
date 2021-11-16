@@ -7,9 +7,6 @@ inputs:
   github-user:
     description: 'github user'
     required: false
-  github-password:
-    description: 'github password'
-    required: false
   github-email:
     description: 'github email'
     required: false
@@ -63,15 +60,10 @@ runs:
         if [ -n "${{ inputs.github-user }}" ]
         then
           git config --global user.name ${{ inputs.github-user }}
-          echo GITHUB_USER=${{ inputs.github-user }} >> $GITHUB_ENV
         fi
         if [ -n "${{ inputs.github-email }}" ]
         then
           git config --global user.email ${{ inputs.github-email }}
-        fi
-        if [ -n "${{ inputs.github-password }}" ]
-        then
-          echo GITHUB_PASSWORD=${{ inputs.github-password }} >> $GITHUB_ENV
         fi
         echo GITHUB_REPOSITORY=${{ github.repository }} >> $GITHUB_ENV
       shell: bash
