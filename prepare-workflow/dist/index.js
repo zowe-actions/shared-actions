@@ -10272,14 +10272,12 @@ const semver = __nccwpck_require__(4603)
 
 class utils {
 
-    static sleep(ms) {
-        var now = new Date().getTime();
-        var end = now + ms
-        while( now < end){
-            now = new Date().getTime();
-        }
+    static async sleep(ms) {
+        return new Promise((resolve) => {
+            setTimeout(resolve, ms);
+        });
     }
-    
+
     static dateTimeNow() {
         return (new Date()).toISOString().split('.')[0].replace(/[^0-9]/g, "")
     }
