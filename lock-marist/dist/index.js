@@ -6613,7 +6613,7 @@ else if (whatToDo == 'unlock') {
         var newLockID = ''
         pass = releaseLock(newLockID)
         var lockFileContent = getLockFileContent()
-        if (lockFileContent == newLockID) {
+        if (!pass && lockFileContent == newLockID) {
             console.warn('not sure what went wrong, but the lock is already given to the next job. Skip this step')
             pass = true
         }
