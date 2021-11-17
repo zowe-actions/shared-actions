@@ -40,6 +40,7 @@ if (whatToDo == 'lock') {
 }
 else if (whatToDo == 'unlock') {
     //TODO
+    releaseLock()
 }
 
 async function lock() {
@@ -60,7 +61,7 @@ async function lock() {
     while (needLineUpandWait) {
         //TODO  Add a queue file and commit push
         while (lockFileContent != '' && lockFileContent != lockID) {
-            utils.sleep(5*60*1000)   //wait for 5 mins to check lock status
+            utils.sleep(1*60*1000)   //wait for 5 mins to check lock status
             github.fetch(lockRoot)
             github.pull(lockRoot)
             lockFileContent = getLockFileContent()
@@ -77,8 +78,13 @@ function acquireLock() {
     var cmds = new Array()
     cmds.push(`cd ${lockRoot}`)
     cmds.push('git add LOCK')
-    cmds.push(`git commit -m "Lock acquired by ${lockID}"`)
-    utils.sh(cmds.join(' && '))
+    cmds.push(`git commit -m "lock acquired by ${lockID}"`)
+    try {
+        utils.sh(cmds.join(' && '))
+    }
+    catch (e) {
+        console.warn(e)
+    }
 
     try {
         github.push('marist-lock',lockRoot,'zowe-marist-lock-manager',githubToken, repository)
@@ -93,6 +99,23 @@ function acquireLock() {
             }
         }
     }
+}
+
+function releaseLock() {
+    console.log('I am done. Release the lock now...')
+    fs.writeFileSync(`${lockRoot}/LOCK`,' ')
+    var cmds = new Array()
+    cmds.push(`cd ${lockRoot}`)
+    cmds.push('git add LOCK')
+    cmds.push(`git commit -m "Lock acquired by ${lockID}"`)
+    try {
+        utils.sh(cmds.join(' && '))
+        github.push('marist-lock',lockRoot,'zowe-marist-lock-manager',githubToken, repository)
+    }
+    catch (e) {
+        throw e
+    }
+    console.log('Release lock success!')
 }
 
 function getLockFileContent() {
