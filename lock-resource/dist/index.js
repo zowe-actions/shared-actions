@@ -6612,7 +6612,7 @@ else {
 
 async function lock(myLockUID) {
     while (!acquireLock(myLockUID)) { //return if lock is successfully acquired
-        console.log(`Acquiring lock failed, wait for ${lockRetryInterval} to try again`)
+        console.log(`Acquiring lock failed, wait for ${lockRetryInterval} seconds to try again`)
         await utils.sleep(lockRetryInterval*1000)
     }
     console.log('Acquired the lock successfully!')
@@ -6636,7 +6636,7 @@ function writeLockFile(lockFileContent) {
     var cmds = new Array()
     cmds.push(`cd ${lockRoot}`)
     cmds.push(`git add ${lockResourceName}`)
-    cmds.push(`git commit -m ${commitMessage}`)
+    cmds.push(`git commit -m "${commitMessage}"`)
     try {
         utils.sh(cmds.join(' && '))
     }
