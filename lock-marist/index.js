@@ -41,9 +41,13 @@ if (whatToDo == 'lock') {
 }
 else if (whatToDo == 'unlock') {
     //TODO
-    github.fetch(lockRoot, true)
-    github.hardReset('origin/marist-lock',lockRoot, true)
-    releaseLock()
+
+    var pass = false
+    while (!pass) {
+        github.fetch(lockRoot, true)
+        github.hardReset('origin/marist-lock',lockRoot, true)
+        pass = releaseLock()
+    } 
 }
 
 async function lock() {
@@ -107,7 +111,7 @@ function acquireLock() {
 }
 
 function releaseLock() {
-    console.log('I am done. Release the lock now...')
+    console.log('Release the lock now...')
     fs.writeFileSync(`${lockRoot}/LOCK`,'')
     var cmds = new Array()
     cmds.push(`cd ${lockRoot}`)
@@ -116,11 +120,13 @@ function releaseLock() {
     try {
         utils.sh(cmds.join(' && '))
         github.push('marist-lock',lockRoot,'zowe-marist-lock-manager',githubToken, repository, true)
+        console.log('Release lock success!')
+        return true
     }
     catch (e) {
-        throw e
+        console.warn('Releasing lock failed, likely due to a new commit occured just before I pushed. Try again')
+        return false
     }
-    console.log('Release lock success!')
 }
 
 function getLockFileContent() {
