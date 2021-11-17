@@ -6606,7 +6606,7 @@ if (whatToDo == 'lock') {
 else if (whatToDo == 'unlock') {
     //TODO
     github.fetch(lockRoot, true)
-    github.pull(lockRoot, true)
+    github.hardReset('origin/marist-lock',lockRoot, true)
     releaseLock()
 }
 
@@ -6631,7 +6631,7 @@ async function lock() {
         while (lockFileContent != '' && lockFileContent != lockID) {
             utils.sleep(1*60*1000)   //wait for 5 mins to check lock status
             github.fetch(lockRoot, true)
-            github.pull(lockRoot, true)
+            github.hardReset('origin/marist-lock',lockRoot, true)
             lockFileContent = getLockFileContent()
         }
         needLineUpandWait = tryToAcquireLock()
