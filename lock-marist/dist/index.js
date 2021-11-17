@@ -6610,19 +6610,18 @@ else if (whatToDo == 'unlock') {
 
     var pass = false
     while (!pass) {
-        sync()
         var newLockID = ''
+        sync()  // sync up here to capture any new queue files by new jobs to make sure next releaseLock() passes
         pass = releaseLock(newLockID)
         var lockFileContent = getLockFileContent()
         if (!pass && lockFileContent == newLockID) {
-            console.warn('not sure what went wrong, but the lock is already given to the next job. Skip this step')
+            console.warn('not sure what went wrong, but the lock is already given to the next queued job. Skip this step')
             pass = true
         }
     } 
 }
 
 async function lock() {
-    sync()
     var lockFileContent = getLockFileContent()
     var needLineUpandWait = false
     if (!lockFileContent || lockFileContent == '' || lockFileContent == lockID) {
@@ -6643,7 +6642,6 @@ async function lock() {
         while (lockFileContent != '' && lockFileContent != lockID) {
             await utils.sleep(30*1000)   //wait for 5 mins to check lock status
             console.log('check log status again')
-            sync()
             lockFileContent = getLockFileContent()
         }
         needLineUpandWait = tryToAcquireLock()
@@ -6702,6 +6700,7 @@ function releaseLock(newLockID) {
 }
 
 function getLockFileContent() {
+    sync()
     if (!utils.fileExists(`${lockRoot}/LOCK`, true)) {
         throw new Error('Lock file not exist! Unable to acquire lock! Failing workflow...')
     }
@@ -6714,7 +6713,6 @@ function tryToAcquireLock() {
         return false
     } 
     else { //this is the result of a race condition of acquireLock() - somebody else acquired the lock ahead of you, so unfortunately you have to wait
-        sync()
         return true
     }
 }
