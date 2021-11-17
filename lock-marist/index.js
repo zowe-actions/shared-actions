@@ -104,7 +104,7 @@ function acquireLock() {
 
 function releaseLock() {
     console.log('I am done. Release the lock now...')
-    fs.writeFileSync(`${lockRoot}/LOCK`,' ')
+    fs.writeFileSync(`${lockRoot}/LOCK`,'')
     var cmds = new Array()
     cmds.push(`cd ${lockRoot}`)
     cmds.push('git add LOCK')

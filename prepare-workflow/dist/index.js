@@ -9860,7 +9860,7 @@ class github {
             console.warn('Hard reset operation skipped, must specify branch and working directory')
         } 
         else {
-            cmd=`cd ${workingDir} && git reset --hard ${branch}`
+            var cmd=`cd ${workingDir} && git reset --hard ${branch}`
             console.log(utils.sh(cmd))
         }
     }
@@ -9875,7 +9875,7 @@ class github {
             console.warn('Fetch operation skipped, must specify working directory')
         } 
         else {
-            cmd=`cd ${workingDir} && git fetch`
+            var cmd=`cd ${workingDir} && git fetch`
             console.log(utils.sh(cmd))
         }
     }
@@ -9890,7 +9890,7 @@ class github {
             console.warn('Pull operation skipped, must specify working directory')
         } 
         else {
-            cmd=`cd ${workingDir} && git pull`
+            var cmd=`cd ${workingDir} && git pull`
             console.log(utils.sh(cmd))
         }
     }
