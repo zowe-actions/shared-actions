@@ -6610,7 +6610,13 @@ else if (whatToDo == 'unlock') {
     while (!pass) {
         github.fetch(lockRoot, true)
         github.hardReset('origin/marist-lock',lockRoot, true)
-        pass = releaseLock()
+        var newLockID = ''
+        pass = releaseLock(newLockID)
+        var lockFileContent = getLockFileContent()
+        if (lockFileContent == newLockID) {
+            console.warn('not sure what went wrong, but the lock is already given to the next job. Skip this step')
+            pass = true
+        }
     } 
 }
 
@@ -6675,9 +6681,9 @@ function acquireLock() {
     }
 }
 
-function releaseLock() {
+function releaseLock(newLockID) {
     console.log('Release the lock now...')
-    fs.writeFileSync(`${lockRoot}/LOCK`,'')
+    fs.writeFileSync(`${lockRoot}/LOCK`,newLockID)
     var cmds = new Array()
     cmds.push(`cd ${lockRoot}`)
     cmds.push('git add LOCK')
@@ -6695,7 +6701,7 @@ function releaseLock() {
 }
 
 function getLockFileContent() {
-    if (!utils.fileExists(`${lockRoot}/LOCK`), true) {
+    if (!utils.fileExists(`${lockRoot}/LOCK`, true)) {
         throw new Error('Lock file not exist! Unable to acquire lock! Failing workflow...')
     }
     return fs.readFileSync(`${lockRoot}/LOCK`)
