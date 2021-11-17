@@ -29,6 +29,8 @@ utils.mandatoryInputCheck(githubToken,'github-token')
 utils.mandatoryInputCheck(whatToDo,'what-to-do')
 utils.mandatoryInputCheck(testFile,'test-file')
 
+console.log(`DEBUG: ${!!process.env['STATE_isPost']}`) 
+
 if (whatToDo != 'lock' && whatToDo != 'unlock') {
     throw new Error('input "what-to-do" must be either "lock" or "unlock"')
 }
