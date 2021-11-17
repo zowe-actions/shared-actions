@@ -27,8 +27,6 @@ utils.mandatoryInputCheck(lockResourceName,'lock-resource-name')
 utils.mandatoryInputCheck(lockAvgRetryIntervalString,'lock-avg-retry-interval')
 utils.mandatoryInputCheck(githubToken,'github-token')
 
-
-
 // generate a random wait timer for each job, this is to prevent jobs are acquiring the lock at the same time to prevent racing.
 var lockAvgRetryInterval = parseInt(lockAvgRetryIntervalString)
 var lockRetryIntervalMax = lockAvgRetryInterval + 10
@@ -83,7 +81,7 @@ function writeLockFile(lockFileContent) {
     }
 
     try {
-        github.push(lockBranch, lockRoot, 'zowe-marist-lock-manager', githubToken, lockRepository, true)
+        github.push(lockBranch, lockRoot, 'dummyname', githubToken, lockRepository, true)
         console.log('Write to lock file success!')
     }
     catch(e) {
@@ -129,5 +127,5 @@ function releaseLock() {
 
 function sync() {
     github.fetch(lockRoot, true)
-    github.hardReset('origin/marist-lock',lockRoot, true)
+    github.hardReset(`origin/${lockBranch}`,lockRoot, true)
 }
