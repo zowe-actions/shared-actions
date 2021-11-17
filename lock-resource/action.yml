@@ -1,5 +1,5 @@
-name: "Lock Marist Server"
-description: "Acquire lock on one of marist servers"
+name: "Lock Resource"
+description: "Acquire resource lock"
 inputs:
   lock-repository:
     description: 'repository'
