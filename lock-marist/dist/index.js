@@ -6608,8 +6608,7 @@ else if (whatToDo == 'unlock') {
 
     var pass = false
     while (!pass) {
-        github.fetch(lockRoot, true)
-        github.hardReset('origin/marist-lock',lockRoot, true)
+        sync()
         var newLockID = ''
         pass = releaseLock(newLockID)
         var lockFileContent = getLockFileContent()
@@ -6641,8 +6640,7 @@ async function lock() {
         while (lockFileContent != '' && lockFileContent != lockID) {
             await utils.sleep(30*1000)   //wait for 5 mins to check lock status
             console.log('check log status again')
-            github.fetch(lockRoot, true)
-            github.hardReset('origin/marist-lock',lockRoot, true)
+            sync()
             lockFileContent = getLockFileContent()
         }
         needLineUpandWait = tryToAcquireLock()
@@ -6709,14 +6707,19 @@ function getLockFileContent() {
 
 // returns needToLineUpandWait
 function tryToAcquireLock() {
+    sync()
     if (acquireLock()) {
         return false
     } 
     else { //this is the result of a race condition of acquireLock() - somebody else acquired the lock ahead of you, so unfortunately you have to wait
-        github.fetch(lockRoot, true)
-        github.hardReset('origin/marist-lock',lockRoot, true)
+        sync()
         return true
     }
+}
+
+function sync() {
+    github.fetch(lockRoot, true)
+    github.hardReset('origin/marist-lock',lockRoot, true)
 }
 })();
 
