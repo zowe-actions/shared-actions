@@ -6622,6 +6622,7 @@ else if (whatToDo == 'unlock') {
 }
 
 async function lock() {
+    sync()
     var lockFileContent = getLockFileContent()
     var needLineUpandWait = false
     if (!lockFileContent || lockFileContent == '' || lockFileContent == lockID) {
@@ -6709,7 +6710,6 @@ function getLockFileContent() {
 
 // returns needToLineUpandWait
 function tryToAcquireLock() {
-    sync()
     if (acquireLock()) {
         return false
     } 
