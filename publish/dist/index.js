@@ -9092,7 +9092,7 @@ class github {
      * @param  dir             the directory name to do the clone, required
      * @param  branch          the branch name to be cloned, required
      */
-     static shallowClone(repo, dir, branch) {
+     static shallowClone(repo, dir, branch, quiet) {
         if (!repo || !dir || !branch) {
             console.warn('Clone operation skipped, must specify all three arguments: repo, dir and branch')
         } 
@@ -9103,7 +9103,12 @@ class github {
             }
             var fullRepo = `https://github.com/${repo}.git/`
             cmd += fullRepo
-            console.log(utils.sh(cmd))
+            if (!quiet) {
+                console.log(utils.sh(cmd))
+            } 
+            else {
+                utils.sh(cmd)
+            }
         }
     }
 
@@ -9113,13 +9118,18 @@ class github {
      * @param  branch          the branch name to be reset, required
      * @param  workingDir      the working directory
      */
-    static hardReset(branch, workingDir) {
+    static hardReset(branch, workingDir, quiet) {
         if (!branch || !workingDir) {
             console.warn('Hard reset operation skipped, must specify branch and working directory')
         } 
         else {
             var cmd=`cd ${workingDir} && git reset --hard ${branch}`
-            console.log(utils.sh(cmd))
+            if (!quiet) {
+                console.log(utils.sh(cmd))
+            } 
+            else {
+                utils.sh(cmd)
+            }
         }
     }
 
@@ -9128,13 +9138,18 @@ class github {
      *
      * @param  workingDir      the working directory
      */
-    static fetch(workingDir) {
+    static fetch(workingDir, quiet) {
         if (!workingDir) {
             console.warn('Fetch operation skipped, must specify working directory')
         } 
         else {
             var cmd=`cd ${workingDir} && git fetch`
-            console.log(utils.sh(cmd))
+            if (!quiet) {
+                console.log(utils.sh(cmd))
+            } 
+            else {
+                utils.sh(cmd)
+            }
         }
     }
 
@@ -9143,13 +9158,18 @@ class github {
      *
      * @param  workingDir      the working directory
      */
-    static pull(workingDir) {
+    static pull(workingDir, quiet) {
         if (!workingDir) {
             console.warn('Pull operation skipped, must specify working directory')
         } 
         else {
             var cmd=`cd ${workingDir} && git pull`
-            console.log(utils.sh(cmd))
+            if (!quiet) {
+                console.log(utils.sh(cmd))
+            } 
+            else {
+                utils.sh(cmd)
+            }
         }
     }
 
@@ -9159,13 +9179,18 @@ class github {
      * @param  branch          the branch to be pushed to, required
      * @param  dir             the working directory, required
      */
-    static push(branch, dir, username, passwd, repo) {
+    static push(branch, dir, username, passwd, repo, quiet) {
         if (!branch) {
             console.warn('Push operation skipped, must specify argument: branch')
         } 
         else {
             var cmd = `cd ${dir} && git push https://${username}:${passwd}@github.com/${repo} ${branch}`
-            console.log(utils.sh(cmd))
+            if (!quiet) {
+                console.log(utils.sh(cmd))
+            } 
+            else {
+                utils.sh(cmd)
+            }
         }
     }
 

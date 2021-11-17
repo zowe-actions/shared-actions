@@ -5726,7 +5726,7 @@ class github {
      * @param  dir             the directory name to do the clone, required
      * @param  branch          the branch name to be cloned, required
      */
-     static shallowClone(repo, dir, branch) {
+     static shallowClone(repo, dir, branch, quiet) {
         if (!repo || !dir || !branch) {
             console.warn('Clone operation skipped, must specify all three arguments: repo, dir and branch')
         } 
@@ -5737,7 +5737,12 @@ class github {
             }
             var fullRepo = `https://github.com/${repo}.git/`
             cmd += fullRepo
-            console.log(utils.sh(cmd))
+            if (!quiet) {
+                console.log(utils.sh(cmd))
+            } 
+            else {
+                utils.sh(cmd)
+            }
         }
     }
 
@@ -5747,13 +5752,18 @@ class github {
      * @param  branch          the branch name to be reset, required
      * @param  workingDir      the working directory
      */
-    static hardReset(branch, workingDir) {
+    static hardReset(branch, workingDir, quiet) {
         if (!branch || !workingDir) {
             console.warn('Hard reset operation skipped, must specify branch and working directory')
         } 
         else {
             var cmd=`cd ${workingDir} && git reset --hard ${branch}`
-            console.log(utils.sh(cmd))
+            if (!quiet) {
+                console.log(utils.sh(cmd))
+            } 
+            else {
+                utils.sh(cmd)
+            }
         }
     }
 
@@ -5762,13 +5772,18 @@ class github {
      *
      * @param  workingDir      the working directory
      */
-    static fetch(workingDir) {
+    static fetch(workingDir, quiet) {
         if (!workingDir) {
             console.warn('Fetch operation skipped, must specify working directory')
         } 
         else {
             var cmd=`cd ${workingDir} && git fetch`
-            console.log(utils.sh(cmd))
+            if (!quiet) {
+                console.log(utils.sh(cmd))
+            } 
+            else {
+                utils.sh(cmd)
+            }
         }
     }
 
@@ -5777,13 +5792,18 @@ class github {
      *
      * @param  workingDir      the working directory
      */
-    static pull(workingDir) {
+    static pull(workingDir, quiet) {
         if (!workingDir) {
             console.warn('Pull operation skipped, must specify working directory')
         } 
         else {
             var cmd=`cd ${workingDir} && git pull`
-            console.log(utils.sh(cmd))
+            if (!quiet) {
+                console.log(utils.sh(cmd))
+            } 
+            else {
+                utils.sh(cmd)
+            }
         }
     }
 
@@ -5793,13 +5813,18 @@ class github {
      * @param  branch          the branch to be pushed to, required
      * @param  dir             the working directory, required
      */
-    static push(branch, dir, username, passwd, repo) {
+    static push(branch, dir, username, passwd, repo, quiet) {
         if (!branch) {
             console.warn('Push operation skipped, must specify argument: branch')
         } 
         else {
             var cmd = `cd ${dir} && git push https://${username}:${passwd}@github.com/${repo} ${branch}`
-            console.log(utils.sh(cmd))
+            if (!quiet) {
+                console.log(utils.sh(cmd))
+            } 
+            else {
+                utils.sh(cmd)
+            }
         }
     }
 
@@ -6575,11 +6600,13 @@ if (whatToDo != 'lock' && whatToDo != 'unlock') {
 var lockRoot = `${process.env.RUNNER_TEMP}/locks/zowe-install-packaging/marist-${maristServer}`
 
 if (whatToDo == 'lock') {
-    github.shallowClone(repository,`${process.env.RUNNER_TEMP}/locks`,'marist-lock')
+    github.shallowClone(repository,`${process.env.RUNNER_TEMP}/locks`,'marist-lock', true)
     lock()
 }
 else if (whatToDo == 'unlock') {
     //TODO
+    github.fetch(lockRoot, true)
+    github.pull(lockRoot, true)
     releaseLock()
 }
 
@@ -6592,6 +6619,7 @@ async function lock() {
         // in this case, we consider lock is free.
         console.log(`${maristServer} lock is free!`)
         needLineUpandWait = tryToAcquireLock()
+        lockFileContent = getLockFileContent()
     }
     else {
         console.log(`${maristServer} lock is occupied, line up and wait!`)
@@ -6602,11 +6630,12 @@ async function lock() {
         //TODO  Add a queue file and commit push
         while (lockFileContent != '' && lockFileContent != lockID) {
             utils.sleep(1*60*1000)   //wait for 5 mins to check lock status
-            github.fetch(lockRoot)
-            github.pull(lockRoot)
+            github.fetch(lockRoot, true)
+            github.pull(lockRoot, true)
             lockFileContent = getLockFileContent()
         }
         needLineUpandWait = tryToAcquireLock()
+        lockFileContent = getLockFileContent()
     }
 
     //TODO: remove queue file and commit push
@@ -6627,7 +6656,7 @@ function acquireLock() {
     }
 
     try {
-        github.push('marist-lock',lockRoot,'zowe-marist-lock-manager',githubToken, repository)
+        github.push('marist-lock',lockRoot,'zowe-marist-lock-manager',githubToken, repository, true)
         console.log('Acquire lock success!')
         return true
     }
@@ -6650,7 +6679,7 @@ function releaseLock() {
     cmds.push(`git commit -m "Lock acquired by ${lockID}"`)
     try {
         utils.sh(cmds.join(' && '))
-        github.push('marist-lock',lockRoot,'zowe-marist-lock-manager',githubToken, repository)
+        github.push('marist-lock',lockRoot,'zowe-marist-lock-manager',githubToken, repository, true)
     }
     catch (e) {
         throw e
@@ -6671,9 +6700,8 @@ function tryToAcquireLock() {
         return false
     } 
     else { //this is the result of a race condition of acquireLock() - somebody else acquired the lock ahead of you, so unfortunately you have to wait
-        github.fetch(lockRoot)
-        github.hardReset('origin/marist-lock',lockRoot)
-        lockFileContent = getLockFileContent()
+        github.fetch(lockRoot, true)
+        github.hardReset('origin/marist-lock',lockRoot, true)
         return true
     }
 }

@@ -36,11 +36,13 @@ if (whatToDo != 'lock' && whatToDo != 'unlock') {
 var lockRoot = `${process.env.RUNNER_TEMP}/locks/zowe-install-packaging/marist-${maristServer}`
 
 if (whatToDo == 'lock') {
-    github.shallowClone(repository,`${process.env.RUNNER_TEMP}/locks`,'marist-lock')
+    github.shallowClone(repository,`${process.env.RUNNER_TEMP}/locks`,'marist-lock', true)
     lock()
 }
 else if (whatToDo == 'unlock') {
     //TODO
+    github.fetch(lockRoot, true)
+    github.pull(lockRoot, true)
     releaseLock()
 }
 
@@ -53,6 +55,7 @@ async function lock() {
         // in this case, we consider lock is free.
         console.log(`${maristServer} lock is free!`)
         needLineUpandWait = tryToAcquireLock()
+        lockFileContent = getLockFileContent()
     }
     else {
         console.log(`${maristServer} lock is occupied, line up and wait!`)
@@ -63,11 +66,12 @@ async function lock() {
         //TODO  Add a queue file and commit push
         while (lockFileContent != '' && lockFileContent != lockID) {
             utils.sleep(1*60*1000)   //wait for 5 mins to check lock status
-            github.fetch(lockRoot)
-            github.pull(lockRoot)
+            github.fetch(lockRoot, true)
+            github.pull(lockRoot, true)
             lockFileContent = getLockFileContent()
         }
         needLineUpandWait = tryToAcquireLock()
+        lockFileContent = getLockFileContent()
     }
 
     //TODO: remove queue file and commit push
@@ -88,7 +92,7 @@ function acquireLock() {
     }
 
     try {
-        github.push('marist-lock',lockRoot,'zowe-marist-lock-manager',githubToken, repository)
+        github.push('marist-lock',lockRoot,'zowe-marist-lock-manager',githubToken, repository, true)
         console.log('Acquire lock success!')
         return true
     }
@@ -111,7 +115,7 @@ function releaseLock() {
     cmds.push(`git commit -m "Lock acquired by ${lockID}"`)
     try {
         utils.sh(cmds.join(' && '))
-        github.push('marist-lock',lockRoot,'zowe-marist-lock-manager',githubToken, repository)
+        github.push('marist-lock',lockRoot,'zowe-marist-lock-manager',githubToken, repository, true)
     }
     catch (e) {
         throw e
@@ -132,9 +136,8 @@ function tryToAcquireLock() {
         return false
     } 
     else { //this is the result of a race condition of acquireLock() - somebody else acquired the lock ahead of you, so unfortunately you have to wait
-        github.fetch(lockRoot)
-        github.hardReset('origin/marist-lock',lockRoot)
-        lockFileContent = getLockFileContent()
+        github.fetch(lockRoot, true)
+        github.hardReset('origin/marist-lock',lockRoot, true)
         return true
     }
 }
