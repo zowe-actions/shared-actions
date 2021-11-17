@@ -20,12 +20,14 @@ var maristServer = core.getInput('marist-server')
 var repository = core.getInput('repository')
 var githubToken = core.getInput('github-token')
 var whatToDo = core.getInput('what-to-do')
+var testFile = core.getInput('test-file')
 
 utils.mandatoryInputCheck(lockID,'lock-id')
 utils.mandatoryInputCheck(maristServer,'marist-server')
 utils.mandatoryInputCheck(repository,'repository')
 utils.mandatoryInputCheck(githubToken,'github-token')
 utils.mandatoryInputCheck(whatToDo,'what-to-do')
+utils.mandatoryInputCheck(testFile,'test-file')
 
 if (whatToDo != 'lock' && whatToDo != 'unlock') {
     throw new Error('input "what-to-do" must be either "lock" or "unlock"')
@@ -92,7 +94,7 @@ function acquireLock() {
     var cmds = new Array()
     cmds.push(`cd ${lockRoot}`)
     cmds.push('git add LOCK')
-    cmds.push(`git commit -m "lock acquired by ${lockID}"`)
+    cmds.push(`git commit -m "lock acquired by ${testFile}"`)
     try {
         utils.sh(cmds.join(' && '))
     }
@@ -121,7 +123,7 @@ function releaseLock(newLockID) {
     var cmds = new Array()
     cmds.push(`cd ${lockRoot}`)
     cmds.push('git add LOCK')
-    cmds.push(`git commit -m "lock released by ${lockID}"`)
+    cmds.push(`git commit -m "lock released by ${testFile}"`)
     try {
         utils.sh(cmds.join(' && '))
         github.push('marist-lock',lockRoot,'zowe-marist-lock-manager',githubToken, repository, true)

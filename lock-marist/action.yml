@@ -10,6 +10,9 @@ inputs:
   lock-id:
     description: 'the lock id of this lock to be acquired'
     required: true
+  test-file: 
+    description: 'test file'
+    required: true
   marist-server:
     description: 'marist server'
     required: true
