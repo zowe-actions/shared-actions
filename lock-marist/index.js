@@ -32,10 +32,11 @@ if (whatToDo != 'lock' && whatToDo != 'unlock') {
 }
 
 // main
-github.shallowClone(repository,`${process.env.RUNNER_TEMP}/locks`,'marist-lock')
+
 var lockRoot = `${process.env.RUNNER_TEMP}/locks/zowe-install-packaging/marist-${maristServer}`
 
 if (whatToDo == 'lock') {
+    github.shallowClone(repository,`${process.env.RUNNER_TEMP}/locks`,'marist-lock')
     lock()
 }
 else if (whatToDo == 'unlock') {
