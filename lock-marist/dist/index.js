@@ -6695,7 +6695,7 @@ function releaseLock() {
 }
 
 function getLockFileContent() {
-    if (!utils.fileExists(`${lockRoot}/LOCK`)) {
+    if (!utils.fileExists(`${lockRoot}/LOCK`), true) {
         throw new Error('Lock file not exist! Unable to acquire lock! Failing workflow...')
     }
     return fs.readFileSync(`${lockRoot}/LOCK`)
