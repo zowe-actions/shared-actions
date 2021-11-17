@@ -112,7 +112,7 @@ function releaseLock() {
     var cmds = new Array()
     cmds.push(`cd ${lockRoot}`)
     cmds.push('git add LOCK')
-    cmds.push(`git commit -m "Lock acquired by ${lockID}"`)
+    cmds.push(`git commit -m "lock released by ${lockID}"`)
     try {
         utils.sh(cmds.join(' && '))
         github.push('marist-lock',lockRoot,'zowe-marist-lock-manager',githubToken, repository, true)
