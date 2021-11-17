@@ -9640,13 +9640,13 @@ class utils {
         spawnSync(cmd, { stdio: 'inherit', shell: true})
     }
 
-    static fileExists(path) {
+    static fileExists(path, quiet) {
         try {
             fs.accessSync(path, fs.constants.F_OK)
-            console.log(`${path} exists :D `)
+            if (!quiet) {console.log(`${path} exists :D `)}
             return true
         } catch {
-            console.warn(`${path} does not exist :(`)
+            if (!quiet) {console.warn(`${path} does not exist :(`)}
             return false
         }
     }

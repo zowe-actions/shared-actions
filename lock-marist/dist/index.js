@@ -6274,13 +6274,13 @@ class utils {
         spawnSync(cmd, { stdio: 'inherit', shell: true})
     }
 
-    static fileExists(path) {
+    static fileExists(path, quiet) {
         try {
             fs.accessSync(path, fs.constants.F_OK)
-            console.log(`${path} exists :D `)
+            if (!quiet) {console.log(`${path} exists :D `)}
             return true
         } catch {
-            console.warn(`${path} does not exist :(`)
+            if (!quiet) {console.warn(`${path} does not exist :(`)}
             return false
         }
     }
@@ -6634,6 +6634,7 @@ async function lock() {
         //TODO  Add a queue file and commit push
         while (lockFileContent != '' && lockFileContent != lockID) {
             utils.sleep(1*60*1000)   //wait for 5 mins to check lock status
+            console.log('check log status again')
             github.fetch(lockRoot, true)
             github.hardReset('origin/marist-lock',lockRoot, true)
             lockFileContent = getLockFileContent()

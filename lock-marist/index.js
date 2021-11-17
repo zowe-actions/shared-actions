@@ -70,6 +70,7 @@ async function lock() {
         //TODO  Add a queue file and commit push
         while (lockFileContent != '' && lockFileContent != lockID) {
             utils.sleep(1*60*1000)   //wait for 5 mins to check lock status
+            console.log('check log status again')
             github.fetch(lockRoot, true)
             github.hardReset('origin/marist-lock',lockRoot, true)
             lockFileContent = getLockFileContent()
