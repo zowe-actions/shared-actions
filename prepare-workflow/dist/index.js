@@ -9831,7 +9831,7 @@ class github {
      * Shallow clone a remote repository with latest
      *
      * @param  repo            the repository name, required 
-     * @param  dir             the directory name to do the clone, required
+     * @param  dir             the directory of where files should be cloned to, required
      * @param  branch          the branch name to be cloned, required
      */
      static shallowClone(repo, dir, branch, quiet) {
@@ -9843,7 +9843,7 @@ class github {
             if (branch) {
                 cmd += ` --depth 1 --single-branch --branch ${branch} `
             }
-            var fullRepo = `https://github.com/${repo}.git/`
+            var fullRepo = `https://github.com/${repo}.git/ ${dir}`
             cmd += fullRepo
             if (!quiet) {
                 console.log(utils.sh(cmd))

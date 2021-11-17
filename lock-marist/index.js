@@ -12,90 +12,69 @@ const core = require('@actions/core')
 const { utils, github } = require('zowe-common')
 const Debug = require('debug')
 const debug = Debug('zowe-actions:shared-actions:lock-marist')
-const fs = require('fs');
+const fs = require('fs')
+const lockRoot = `${process.env.RUNNER_TEMP}/locks`
 
 // Gets inputs
-var lockID = core.getInput('lock-id')
-var maristServer = core.getInput('marist-server')
-var repository = core.getInput('repository')
+var lockRepository = core.getInput('lock-repository')
+var lockBranch = core.getInput('lock-branch')
+var lockResourceName = core.getInput('lock-resource-name')
+var lockAvgRetryIntervalString = core.getInput('lock-avg-retry-interval')
 var githubToken = core.getInput('github-token')
-var whatToDo = core.getInput('what-to-do')
-var testFile = core.getInput('test-file')
 
-utils.mandatoryInputCheck(lockID,'lock-id')
-utils.mandatoryInputCheck(maristServer,'marist-server')
-utils.mandatoryInputCheck(repository,'repository')
+utils.mandatoryInputCheck(lockRepository,'lock-repository')
+utils.mandatoryInputCheck(lockResourceName,'lock-resource-name')
+utils.mandatoryInputCheck(lockAvgRetryIntervalString,'lock-avg-retry-interval')
 utils.mandatoryInputCheck(githubToken,'github-token')
-utils.mandatoryInputCheck(whatToDo,'what-to-do')
-utils.mandatoryInputCheck(testFile,'test-file')
 
-console.log(`DEBUG: ${!!process.env['STATE_isPost']}`) 
 
-if (whatToDo != 'lock' && whatToDo != 'unlock') {
-    throw new Error('input "what-to-do" must be either "lock" or "unlock"')
-}
+
+// generate a random wait timer for each job, this is to prevent jobs are acquiring the lock at the same time to prevent racing.
+var lockAvgRetryInterval = parseInt(lockAvgRetryIntervalString)
+var lockRetryIntervalMax = lockAvgRetryInterval + 10
+var lockRetryIntervalMin = lockAvgRetryInterval - 10
+const lockRetryInterval = Math.floor(Math.random() * (lockRetryIntervalMax - lockRetryIntervalMin + 1)) + lockRetryIntervalMin
 
 // main
-
-var lockRoot = `${process.env.RUNNER_TEMP}/locks/zowe-install-packaging/marist-${maristServer}`
-
-if (whatToDo == 'lock') {
-    github.shallowClone(repository,`${process.env.RUNNER_TEMP}/locks`,'marist-lock', true)
-    lock()
+if (!core.getState('isLockPost')) {
+    var currentTime =  utils.sh('date +%s%N')
+    const myLockUID = currentTime      //TODO
+    github.shallowClone(lockRepository,lockRoot,lockBranch,true)
+    lock(myLockUID)
+    core.saveState('isLockPost',true)
+    core.exportVariable('MY_LOCK_UID',myLockUID)
 }
-else if (whatToDo == 'unlock') {
-    //TODO check which queue is smallest number
-
-    var pass = false
-    while (!pass) {
-        var newLockID = ''
-        sync()  // sync up here to capture any new queue files by new jobs to make sure next releaseLock() passes
-        pass = releaseLock(newLockID)
-        var lockFileContent = getLockFileContent()
-        if (!pass && lockFileContent == newLockID) {
-            console.warn('not sure what went wrong, but the lock is already given to the next queued job. Skip this step')
-            pass = true
-        }
-    } 
+else {
+    unlock()
 }
 
-async function lock() {
-    var lockFileContent = getLockFileContent()
-    var needLineUpandWait = false
-    if (!lockFileContent || lockFileContent == '' || lockFileContent == lockID) {
-        // why == lockID ?
-        // could be possible that another job already unlocked server by modifying the LOCK file and assigned the lock to me
-        // in this case, we consider lock is free.
-        console.log(`${maristServer} lock is free!`)
-        needLineUpandWait = tryToAcquireLock()
-        lockFileContent = getLockFileContent()
+async function lock(myLockUID) {
+    while (!acquireLock(myLockUID)) { //return if lock is successfully acquired
+        console.log(`Acquiring lock failed, wait for ${lockRetryInterval} to try again`)
+        await utils.sleep(lockRetryInterval*1000)
     }
-    else {
-        console.log(`${maristServer} lock is occupied, line up and wait!`)
-        needLineUpandWait = true
-    }
-
-    while (needLineUpandWait) {
-        //TODO  Add a queue file and commit push
-        while (lockFileContent != '' && lockFileContent != lockID) {
-            await utils.sleep(30*1000)   //wait for 5 mins to check lock status
-            console.log('check log status again')
-            lockFileContent = getLockFileContent()
-        }
-        needLineUpandWait = tryToAcquireLock()
-        lockFileContent = getLockFileContent()
-    }
-
-    //TODO: remove queue file and commit push
+    console.log('Acquired the lock successfully!')
+    
 }
 
-function acquireLock() {
-    console.log('It\'s my turn to acquire lock now...')
-    fs.writeFileSync(`${lockRoot}/LOCK`,lockID)
+async function unlock() {
+    while (!releaseLock()) { } //iterate until lock is released successfully
+    console.log('Released the lock successfully!')
+}
+
+function writeLockFile(lockFileContent) {
+    console.log('Writing to lock file...')
+    fs.writeFileSync(`${lockRoot}/${lockResourceName}`,lockFileContent)
+    var commitMessage
+    if (lockFileContent == '') {
+        commitMessage = 'Lock is released by '
+    } else {
+        commitMessage = 'Lock is acquired by '
+    }
     var cmds = new Array()
     cmds.push(`cd ${lockRoot}`)
-    cmds.push('git add LOCK')
-    cmds.push(`git commit -m "lock acquired by ${testFile}"`)
+    cmds.push(`git add ${lockResourceName}`)
+    cmds.push(`git commit -m ${commitMessage}`)
     try {
         utils.sh(cmds.join(' && '))
     }
@@ -104,55 +83,48 @@ function acquireLock() {
     }
 
     try {
-        github.push('marist-lock',lockRoot,'zowe-marist-lock-manager',githubToken, repository, true)
-        console.log('Acquire lock success!')
-        return true
+        github.push(lockBranch, lockRoot, 'zowe-marist-lock-manager', githubToken, lockRepository, true)
+        console.log('Write to lock file success!')
     }
     catch(e) {
-        if (e) {
-            if (e.stderr.toString().includes('[rejected]') || e.stderr.toString().includes('error: failed to push some refs to')) {
-                console.warn('Somebody else got the lock ahead of you, I am afraid you will have to wait for a bit...')
-                return false
-            }
+        if (e.stderr.toString().includes('[rejected]') || e.stderr.toString().includes('error: failed to push some refs to')) {
+            console.warn('=======================================================')
+            console.warn('Somebody wrote to the lock file ahead of you,')
+            console.warn('I am afraid you will have to wait for the next interval...')
+            console.warn('=======================================================')
         }
-    }
-}
-
-function releaseLock(newLockID) {
-    console.log('Release the lock now...')
-    fs.writeFileSync(`${lockRoot}/LOCK`,newLockID)
-    var cmds = new Array()
-    cmds.push(`cd ${lockRoot}`)
-    cmds.push('git add LOCK')
-    cmds.push(`git commit -m "lock released by ${testFile}"`)
-    try {
-        utils.sh(cmds.join(' && '))
-        github.push('marist-lock',lockRoot,'zowe-marist-lock-manager',githubToken, repository, true)
-        console.log('Release lock success!')
-        return true
-    }
-    catch (e) {
-        console.warn('Releasing lock failed, likely due to a new commit occured just before I pushed. Try again')
-        return false
     }
 }
 
 function getLockFileContent() {
     sync()
-    if (!utils.fileExists(`${lockRoot}/LOCK`, true)) {
+    if (!utils.fileExists(`${lockRoot}/${lockResourceName}`, true)) {
         throw new Error('Lock file not exist! Unable to acquire lock! Failing workflow...')
     }
-    return fs.readFileSync(`${lockRoot}/LOCK`)
+    return fs.readFileSync(`${lockRoot}/${lockResourceName}`)
 }
 
-// returns needToLineUpandWait
-function tryToAcquireLock() {
-    if (acquireLock()) {
-        return false
-    } 
-    else { //this is the result of a race condition of acquireLock() - somebody else acquired the lock ahead of you, so unfortunately you have to wait
-        return true
+function acquireLock(myLockUID) {
+    console.log('Trying to acquire the lock...')
+    var content = getLockFileContent()
+    if (!content || content == '') { // free of lock
+        console.log('Lock is free!')
+        writeLockFile(myLockUID)     // only one job can successfully get the lock (by pushing changes)
     }
+    //since getLockFileContent has sync() which will do a hard reset, 
+    // if the content (latest) is my current job myLockUID, meaning lock is successfully acquired
+    return getLockFileContent() == myLockUID    
+}
+
+function releaseLock() {
+    console.log('Trying to release the lock...')
+    var content = getLockFileContent()
+    if (content && content == process.env.MY_LOCK_UID) { // it is my lock, to prevent I unlock somebody else
+        writeLockFile('')     // only one job can successfully get the lock (by pushing changes)
+    }
+    //since getLockFileContent has sync() which will do a hard reset, 
+    // if the content (latest) is empty, meaning lock is successfully released
+    return getLockFileContent() == ''
 }
 
 function sync() {

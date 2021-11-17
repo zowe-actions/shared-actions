@@ -1,25 +1,24 @@
 name: "Lock Marist Server"
 description: "Acquire lock on one of marist servers"
 inputs:
-  repository:
+  lock-repository:
     description: 'repository'
     required: true
+  lock-branch:
+    description: 'the branch name of where lock is'
+    required: false
+    default: 'github-actions-resource-locks'
+  lock-resource-name:
+    description: 'lock resource name'
+    required: true
+  lock-avg-retry-interval:
+    description: 'average lock acquire retry interval in seconds. Actual time will be +/- 10 seconds'
+    required: true
   github-token:
-    description: 'github api access token'
-    required: true
-  lock-id:
-    description: 'the lock id of this lock to be acquired'
-    required: true
-  test-file: 
-    description: 'test file'
-    required: true
-  marist-server:
-    description: 'marist server'
-    required: true
-  what-to-do:
-    description: 'either doing lock or unlock'
+    description: 'github api access token, must have access to lock-repo/lock-branch'
     required: true
 
 runs:
   using: 'node12'
   main: 'dist/index.js'
+  post: 'dist/index.js'
