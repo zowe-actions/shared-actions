@@ -9,7 +9,7 @@
  */
 
 const core = require('@actions/core')
-const { utils } = require('zowe-common')
+const { utils, github } = require('zowe-common')
 const Debug = require('debug')
 const debug = Debug('zowe-actions:shared-actions:lock-marist')
 const fs = require('fs');
@@ -17,14 +17,14 @@ const fs = require('fs');
 // Gets inputs
 var lockID = core.getInput('lock-id')
 var maristServer = core.getInput('marist-server')
-// var repositoryId = core.getInput('repository-id')
-// var githubToken = core.getInput('github-token')
+var repository = core.getInput('repository')
+var githubToken = core.getInput('github-token')
 var whatToDo = core.getInput('what-to-do')
 
 utils.mandatoryInputCheck(lockID,'lock-id')
 utils.mandatoryInputCheck(maristServer,'marist-server')
-// utils.mandatoryInputCheck(repositoryId,'repository-id')
-// utils.mandatoryInputCheck(githubToken,'github-token')
+utils.mandatoryInputCheck(repository,'repository')
+utils.mandatoryInputCheck(githubToken,'github-token')
 utils.mandatoryInputCheck(whatToDo,'what-to-do')
 
 if (whatToDo != 'lock' && whatToDo != 'unlock') {
@@ -32,6 +32,9 @@ if (whatToDo != 'lock' && whatToDo != 'unlock') {
 }
 
 // main
+github.shallowClone(repository,`${process.env.RUNNER_TEMP}/locks`,'marist-lock')
+var lockRoot = `${process.env.RUNNER_TEMP}/locks/zowe-install-packaging/marist-${maristServer}`
+
 if (whatToDo == 'lock') {
     lock()
 }
@@ -40,7 +43,74 @@ else if (whatToDo == 'unlock') {
 }
 
 async function lock() {
-    // each test job enters here should wait for random number of seconds to avoid acquiring the first lock at the same time
+    var lockFileContent = getLockFileContent()
+    var needLineUpandWait = false
+    if (!lockFileContent || lockFileContent == '' || lockFileContent == lockID) {
+        // why == lockID ?
+        // could be possible that another job already unlocked server by modifying the LOCK file and assigned the lock to me
+        // in this case, we consider lock is free.
+        console.log(`${maristServer} lock is free!`)
+        needLineUpandWait = tryToAcquireLock()
+    }
+    else {
+        console.log(`${maristServer} lock is occupied, line up and wait!`)
+        needLineUpandWait = true
+    }
+
+    while (needLineUpandWait) {
+        //TODO  Add a queue file and commit push
+        while (lockFileContent != '' && lockFileContent != lockID) {
+            utils.sleep(5*60*1000)   //wait for 5 mins to check lock status
+            github.fetch(lockRoot)
+            github.pull(lockRoot)
+            lockFileContent = getLockFileContent()
+        }
+        needLineUpandWait = tryToAcquireLock()
+    }
+
+    //TODO: remove queue file and commit push
 }
 
+function acquireLock() {
+    console.log('It\'s my turn to acquire lock now...')
+    fs.writeFileSync(`${lockRoot}/LOCK`,lockID)
+    var cmds = new Array()
+    cmds.push(`cd ${lockRoot}`)
+    cmds.push('git add LOCK')
+    cmds.push(`git commit -m "Lock acquired by ${lockID}"`)
+    utils.sh(cmds.join(' && '))
 
+    try {
+        github.push('marist-lock',lockRoot,'zowe-marist-lock-manager',githubToken, repository)
+        console.log('Acquire lock success!')
+        return true
+    }
+    catch(e) {
+        if (e) {
+            if (e.stderr.toString().includes('[rejected]') || e.stderr.toString().includes('error: failed to push some refs to')) {
+                console.warn('Somebody else got the lock ahead of you, I am afraid you will have to wait for a bit...')
+                return false
+            }
+        }
+    }
+}
+
+function getLockFileContent() {
+    if (!utils.fileExists(`${lockRoot}/LOCK`)) {
+        throw new Error('Lock file not exist! Unable to acquire lock! Failing workflow...')
+    }
+    return fs.readFileSync(`${lockRoot}/LOCK`)
+}
+
+// returns needToLineUpandWait
+function tryToAcquireLock() {
+    if (acquireLock()) {
+        return false
+    } 
+    else { //this is the result of a race condition of acquireLock() - somebody else acquired the lock ahead of you, so unfortunately you have to wait
+        github.fetch(lockRoot)
+        github.hardReset('origin/marist-lock',lockRoot)
+        lockFileContent = getLockFileContent()
+        return true
+    }
+}

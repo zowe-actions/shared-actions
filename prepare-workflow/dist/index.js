@@ -9828,6 +9828,74 @@ class github {
     }
 
     /**
+     * Shallow clone a remote repository with latest
+     *
+     * @param  repo            the repository name, required 
+     * @param  dir             the directory name to do the clone, required
+     * @param  branch          the branch name to be cloned, required
+     */
+     static shallowClone(repo, dir, branch) {
+        if (!repo || !dir || !branch) {
+            console.warn('Clone operation skipped, must specify all three arguments: repo, dir and branch')
+        } 
+        else {
+            var cmd = `mkdir ${dir} && cd ${dir} && git clone`
+            if (branch) {
+                cmd += ` --depth 1 --single-branch --branch ${branch} `
+            }
+            var fullRepo = `https://github.com/${repo}.git/`
+            cmd += fullRepo
+            console.log(utils.sh(cmd))
+        }
+    }
+
+    /**
+     * Hard reset a repository, removing all (/staged) changes
+     *
+     * @param  branch          the branch name to be reset, required
+     * @param  workingDir      the working directory
+     */
+    static hardReset(branch, workingDir) {
+        if (!branch || !workingDir) {
+            console.warn('Hard reset operation skipped, must specify branch and working directory')
+        } 
+        else {
+            cmd=`cd ${workingDir} && git reset --hard ${branch}`
+            console.log(utils.sh(cmd))
+        }
+    }
+
+    /**
+     * Fetch latest changes from remote
+     *
+     * @param  workingDir      the working directory
+     */
+    static fetch(workingDir) {
+        if (!workingDir) {
+            console.warn('Fetch operation skipped, must specify working directory')
+        } 
+        else {
+            cmd=`cd ${workingDir} && git fetch`
+            console.log(utils.sh(cmd))
+        }
+    }
+
+    /**
+     * Pull down latest changes from remote
+     *
+     * @param  workingDir      the working directory
+     */
+    static pull(workingDir) {
+        if (!workingDir) {
+            console.warn('Pull operation skipped, must specify working directory')
+        } 
+        else {
+            cmd=`cd ${workingDir} && git pull`
+            console.log(utils.sh(cmd))
+        }
+    }
+
+    /**
      * Push committed changes to a remote repository
      *
      * @param  branch          the branch to be pushed to, required
@@ -9866,7 +9934,6 @@ class github {
             return false
         }
     }
-
 }
 
 module.exports = github;

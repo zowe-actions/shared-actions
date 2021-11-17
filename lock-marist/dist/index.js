@@ -5720,6 +5720,74 @@ class github {
     }
 
     /**
+     * Shallow clone a remote repository with latest
+     *
+     * @param  repo            the repository name, required 
+     * @param  dir             the directory name to do the clone, required
+     * @param  branch          the branch name to be cloned, required
+     */
+     static shallowClone(repo, dir, branch) {
+        if (!repo || !dir || !branch) {
+            console.warn('Clone operation skipped, must specify all three arguments: repo, dir and branch')
+        } 
+        else {
+            var cmd = `mkdir ${dir} && cd ${dir} && git clone`
+            if (branch) {
+                cmd += ` --depth 1 --single-branch --branch ${branch} `
+            }
+            var fullRepo = `https://github.com/${repo}.git/`
+            cmd += fullRepo
+            console.log(utils.sh(cmd))
+        }
+    }
+
+    /**
+     * Hard reset a repository, removing all (/staged) changes
+     *
+     * @param  branch          the branch name to be reset, required
+     * @param  workingDir      the working directory
+     */
+    static hardReset(branch, workingDir) {
+        if (!branch || !workingDir) {
+            console.warn('Hard reset operation skipped, must specify branch and working directory')
+        } 
+        else {
+            cmd=`cd ${workingDir} && git reset --hard ${branch}`
+            console.log(utils.sh(cmd))
+        }
+    }
+
+    /**
+     * Fetch latest changes from remote
+     *
+     * @param  workingDir      the working directory
+     */
+    static fetch(workingDir) {
+        if (!workingDir) {
+            console.warn('Fetch operation skipped, must specify working directory')
+        } 
+        else {
+            cmd=`cd ${workingDir} && git fetch`
+            console.log(utils.sh(cmd))
+        }
+    }
+
+    /**
+     * Pull down latest changes from remote
+     *
+     * @param  workingDir      the working directory
+     */
+    static pull(workingDir) {
+        if (!workingDir) {
+            console.warn('Pull operation skipped, must specify working directory')
+        } 
+        else {
+            cmd=`cd ${workingDir} && git pull`
+            console.log(utils.sh(cmd))
+        }
+    }
+
+    /**
      * Push committed changes to a remote repository
      *
      * @param  branch          the branch to be pushed to, required
@@ -5758,7 +5826,6 @@ class github {
             return false
         }
     }
-
 }
 
 module.exports = github;
@@ -6481,7 +6548,7 @@ var __webpack_exports__ = {};
  */
 
 const core = __nccwpck_require__(4562)
-const { utils } = __nccwpck_require__(386)
+const { utils, github } = __nccwpck_require__(386)
 const Debug = __nccwpck_require__(8797)
 const debug = Debug('zowe-actions:shared-actions:lock-marist')
 const fs = __nccwpck_require__(5747);
@@ -6489,14 +6556,14 @@ const fs = __nccwpck_require__(5747);
 // Gets inputs
 var lockID = core.getInput('lock-id')
 var maristServer = core.getInput('marist-server')
-// var repositoryId = core.getInput('repository-id')
-// var githubToken = core.getInput('github-token')
+var repository = core.getInput('repository')
+var githubToken = core.getInput('github-token')
 var whatToDo = core.getInput('what-to-do')
 
 utils.mandatoryInputCheck(lockID,'lock-id')
 utils.mandatoryInputCheck(maristServer,'marist-server')
-// utils.mandatoryInputCheck(repositoryId,'repository-id')
-// utils.mandatoryInputCheck(githubToken,'github-token')
+utils.mandatoryInputCheck(repository,'repository')
+utils.mandatoryInputCheck(githubToken,'github-token')
 utils.mandatoryInputCheck(whatToDo,'what-to-do')
 
 if (whatToDo != 'lock' && whatToDo != 'unlock') {
@@ -6504,6 +6571,9 @@ if (whatToDo != 'lock' && whatToDo != 'unlock') {
 }
 
 // main
+github.shallowClone(repository,`${process.env.RUNNER_TEMP}/locks`,'marist-lock')
+var lockRoot = `${process.env.RUNNER_TEMP}/locks/zowe-install-packaging/marist-${maristServer}`
+
 if (whatToDo == 'lock') {
     lock()
 }
@@ -6512,11 +6582,77 @@ else if (whatToDo == 'unlock') {
 }
 
 async function lock() {
-    // each test job enters here should wait for random number of seconds to avoid acquiring the first lock at the same time
+    var lockFileContent = getLockFileContent()
+    var needLineUpandWait = false
+    if (!lockFileContent || lockFileContent == '' || lockFileContent == lockID) {
+        // why == lockID ?
+        // could be possible that another job already unlocked server by modifying the LOCK file and assigned the lock to me
+        // in this case, we consider lock is free.
+        console.log(`${maristServer} lock is free!`)
+        needLineUpandWait = tryToAcquireLock()
+    }
+    else {
+        console.log(`${maristServer} lock is occupied, line up and wait!`)
+        needLineUpandWait = true
+    }
+
+    while (needLineUpandWait) {
+        //TODO  Add a queue file and commit push
+        while (lockFileContent != '' && lockFileContent != lockID) {
+            utils.sleep(5*60*1000)   //wait for 5 mins to check lock status
+            github.fetch(lockRoot)
+            github.pull(lockRoot)
+            lockFileContent = getLockFileContent()
+        }
+        needLineUpandWait = tryToAcquireLock()
+    }
+
+    //TODO: remove queue file and commit push
 }
 
+function acquireLock() {
+    console.log('It\'s my turn to acquire lock now...')
+    fs.writeFileSync(`${lockRoot}/LOCK`,lockID)
+    var cmds = new Array()
+    cmds.push(`cd ${lockRoot}`)
+    cmds.push('git add LOCK')
+    cmds.push(`git commit -m "Lock acquired by ${lockID}"`)
+    utils.sh(cmds.join(' && '))
 
+    try {
+        github.push('marist-lock',lockRoot,'zowe-marist-lock-manager',githubToken, repository)
+        console.log('Acquire lock success!')
+        return true
+    }
+    catch(e) {
+        if (e) {
+            if (e.stderr.toString().includes('[rejected]') || e.stderr.toString().includes('error: failed to push some refs to')) {
+                console.warn('Somebody else got the lock ahead of you, I am afraid you will have to wait for a bit...')
+                return false
+            }
+        }
+    }
+}
 
+function getLockFileContent() {
+    if (!utils.fileExists(`${lockRoot}/LOCK`)) {
+        throw new Error('Lock file not exist! Unable to acquire lock! Failing workflow...')
+    }
+    return fs.readFileSync(`${lockRoot}/LOCK`)
+}
+
+// returns needToLineUpandWait
+function tryToAcquireLock() {
+    if (acquireLock()) {
+        return false
+    } 
+    else { //this is the result of a race condition of acquireLock() - somebody else acquired the lock ahead of you, so unfortunately you have to wait
+        github.fetch(lockRoot)
+        github.hardReset('origin/marist-lock',lockRoot)
+        lockFileContent = getLockFileContent()
+        return true
+    }
+}
 })();
 
 module.exports = __webpack_exports__;
