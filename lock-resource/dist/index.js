@@ -13368,28 +13368,28 @@ const lockRetryInterval = Math.floor(Math.random() * (lockRetryIntervalMax - loc
 // main
 if (!core.getState('isLockPost')) {
     var currentTimeInNano =  utils.sh('date +%s%N')
-    var myLockUID = {}
-    myLockUID.lockAcquiredTime = new Date().toString()
-    myLockUID.uid = currentTimeInNano
-    myLockUID.repository = context.repo
-    myLockUID.branch = process.env.CURRENT_BRANCH
-    myLockUID.workflow = context.workflow
-    myLockUID.job = context.job
-    myLockUID.actor = context.actor
-    myLockUID.runId = context.runId
-    myLockUID.runNumber = context.runNumber
+    var myLockJson = {}
+    myLockJson.lockAcquiredTime = new Date().toString()
+    myLockJson.uid = currentTimeInNano
+    myLockJson.repository = context.repo
+    myLockJson.branch = process.env.CURRENT_BRANCH
+    myLockJson.workflow = context.workflow
+    myLockJson.job = context.job
+    myLockJson.actor = context.actor
+    myLockJson.runId = context.runId
+    myLockJson.runNumber = context.runNumber
     
     github.shallowClone(lockRepository,lockRoot,lockBranch,true)
-    lock(JSON.stringify(myLockUID, null, 2))
+    lock(myLockJson)
     core.saveState('isLockPost',true)
-    core.exportVariable('MY_LOCK_UID',myLockUID)
+    core.exportVariable('MY_LOCK_UID',myLockJson.uid)
 }
 else {
     unlock()
 }
 
-async function lock(myLockUID) {
-    while (!acquireLock(myLockUID)) { //return if lock is successfully acquired
+async function lock(myLockJson) {
+    while (!acquireLock(myLockJson)) { //return if lock is successfully acquired
         console.log(`Acquiring lock failed, wait for ${lockRetryInterval} seconds to try again`)
         await utils.sleep(lockRetryInterval*1000)
     }
@@ -13401,16 +13401,42 @@ async function unlock() {
     console.log('Released the lock successfully!')
 }
 
-function writeLockFile(lockFileContent) {
-    console.log('Writing to lock file...')
-    fs.writeFileSync(`${lockRoot}/${lockResourceName}`,lockFileContent)
-    var commitMessage
-    if (lockFileContent == '') {
-        var lockFileContentJson = JSON.parse(lockFileContent)
-        commitMessage = `Lock is released by ${lockFileContentJson.actor} running ${lockFileContentJson.workflow}/${lockFileContentJson.job}/${lockFileContentJson.runNumber}`
-    } else {
-        commitMessage = `Lock is acquired by ${lockFileContentJson.actor} running ${lockFileContentJson.workflow}/${lockFileContentJson.job}/${lockFileContentJson.runNumber}`
+function acquireLock(myLockJson) {
+    console.log('Trying to acquire the lock...')
+    var content = getLockFileContent()
+    if (!content || content == '') { // free of lock
+        console.log('Lock is free!')
+        writeLockFile(myLockJson)     // only one job can successfully get the lock (by pushing changes)
     }
+    //since getLockFileContent has sync() which will do a hard reset, 
+    // if the content (latest) is my current job lock uid, meaning lock is successfully acquired
+    return getLockFileContent().uid == myLockJson.uid
+}
+
+function releaseLock() {
+    console.log('Trying to release the lock...')
+    var content = getLockFileContent()
+    if (content && content.uid && content.uid == process.env.MY_LOCK_UID) { // it is my lock, to prevent I unlock somebody else
+        writeLockFile('')     // only one job can successfully get the lock (by pushing changes)
+    }
+    //since getLockFileContent has sync() which will do a hard reset, 
+    // if the content (latest) is empty, meaning lock is successfully released
+    return getLockFileContent() == ''
+}
+
+function getLockFileContent() {
+    sync()
+    if (!utils.fileExists(`${lockRoot}/${lockResourceName}`, true)) {
+        throw new Error('Lock file not exist! Unable to acquire lock! Failing workflow...')
+    }
+    var content = fs.readFileSync(`${lockRoot}/${lockResourceName}`)
+    return content != '' ? JSON.parse(content) : ''
+}
+
+function writeLockFile(lockFileContentJson) {
+    console.log('Writing to lock file...')
+    fs.writeFileSync(`${lockRoot}/${lockResourceName}`,lockFileContentJson)
+    var commitMessage = `Lock is ${lockFileContentJson == '' ? 'released' : 'acquired'} by ${context.actor} running ${context.workflow}/${context.job}/${context.runNumber}`
     var cmds = new Array()
     cmds.push(`cd ${lockRoot}`)
     cmds.push(`git add ${lockResourceName}`)
@@ -13434,37 +13460,6 @@ function writeLockFile(lockFileContent) {
             console.warn('=======================================================')
         }
     }
-}
-
-function getLockFileContent() {
-    sync()
-    if (!utils.fileExists(`${lockRoot}/${lockResourceName}`, true)) {
-        throw new Error('Lock file not exist! Unable to acquire lock! Failing workflow...')
-    }
-    return fs.readFileSync(`${lockRoot}/${lockResourceName}`)
-}
-
-function acquireLock(myLockUID) {
-    console.log('Trying to acquire the lock...')
-    var content = getLockFileContent()
-    if (!content || content == '') { // free of lock
-        console.log('Lock is free!')
-        writeLockFile(myLockUID)     // only one job can successfully get the lock (by pushing changes)
-    }
-    //since getLockFileContent has sync() which will do a hard reset, 
-    // if the content (latest) is my current job myLockUID, meaning lock is successfully acquired
-    return getLockFileContent() == myLockUID    
-}
-
-function releaseLock() {
-    console.log('Trying to release the lock...')
-    var content = getLockFileContent()
-    if (content && content == process.env.MY_LOCK_UID) { // it is my lock, to prevent I unlock somebody else
-        writeLockFile('')     // only one job can successfully get the lock (by pushing changes)
-    }
-    //since getLockFileContent has sync() which will do a hard reset, 
-    // if the content (latest) is empty, meaning lock is successfully released
-    return getLockFileContent() == ''
 }
 
 function sync() {
