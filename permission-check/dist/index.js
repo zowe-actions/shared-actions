@@ -13365,8 +13365,6 @@ else {
         core.setFailed(`Permission check failure, user ${context.actor} is not authorized to run workflow on ${repo}, permission is ${returnedPermission}`)
     }
 }
-
-console.log(context)
 })();
 
 module.exports = __webpack_exports__;
