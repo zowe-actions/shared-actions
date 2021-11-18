@@ -3,13 +3,13 @@ description: "Permission check for current github actor to see if it has write a
 inputs:
   user: 
     description: 'user to be checked'
-    required: true
+    required: false
   github-repo:
     description: 'github repository'
-    required: true
+    required: false
   github-token:
     description: 'github token for authenticating api requests'
-    required: true
+    required: false
 
 runs:
   using: 'node12'

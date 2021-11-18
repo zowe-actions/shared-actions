@@ -9,27 +9,27 @@
  */
 
 const core = require('@actions/core')
+const github = require('@actions/github')
 const { utils } = require('zowe-common')
 
-var user = core.getInput('user')
-var repo = core.getInput('github-repo')
-var g_token = core.getInput('github-token')
+var context = github.context
+var repo = context.repo.owner + '/' + context.repo.repo
+// var g_token = core.getInput('github-token')
 
 // null check
-utils.mandatoryInputCheck(user,'user')
-utils.mandatoryInputCheck(repo,'github-repo')
-utils.mandatoryInputCheck(g_token,'github-token')
 
-if (user == 'dependabot[bot]'){
-    console.log(`${user} is running this workflow now, manually approved - Bypassing permission check`)
+// utils.mandatoryInputCheck(g_token,'github-token')
+
+if (context.actor == 'dependabot[bot]'){
+    console.log(`${context.actor} is running this workflow now, manually approved - Bypassing permission check`)
 }
 else {
     var cmds = new Array()
     cmds.push(`curl`)
     cmds.push(`-H "Accept: application/vnd.github.v3+json"`)
-    cmds.push(`-H "Authorization: Bearer ${g_token}"`)
+    // cmds.push(`-H "Authorization: Bearer ${g_token}"`)
     cmds.push(`-X GET`)
-    cmds.push(`"https://api.github.com/repos/${repo}/collaborators/${user}/permission"`)
+    cmds.push(`"https://api.github.com/repos/${repo}/collaborators/${context.actor}/permission"`)
     cmds.push(`| jq -r .permission`)
     var returnedPermission = utils.sh(cmds.join(' '))
     console.log(`Returned permission is ${returnedPermission}`)
