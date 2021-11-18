@@ -13344,11 +13344,9 @@ const { utils } = __nccwpck_require__(386)
 
 var context = github.context
 var repo = context.repo.owner + '/' + context.repo.repo
-// var g_token = core.getInput('github-token')
+var g_token = core.getInput('github-token')
 
-// null check
-
-// utils.mandatoryInputCheck(g_token,'github-token')
+utils.mandatoryInputCheck(g_token,'github-token')
 
 if (context.actor == 'dependabot[bot]'){
     console.log(`${context.actor} is running this workflow now, manually approved - Bypassing permission check`)
@@ -13357,14 +13355,14 @@ else {
     var cmds = new Array()
     cmds.push(`curl`)
     cmds.push(`-H "Accept: application/vnd.github.v3+json"`)
-    // cmds.push(`-H "Authorization: Bearer ${g_token}"`)
+    cmds.push(`-H "Authorization: Bearer ${g_token}"`)
     cmds.push(`-X GET`)
     cmds.push(`"https://api.github.com/repos/${repo}/collaborators/${context.actor}/permission"`)
     cmds.push(`| jq -r .permission`)
     var returnedPermission = utils.sh(cmds.join(' '))
     console.log(`Returned permission is ${returnedPermission}`)
     if (!returnedPermission || (returnedPermission != 'admin' && returnedPermission != 'write' && returnedPermission != 'maintain')) {
-        core.setFailed(`Permission check failure, user ${user} is not authorized to run workflow on ${repo}, permission is ${returnedPermission}`)
+        core.setFailed(`Permission check failure, user ${context.actor} is not authorized to run workflow on ${repo}, permission is ${returnedPermission}`)
     }
 }
 })();
