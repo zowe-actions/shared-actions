@@ -1,12 +1,6 @@
 name: "Check permission"
 description: "Permission check for current github actor to see if it has write access"
 inputs:
-  user: 
-    description: 'user to be checked'
-    required: true
-  github-repo:
-    description: 'github repository'
-    required: true
   github-token:
     description: 'github token for authenticating api requests'
     required: true
