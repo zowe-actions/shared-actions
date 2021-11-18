@@ -9,11 +9,11 @@
  */
 
 const core = require('@actions/core')
+const actionsGithub = require('@actions/github')
 const { utils, github } = require('zowe-common')
-const Debug = require('debug')
-const debug = Debug('zowe-actions:shared-actions:lock-marist')
 const fs = require('fs')
-const lockRoot = `${process.env.RUNNER_TEMP}/locks`
+const lockRoot = `${process.env.RUNNER_TEMP}/resource-locks`
+const context = actionsGithub.context
 
 // Gets inputs
 var lockRepository = core.getInput('lock-repository')
@@ -22,10 +22,12 @@ var lockResourceName = core.getInput('lock-resource-name')
 var lockAvgRetryIntervalString = core.getInput('lock-avg-retry-interval')
 var githubToken = core.getInput('github-token')
 
-utils.mandatoryInputCheck(lockRepository,'lock-repository')
 utils.mandatoryInputCheck(lockResourceName,'lock-resource-name')
 utils.mandatoryInputCheck(lockAvgRetryIntervalString,'lock-avg-retry-interval')
 utils.mandatoryInputCheck(githubToken,'github-token')
+if (!lockRepository || lockRepository == '') {
+    lockRepository = context.repo
+}
 
 // generate a random wait timer for each job, this is to prevent jobs are acquiring the lock at the same time to prevent racing.
 var lockAvgRetryInterval = parseInt(lockAvgRetryIntervalString)
@@ -35,10 +37,20 @@ const lockRetryInterval = Math.floor(Math.random() * (lockRetryIntervalMax - loc
 
 // main
 if (!core.getState('isLockPost')) {
-    var currentTime =  utils.sh('date +%s%N')
-    const myLockUID = currentTime      //TODO
+    var currentTimeInNano =  utils.sh('date +%s%N')
+    var myLockUID = {}
+    myLockUID.lockAcquiredTime = new Date().toString()
+    myLockUID.uid = currentTimeInNano
+    myLockUID.repository = context.repo
+    myLockUID.branch = process.env.CURRENT_BRANCH
+    myLockUID.workflow = context.workflow
+    myLockUID.job = context.job
+    myLockUID.actor = context.actor
+    myLockUID.runId = context.runId
+    myLockUID.runNumber = context.runNumber
+    
     github.shallowClone(lockRepository,lockRoot,lockBranch,true)
-    lock(myLockUID)
+    lock(JSON.stringify(myLockUID, null, 2))
     core.saveState('isLockPost',true)
     core.exportVariable('MY_LOCK_UID',myLockUID)
 }
@@ -52,7 +64,6 @@ async function lock(myLockUID) {
         await utils.sleep(lockRetryInterval*1000)
     }
     console.log('Acquired the lock successfully!')
-    
 }
 
 async function unlock() {
@@ -65,9 +76,10 @@ function writeLockFile(lockFileContent) {
     fs.writeFileSync(`${lockRoot}/${lockResourceName}`,lockFileContent)
     var commitMessage
     if (lockFileContent == '') {
-        commitMessage = 'Lock is released by '
+        var lockFileContentJson = JSON.parse(lockFileContent)
+        commitMessage = `Lock is released by ${lockFileContentJson.actor} running ${lockFileContentJson.workflow}/${lockFileContentJson.job}/${lockFileContentJson.runNumber}`
     } else {
-        commitMessage = 'Lock is acquired by '
+        commitMessage = `Lock is acquired by ${lockFileContentJson.actor} running ${lockFileContentJson.workflow}/${lockFileContentJson.job}/${lockFileContentJson.runNumber}`
     }
     var cmds = new Array()
     cmds.push(`cd ${lockRoot}`)

@@ -2,8 +2,8 @@ name: "Lock Resource"
 description: "Acquire resource lock"
 inputs:
   lock-repository:
-    description: 'repository'
-    required: true
+    description: 'repository. Default to be current workflow repository'
+    required: false
   lock-branch:
     description: 'the branch name of where lock is'
     required: false
