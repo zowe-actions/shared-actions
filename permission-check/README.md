@@ -1,19 +1,11 @@
 # Permission check
 
-This action does permission checks for a specified user on a given repository. If permission returned does not have write permission (not from one of 'admin', 'write', or 'maintain'), the workflow job invoking this action will set to fail.\
+This action does permission checks for the running user on caller repository. If permission returned does not have write permission (not from one of 'admin', 'write', or 'maintain'), the workflow job invoking this action will set to fail.\
 <br />
 This action is created to prevent protected workflow jobs running from unauthorized user.
 <br />
 
 ## Inputs
-
-### `user`
-
-**Required** - User whose permission will be checked
-
-### `github-repo`
-
-**Required** - github repository
 
 ### `github-token`
 
@@ -37,7 +29,5 @@ None
 ```yaml
 uses: zowe-actions/shared-actions/permission-check@main
 with:
-  user: random-userid
-  github-repo: user/project
   github-token: example-token-here
 ```
