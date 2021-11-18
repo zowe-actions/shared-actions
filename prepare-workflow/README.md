@@ -8,14 +8,6 @@ This action does several things including exports certain environment variables 
 
 **Optional** - package name. This will be utilized if there is no `id` in manifest file of your project. Will get ignored if `id` is present in your manifest file.
 
-### `github-user`
-
-**Optional** - github user used to do authentication. Will be exported to env vars if provided.
-
-### `github-email`
-
-**Optional** - github email used to record pushes.
-
 ### `manifest`
 
 **Optional** - Custom manifest file name (in project root directory) to overwrite default manifest exists in project
@@ -47,10 +39,6 @@ the branch where workflow is triggered
 ### `JFROG_CLI_BUILD_NAME`
 
 this is to overwrite jfrog build name while doing jfrog cli commands
-
-### `GITHUB_REPOSITORY`
-
-the repository where workflow is triggered
 
 ### `MANIFEST_INFO`
 

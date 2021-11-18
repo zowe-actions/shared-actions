@@ -4,12 +4,6 @@ inputs:
   package-name:
     description: 'package name'
     required: false
-  github-user:
-    description: 'github user'
-    required: false
-  github-email:
-    description: 'github email'
-    required: false
   manifest:
     description: Custom manifest file to overwrite default manifest exists in project
     required: false
@@ -57,15 +51,9 @@ runs:
     
     - name: 'export github username and email'
       run: |
-        if [ -n "${{ inputs.github-user }}" ]
-        then
-          git config --global user.name ${{ inputs.github-user }}
-        fi
-        if [ -n "${{ inputs.github-email }}" ]
-        then
-          git config --global user.email ${{ inputs.github-email }}
-        fi
-        echo GITHUB_REPOSITORY=${{ github.repository }} >> $GITHUB_ENV
+        git config --global user.name ${{ github.actor }}
+        echo ${{ github.actor }}
+        git config --global user.email dummy-email@email.com
       shell: bash
 
     - name: 'run generic setup'

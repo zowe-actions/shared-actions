@@ -9,6 +9,7 @@
  */
 
 const core = require('@actions/core')
+const actionsGithub = require('@actions/github')
 const { github } = require('zowe-common')
 const Debug = require('debug')
 const debug = Debug('zowe-actions:shared-actions:release')
@@ -47,7 +48,8 @@ else {
  */
 function tagBranch() {
     var tag = `${githubTagPrefix ? githubTagPrefix + '-' : ''}v${process.env.P_VERSION}${process.env.PRE_RELEASE_STRING != '' ? '-' + process.env.PRE_RELEASE_STRING : '' }`
-    console.log(`Creating tag "${tag}" at "${process.env.GITHUB_REPOSITORY}:${process.env.CURRENT_BRANCH}`)
+    var repo = actionsGithub.context.repo.owner + '/' + actionsGithub.context.repo.repo
+    console.log(`Creating tag "${tag}" at "${repo}:${process.env.CURRENT_BRANCH}`)
 
     github.tag(tag)
 }
