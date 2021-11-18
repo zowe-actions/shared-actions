@@ -36,4 +36,4 @@ else {
     }
 }
 
-console.log(context.payload)
+console.log(context)

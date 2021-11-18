@@ -13366,7 +13366,7 @@ else {
     }
 }
 
-console.log(context.payload)
+console.log(context)
 })();
 
 module.exports = __webpack_exports__;
