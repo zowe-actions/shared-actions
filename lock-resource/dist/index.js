@@ -13435,7 +13435,7 @@ function getLockFileContent() {
 
 function writeLockFile(lockFileContentJson) {
     console.log('Writing to lock file...')
-    fs.writeFileSync(`${lockRoot}/${lockResourceName}`,lockFileContentJson)
+    fs.writeFileSync(`${lockRoot}/${lockResourceName}`,JSON.stringify(lockFileContentJson, null, 2))
     var commitMessage = `Lock is ${lockFileContentJson == '' ? 'released' : 'acquired'} by ${context.actor} running ${context.workflow}/${context.job}/${context.runNumber}`
     var cmds = new Array()
     cmds.push(`cd ${lockRoot}`)
