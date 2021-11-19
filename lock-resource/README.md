@@ -4,7 +4,7 @@ Github Actions has a natively supported feature to ensure only one workflow can 
   
 Therefore, this action `lock-resource` is closing the gap to have multiple workflows queueing up and ensure only one workflow can acquire a resource lock at a time.  
 
-The lock files are stored on any specified repository branch. Whenever a workflow needs to lock a resource, it will write to that lock file and commit push to that branch. This action takes the advantage of Git push command to ensure atomic instruction; if one workflow already pushes changes, subsequent workflow (on a separate checkout branch) will not be able to push changes unless syncing up with remote. Failure to acquire the lock (pushing changes to lock file) will result in a wait; as wait timer passes it will check the lock status again until the lock is free to acquire.
+The lock files are stored on any specified repository branch. Whenever a workflow needs to lock a resource, it will write to that lock file and commit push to that branch. This action takes the advantage of Git push command to ensure atomic instruction; if one workflow already pushes changes, subsequent workflow (on a separate checkout branch) will not be able to push changes unless after syncing up with remote. Failure to acquire the lock (pushing changes to lock file) will result in a wait; as wait timer passes it will check the lock status again (and again...) until the lock is free to acquire.
 
 The wait timer can be configured from `lock-avg-retry-interval`. Note that this is only an average wait timer, exact number will be randomly generated from the range of +/- 10 seconds of your input to reduce the chance of race condition.
 
