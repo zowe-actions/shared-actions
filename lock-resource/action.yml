@@ -1,0 +1,24 @@
+name: "Lock Resource"
+description: "Acquire resource lock"
+inputs:
+  lock-repository:
+    description: 'repository. Default to be current workflow repository'
+    required: false
+  lock-branch:
+    description: 'the branch name of where lock is'
+    required: false
+    default: 'github-actions-resource-locks'
+  lock-resource-name:
+    description: 'lock resource name'
+    required: true
+  lock-avg-retry-interval:
+    description: 'average lock acquire retry interval in seconds. Actual time will be +/- 10 seconds'
+    required: true
+  github-token:
+    description: 'github api access token, must have access to lock-repo/lock-branch'
+    required: true
+
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
+  post: 'dist/index.js'
