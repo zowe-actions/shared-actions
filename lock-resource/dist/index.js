@@ -13372,7 +13372,7 @@ if (!core.getState('isLockPost')) {
     myLockJson.lockAcquiredTime = new Date().toString()
     myLockJson.uid = currentTimeInNano
     myLockJson.repository = context.repo
-    myLockJson.branch = process.env.CURRENT_BRANCH
+    myLockJson.branch = context.ref.replace('refs/heads/','')
     myLockJson.workflow = context.workflow
     myLockJson.job = context.job
     myLockJson.actor = context.actor
