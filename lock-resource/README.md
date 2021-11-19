@@ -60,20 +60,17 @@ You can also manually locks a resource by writing any data to the lock file. Thi
 ## Outputs
 
 None
-<br /><br />
+<br />
 
 ## Exported environment variables
 
 None
-<br /><br />
+<br />
 
 ## Pre-requisite
 
-Before you call this action, make sure you call [shared-actions/prepare-workflow](https://github.com/zowe-actions/shared-actions/tree/main/prepare-workflow). Sample usage would be:
-
-```yaml
-uses: zowe-actions/shared-actions/prepare-workflow@main
-```
+None
+<br />
 
 ## Example usage
 
