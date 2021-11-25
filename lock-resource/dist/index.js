@@ -13382,7 +13382,6 @@ if (!core.getState('isLockPost')) {
     github.shallowClone(lockRepository,lockRoot,lockBranch,true)
     lock(myLockJson)
     core.saveState('isLockPost',true)
-    core.saveState('isLockAcquiredOK',true)
     core.exportVariable('MY_LOCK_UID',myLockJson.uid)
 }
 else {
@@ -13399,6 +13398,7 @@ async function lock(myLockJson) {
         await utils.sleep(lockRetryInterval*1000)
     }
     console.log('Acquired the lock successfully!')
+    core.saveState('isLockAcquiredOK',true)
 }
 
 async function unlock() {
