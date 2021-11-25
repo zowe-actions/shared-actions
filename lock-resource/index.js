@@ -52,10 +52,15 @@ if (!core.getState('isLockPost')) {
     github.shallowClone(lockRepository,lockRoot,lockBranch,true)
     lock(myLockJson)
     core.saveState('isLockPost',true)
+    core.saveState('isLockAcquiredOK',true)
     core.exportVariable('MY_LOCK_UID',myLockJson.uid)
 }
 else {
-    unlock()
+    if (core.getState('isLockAcquiredOK')) { //only if we acquired the lock successfully before, then now we unlock
+        unlock()
+    } else {
+        console.log('Lock previously is not acquired successfully, thus skip release lock')
+    }
 }
 
 async function lock(myLockJson) {
