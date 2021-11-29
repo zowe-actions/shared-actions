@@ -25,26 +25,14 @@ const zlinuxSSHServer = core.getInput('zlinux-ssh-server')
 const zlinuxSSHKeyPassphrase= core.getInput('zlinux-ssh-key-passphrase')
 
 // null check
-if (!buildNumber || buildNumber == '') {
-    throw new InvalidArgumentException('run-number')
-}
-if (!zowePaxJfrogUploadTarget || zowePaxJfrogUploadTarget == '') {
-    throw new InvalidArgumentException('zowe-pax-jfrog-upload-target')
-}
-if (!buildDockerSources || buildDockerSources == '') {
+utils.mandatoryInputCheck(buildNumber, 'run-number')
+utils.mandatoryInputCheck(zowePaxJfrogUploadTarget, 'zowe-pax-jfrog-upload-target')
+utils.mandatoryInputCheck(dockerhubUser, 'dockerhub-user')
+utils.mandatoryInputCheck(dockerhubPassword, 'dockerhub-password')
+utils.mandatoryInputCheck(zlinuxSSHServer, 'zlinux-ssh-server')
+utils.mandatoryInputCheck(zlinuxSSHKeyPassphrase, 'zlinux-ssh-key-passphrase')
+if (buildDockerSources == '') {
     throw new InvalidArgumentException('build-docker-sources')
-}
-if (!dockerhubUser || dockerhubUser == '') {
-    throw new InvalidArgumentException('dockerhub-user')
-}
-if (!dockerhubPassword || dockerhubPassword == '') {
-    throw new InvalidArgumentException('dockerhub-password')
-}
-if (!zlinuxSSHServer || zlinuxSSHServer == '') {
-    throw new InvalidArgumentException('zlinux-ssh-server')
-}
-if (!zlinuxSSHKeyPassphrase || zlinuxSSHKeyPassphrase == '') {
-    throw new InvalidArgumentException('zlinux-ssh-key-passphrase')
 }
 
 // main
