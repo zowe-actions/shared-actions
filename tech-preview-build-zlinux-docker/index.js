@@ -18,7 +18,7 @@ const projectRootPath = process.env.GITHUB_WORKSPACE
 const currentBranch = process.env.CURRENT_BRANCH
 const buildNumber = core.getInput('run-number')
 const zowePaxJfrogUploadTarget = core.getInput('zowe-pax-jfrog-upload-target')
-const buildDockerSources = core.getBooleanInput('build-docker-sources')
+const buildDockerSources = core.getInput('build-docker-sources') == 'true' ? true : false
 const dockerhubUser = core.getInput('dockerhub-user')
 const dockerhubPassword = core.getInput('dockerhub-password')
 const zlinuxSSHServer = core.getInput('zlinux-ssh-server')
@@ -31,9 +31,6 @@ utils.mandatoryInputCheck(dockerhubUser, 'dockerhub-user')
 utils.mandatoryInputCheck(dockerhubPassword, 'dockerhub-password')
 utils.mandatoryInputCheck(zlinuxSSHServer, 'zlinux-ssh-server')
 utils.mandatoryInputCheck(zlinuxSSHKeyPassphrase, 'zlinux-ssh-key-passphrase')
-if (buildDockerSources == '') {
-    throw new InvalidArgumentException('build-docker-sources')
-}
 
 // main
 printLogDivider(`make directory of zowe-build/${currentBranch}_${buildNumber}`)
