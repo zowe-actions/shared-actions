@@ -9219,47 +9219,63 @@ get ${remoteWorkspaceFullPath}/${file} ${paxLocalWorkspace}`
         } catch (ex1) {
             // throw error
             throw new Error(`Pack Pax package failed: ${ex1}`)
-        } finally {
-            if (keepTempFolder) {
-                console.warn(`${func}[warning] remote workspace will be left as-is without clean-up.`)
-            } 
-            else {
-                try {
-                    // run catch-all hooks
-                    console.log(`${func} running catch-all hooks...`)
-                    var cmd4 = `cd "${remoteWorkspaceFullPath}"
-if [ -f "${HOOK_CATCHALL_PACKAGING}" ]; then
-echo "${func} running catch-all hook ..."
-iconv -f ISO8859-1 -t IBM-1047 ${HOOK_CATCHALL_PACKAGING} > ${HOOK_CATCHALL_PACKAGING}.new
-mv ${HOOK_CATCHALL_PACKAGING}.new ${HOOK_CATCHALL_PACKAGING}
-chmod +x ${HOOK_CATCHALL_PACKAGING}
-echo "${func} launch: ${environmentText} ./${HOOK_CATCHALL_PACKAGING}"
-${environmentText} ./${HOOK_CATCHALL_PACKAGING}
-if [ \$? -ne 0 ]; then
-echo "${func}[ERROR] failed on catch-all hook"
-exit 1
-fi
-fi`
-                    utils.ssh(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd4)
-                } catch (ex3) {
-                    // ignore errors for cleaning up
-                    console.warn(`${func} running catch-all hooks failed: ${ex3}`)
-                }
-                console.log('catch all hooks completed')
-                try {
-                    // always clean up temporary files/folders
-                    console.log(`${func} cleaning up remote workspace...`)
-                    var cmdCleaning = `rm -fr ${remoteWorkspaceFullPath}*`
-                    utils.ssh(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmdCleaning)
-                    console.log(`${func} cleaning up remote workspace success`)
-                } catch (ex2) {
-                    // ignore errors for cleaning up
-                    console.warn(`${func} cleaning up remote workspace failed: ${ex2}`)
-                }
-            } //ELSE
-        } //FINALLY
-        return `${paxLocalWorkspace}/${compressPax ? filePaxZ : filePax}`
+        } 
+        return remoteWorkspaceFullPath
     } //PACK
+
+
+    static paxCleanup(args) {
+
+        const func = 'packCleanup:'
+        const remoteWorkspaceFullPath = args.get('remoteWorkspaceFullPath')
+        const paxSSHHost = args.get('paxSSHHost')
+        const paxSSHPort = args.get('paxSSHPort')
+        const paxSSHUsername = args.get('paxSSHUsername')
+        const paxSSHPassword = args.get('paxSSHPassword')
+        const keepTempFolderArg = args.get('keepTempFolder')
+
+        if (keepTempFolderArg) {
+            keepTempFolder = true
+        }
+        
+        if (keepTempFolder) {
+            console.warn(`${func}[warning] remote workspace will be left as-is without clean-up.`)
+        } 
+        else {
+            try {
+                // run catch-all hooks
+                console.log(`${func} running catch-all hooks...`)
+                var cmd = `cd "${remoteWorkspaceFullPath}"
+    if [ -f "${HOOK_CATCHALL_PACKAGING}" ]; then
+    echo "${func} running catch-all hook ..."
+    iconv -f ISO8859-1 -t IBM-1047 ${HOOK_CATCHALL_PACKAGING} > ${HOOK_CATCHALL_PACKAGING}.new
+    mv ${HOOK_CATCHALL_PACKAGING}.new ${HOOK_CATCHALL_PACKAGING}
+    chmod +x ${HOOK_CATCHALL_PACKAGING}
+    echo "${func} launch: ${environmentText} ./${HOOK_CATCHALL_PACKAGING}"
+    ${environmentText} ./${HOOK_CATCHALL_PACKAGING}
+    if [ \$? -ne 0 ]; then
+    echo "${func}[ERROR] failed on catch-all hook"
+    exit 1
+    fi
+    fi`
+                utils.ssh(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmd)
+            } catch (ex) {
+                // ignore errors for cleaning up
+                console.warn(`${func} running catch-all hooks failed: ${ex}`)
+            }
+            console.log('catch all hooks completed')
+            try {
+                // always clean up temporary files/folders
+                console.log(`${func} cleaning up remote workspace...`)
+                var cmdCleaning = `rm -fr ${remoteWorkspaceFullPath}*`
+                utils.ssh(paxSSHHost,paxSSHPort,paxSSHUsername,paxSSHPassword,cmdCleaning)
+                console.log(`${func} cleaning up remote workspace success`)
+            } catch (ex2) {
+                // ignore errors for cleaning up
+                console.warn(`${func} cleaning up remote workspace failed: ${ex2}`)
+            }
+        } //ELSE
+    }
 }
 
 module.exports = pax;

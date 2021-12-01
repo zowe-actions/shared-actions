@@ -39,66 +39,82 @@ utils.mandatoryInputCheck(paxSSHPassword, 'pax-ssh-password')
 
 core.setSecret(paxSSHUsername.toUpperCase())  //this is to prevent uppercased username to be showing in the log
 
-if (!paxRemoteWorkspace){
-    paxRemoteWorkspace = DEFAULT_REMOTE_WORKSPACE
-}
+if (!core.getState('isMakePaxPost')) {
+    if (!paxRemoteWorkspace){
+        paxRemoteWorkspace = DEFAULT_REMOTE_WORKSPACE
+    }
 
-// get package name from manifest file if not entered through this action
-if (!paxName) {
-    var manifestInfo = JSON.parse(process.env.MANIFEST_INFO)
-    paxName = manifestInfo['name']
-}
-if (!paxName) {
-    core.setFailed('Package name is not provided through shared-actions/make-pax or through manifest file')
-} 
-else {
-    // set to default path if not passing through this action
-    if (!utils.fileExists(paxLocalWorkspace)) {
-        console.warn('pax local workspace path does not exist, packaging step skipped')
+    // get package name from manifest file if not entered through this action
+    if (!paxName) {
+        var manifestInfo = JSON.parse(process.env.MANIFEST_INFO)
+        paxName = manifestInfo['name']
+    }
+    if (!paxName) {
+        core.setFailed('Package name is not provided through shared-actions/make-pax or through manifest file')
     } 
     else {
-        // normalize pax name to only contains letters, numbers or dashes
-        paxName = utils.sanitizeBranchName(paxName)
-        var environmentText = ''
-        if (extraEnvironmentVars && extraEnvironmentVars.length > 0) {
-            extraEnvironmentVars.forEach( eachLine => {
-                if (!eachLine.match(/^.+=.*$/)) {
-                    throw new Error(`Environment provided ${eachLine} is not valid. Must be in the form KEY=VALUE`)
-                }
-                environmentText += `${eachLine} `
-            })
-            console.log(`Extra environments: ${environmentText}`)
-        }
-        // Real work starts now
-        console.log(`Prepare to package ${paxName}`)
-        console.log(`Creating pax file "${paxName}" from workspace...`)
-        var paxNameFull = paxCompress ? `${paxName}.pax.Z` : `${paxName}.pax`
-
-        var args = new Map()
-        
-        args.set('job',`pax-packaging-${paxName}`)
-        args.set('paxSSHHost',paxSSHHost)
-        args.set('paxSSHPort',paxSSHPort)
-        args.set('paxSSHUsername',paxSSHUsername)
-        args.set('paxSSHPassword',paxSSHPassword)
-        args.set('filename',paxNameFull)
-        args.set('paxOptions',paxOptions)
-        args.set('extraFiles',extraFiles)
-        args.set('environments',environmentText)
-        args.set('compress',paxCompress)
-        args.set('compressOptions',paxCompressOptions)
-        args.set('keepTempFolder',keepTempFolder)
-        args.set('paxLocalWorkspace',paxLocalWorkspace)
-        args.set('paxRemoteWorkspace',paxRemoteWorkspace)
-
-        pax.pack(args)
-
-        if (utils.fileExists(`${paxLocalWorkspace}/${paxNameFull}`)) {
-            console.log(`Packaging result ${paxNameFull} is in place.`)
+        // set to default path if not passing through this action
+        if (!utils.fileExists(paxLocalWorkspace)) {
+            console.warn('pax local workspace path does not exist, packaging step skipped')
         } 
         else {
-            console.log(utils.sh(`ls -la ${paxLocalWorkspace}`))
-            core.setFailed(`Failed to find packaging result ${paxNameFull}`)
+            // normalize pax name to only contains letters, numbers or dashes
+            paxName = utils.sanitizeBranchName(paxName)
+            var environmentText = ''
+            if (extraEnvironmentVars && extraEnvironmentVars.length > 0) {
+                extraEnvironmentVars.forEach( eachLine => {
+                    if (!eachLine.match(/^.+=.*$/)) {
+                        throw new Error(`Environment provided ${eachLine} is not valid. Must be in the form KEY=VALUE`)
+                    }
+                    environmentText += `${eachLine} `
+                })
+                console.log(`Extra environments: ${environmentText}`)
+            }
+            // Real work starts now
+            console.log(`Prepare to package ${paxName}`)
+            console.log(`Creating pax file "${paxName}" from workspace...`)
+            var paxNameFull = paxCompress ? `${paxName}.pax.Z` : `${paxName}.pax`
+
+            var args = new Map()
+            
+            args.set('job',`pax-packaging-${paxName}`)
+            args.set('paxSSHHost',paxSSHHost)
+            args.set('paxSSHPort',paxSSHPort)
+            args.set('paxSSHUsername',paxSSHUsername)
+            args.set('paxSSHPassword',paxSSHPassword)
+            args.set('filename',paxNameFull)
+            args.set('paxOptions',paxOptions)
+            args.set('extraFiles',extraFiles)
+            args.set('environments',environmentText)
+            args.set('compress',paxCompress)
+            args.set('compressOptions',paxCompressOptions)
+            args.set('keepTempFolder',keepTempFolder)
+            args.set('paxLocalWorkspace',paxLocalWorkspace)
+            args.set('paxRemoteWorkspace',paxRemoteWorkspace)
+
+            var remoteWorkspaceFullPath = pax.pack(args)
+            core.saveState('isMakePaxPost', true)
+            core.exportVariable('PAX_REMOTE_PATH_FULL',remoteWorkspaceFullPath)
+
+            if (utils.fileExists(`${paxLocalWorkspace}/${paxNameFull}`)) {
+                console.log(`Packaging result ${paxNameFull} is in place.`)
+            } 
+            else {
+                console.log(utils.sh(`ls -la ${paxLocalWorkspace}`))
+                core.setFailed(`Failed to find packaging result ${paxNameFull}`)
+            }
         }
     }
+}
+else {
+    //remote pax workspace cleanup
+    var remoteWorkspaceFullPath = process.env.PAX_REMOTE_PATH_FULL
+    var args = new Map()
+    args.set('paxSSHHost',paxSSHHost)
+    args.set('paxSSHPort',paxSSHPort)
+    args.set('paxSSHUsername',paxSSHUsername)
+    args.set('paxSSHPassword',paxSSHPassword)
+    args.set('remoteWorkspaceFullPath',remoteWorkspaceFullPath)
+    args.set('keepTempFolder',keepTempFolder)
+    pax.paxCleanup(args)
 }
