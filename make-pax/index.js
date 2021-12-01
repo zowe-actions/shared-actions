@@ -92,6 +92,7 @@ if (!core.getState('isMakePaxPost')) {
             args.set('paxLocalWorkspace',paxLocalWorkspace)
 
             var processUid = `${args.get('job')}-${Date.now()}`
+            args.set('processUid',processUid)
             var remoteWorkspaceFullPath = `${paxRemoteWorkspace}/${processUid}`
             args.set('remoteWorkspaceFullPath',remoteWorkspaceFullPath)
 

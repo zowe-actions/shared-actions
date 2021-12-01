@@ -4849,6 +4849,7 @@ class pax {
      * @param   filename           required - package file name will be created
      * @param   paxLocalWorkspace  required - local path to prepare pax
      * @param   remoteWorkspaceFullPath required - remote path to pax on zOS
+     * @param   processUid         required - uid of temp file on zOS when doing pax
      * @param   paxOptions         optional - pax write command options
      * @param   extraFiles         optional - extra artifacts will be generated and should be transferred back;
      *                                        accept comma separated string or Array
@@ -4880,6 +4881,7 @@ class pax {
 
         var paxLocalWorkspace = args.get('paxLocalWorkspace')
         var remoteWorkspaceFullPath = args.get('remoteWorkspaceFullPath')
+        var processUid = args.get('processUid')
 
         // validate arguments
         if (!paxSSHHost) {
@@ -4905,6 +4907,9 @@ class pax {
         }
         if (!remoteWorkspaceFullPath){
             throw new InvalidArgumentException('remoteWorkspaceFullPath')
+        }
+        if (!processUid) {
+            throw new InvalidArgumentException('processUid')
         }
 
         var keepTempFolder = false
@@ -5541,6 +5546,7 @@ if (!core.getState('isMakePaxPost')) {
             args.set('paxLocalWorkspace',paxLocalWorkspace)
 
             var processUid = `${args.get('job')}-${Date.now()}`
+            args.set('processUid',processUid)
             var remoteWorkspaceFullPath = `${paxRemoteWorkspace}/${processUid}`
             args.set('remoteWorkspaceFullPath',remoteWorkspaceFullPath)
 
