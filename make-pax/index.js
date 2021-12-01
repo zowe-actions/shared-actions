@@ -40,9 +40,6 @@ utils.mandatoryInputCheck(paxSSHPassword, 'pax-ssh-password')
 core.setSecret(paxSSHUsername.toUpperCase())  //this is to prevent uppercased username to be showing in the log
 
 if (!core.getState('isMakePaxPost')) {
-    if (!paxRemoteWorkspace){
-        paxRemoteWorkspace = DEFAULT_REMOTE_WORKSPACE
-    }
 
     // get package name from manifest file if not entered through this action
     if (!paxName) {
@@ -90,14 +87,13 @@ if (!core.getState('isMakePaxPost')) {
             args.set('compressOptions',paxCompressOptions)
             args.set('keepTempFolder',keepTempFolder)
             args.set('paxLocalWorkspace',paxLocalWorkspace)
+            args.set('paxRemoteWorkspace',paxRemoteWorkspace)
 
             var processUid = `${args.get('job')}-${Date.now()}`
             args.set('processUid',processUid)
-            var remoteWorkspaceFullPath = `${paxRemoteWorkspace}/${processUid}`
-            args.set('remoteWorkspaceFullPath',remoteWorkspaceFullPath)
-
+            
             core.saveState('isMakePaxPost', true)
-            core.exportVariable('PAX_REMOTE_PATH_FULL',remoteWorkspaceFullPath)
+            core.exportVariable('PAX_REMOTE_PATH_FULL',`${paxRemoteWorkspace}/${processUid}`)
             
             pax.pack(args)
 

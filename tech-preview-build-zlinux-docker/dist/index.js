@@ -4848,7 +4848,7 @@ class pax {
      * @param   paxSSHPassword     required - ssh password
      * @param   filename           required - package file name will be created
      * @param   paxLocalWorkspace  required - local path to prepare pax
-     * @param   remoteWorkspaceFullPath required - remote path to pax on zOS
+     * @param   paxRemoteWorkspace required - remote path to prepare pax
      * @param   processUid         required - uid of temp file on zOS when doing pax
      * @param   paxOptions         optional - pax write command options
      * @param   extraFiles         optional - extra artifacts will be generated and should be transferred back;
@@ -4880,7 +4880,7 @@ class pax {
         var keepTempFolderArg = args.get('keepTempFolder')
 
         var paxLocalWorkspace = args.get('paxLocalWorkspace')
-        var remoteWorkspaceFullPath = args.get('remoteWorkspaceFullPath')
+        var paxRemoteWorkspace = args.get('paxRemoteWorkspace')
         var processUid = args.get('processUid')
 
         // validate arguments
@@ -4905,8 +4905,8 @@ class pax {
         if (!paxLocalWorkspace){
             throw new InvalidArgumentException('paxLocalWorkspace')
         }
-        if (!remoteWorkspaceFullPath){
-            throw new InvalidArgumentException('remoteWorkspaceFullPath')
+        if (!paxRemoteWorkspace){
+            throw new InvalidArgumentException('paxRemoteWorkspace')
         }
         if (!processUid) {
             throw new InvalidArgumentException('processUid')
@@ -4943,7 +4943,7 @@ class pax {
                 throw new InvalidArgumentException('extraFiles', `extraFiles with type ${extraFilesArg.constructor.name} is not accepted`)
             }
         }
-
+        var remoteWorkspaceFullPath = `${paxRemoteWorkspace}/${processUid}`
         var packageTar = `${processUid}.tar`
         var packageScriptFile = `${processUid}.sh`
         var packageScriptContent = `#!/bin/sh -e
