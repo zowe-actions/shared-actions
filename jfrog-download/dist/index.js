@@ -4903,8 +4903,8 @@ class pax {
         if (!paxLocalWorkspace){
             throw new InvalidArgumentException('paxLocalWorkspace')
         }
-        if (!paxRemoteWorkspace){
-            throw new InvalidArgumentException('paxRemoteWorkspace')
+        if (!remoteWorkspaceFullPath){
+            throw new InvalidArgumentException('remoteWorkspaceFullPath')
         }
 
         var keepTempFolder = false
@@ -5123,13 +5123,9 @@ get ${remoteWorkspaceFullPath}/${file} ${paxLocalWorkspace}`
         const paxSSHPort = args.get('paxSSHPort')
         const paxSSHUsername = args.get('paxSSHUsername')
         const paxSSHPassword = args.get('paxSSHPassword')
-        const keepTempFolderArg = args.get('keepTempFolder')
-
-        if (keepTempFolderArg) {
-            keepTempFolder = true
-        }
+        const keepTempFolder = args.get('keepTempFolder')
         
-        if (keepTempFolder) {
+        if (keepTempFolder == true) {
             console.warn(`${func}[warning] remote workspace will be left as-is without clean-up.`)
         } 
         else {
