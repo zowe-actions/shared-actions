@@ -90,11 +90,15 @@ if (!core.getState('isMakePaxPost')) {
             args.set('compressOptions',paxCompressOptions)
             args.set('keepTempFolder',keepTempFolder)
             args.set('paxLocalWorkspace',paxLocalWorkspace)
-            args.set('paxRemoteWorkspace',paxRemoteWorkspace)
 
-            var remoteWorkspaceFullPath = pax.pack(args)
+            var processUid = `${args.get('job')}-${Date.now()}`
+            var remoteWorkspaceFullPath = `${paxRemoteWorkspace}/${processUid}`
+            args.set('remoteWorkspaceFullPath',remoteWorkspaceFullPath)
+
             core.saveState('isMakePaxPost', true)
             core.exportVariable('PAX_REMOTE_PATH_FULL',remoteWorkspaceFullPath)
+            
+            pax.pack(args)
 
             if (utils.fileExists(`${paxLocalWorkspace}/${paxNameFull}`)) {
                 console.log(`Packaging result ${paxNameFull} is in place.`)
