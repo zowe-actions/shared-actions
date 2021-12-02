@@ -121,7 +121,7 @@ function validate(response) {
 
 function processEachPackageInManifest(packageName,definitions) {
     debug(`Processing ${packageName}:`)
-    debug(definitions)
+    debug(`Original manifest definitions are: ${definitions}`)
 
     var resultJsonObject = JSON.parse('{}')
     var packagePath = packageName.replace(/\./g, '/')
@@ -137,6 +137,7 @@ function processEachPackageInManifest(packageName,definitions) {
 
     // if package definition has repository, we will use it;
     //   if not, we will use the defaultRepository passed in
+    //     if defaultRepository is empty, we will skip and ignore repository
     if (definitions.hasOwnProperty('repository')) {
         repository = definitions.repository
     } else if (defaultRepository != '') {
@@ -179,16 +180,21 @@ function processEachPackageInManifest(packageName,definitions) {
         var m1 = definitions.version.match(/^~([0-9]+)\.([0-9]+)\.([0-9]+)(-.+)?$/)
         var m2 = definitions.version.match(/^\^([0-9]+)\.([0-9]+)\.([0-9]+)(-.+)?$/)
         if (m1) {
+            console.log('I am in m1')
             if (!repository) {
                 repository = m1[4] ? REPOSITORY_SNAPSHOT : REPOSITORY_RELEASE
             }
             resultJsonObject.pattern = `${repository}/${packagePath}/${m1[1]}.${m1[2]}.*${m1[4] ? m1[4] : ''}/`
+            debug(`Interim pattern is ${resultJsonObject.pattern}`)
         } else if (m2) {
+            console.log('I am in m2')
             if (!repository) {
                 repository = m2[4] ? REPOSITORY_SNAPSHOT : REPOSITORY_RELEASE
             }
             resultJsonObject.pattern = `${repository}/${packagePath}/${m2[1]}.*${m2[4] ? m2[4] : ''}/`
+            debug(`Interim pattern is ${resultJsonObject.pattern}`)
         } else {
+            console.log('I am in else')
             // parse semantic version, this may throw exception if version is invalid
             var semanticVersionJson = utils.parseSemanticVersion(definitions.version)
             if (semanticVersionJson.prerelease) {
@@ -198,6 +204,7 @@ function processEachPackageInManifest(packageName,definitions) {
                 // this is formal release
                 resultJsonObject.pattern = `${repository ? repository : REPOSITORY_RELEASE}/${packagePath}/${definitions.version}/`
             }
+            debug(`Interim pattern is ${resultJsonObject.pattern}`)
         }
 
         if (resultJsonObject.pattern) {
