@@ -5634,28 +5634,34 @@ function processEachPackageInManifest(packageName,definitions) {
         var m1 = definitions.version.match(/^~([0-9]+)\.([0-9]+)\.([0-9]+)(-.+)?$/)
         var m2 = definitions.version.match(/^\^([0-9]+)\.([0-9]+)\.([0-9]+)(-.+)?$/)
         if (m1) {
-            console.log('I am in m1')
             if (!repository) {
                 repository = m1[4] ? REPOSITORY_SNAPSHOT : REPOSITORY_RELEASE
             }
             resultJsonObject.pattern = `${repository}/${packagePath}/${m1[1]}.${m1[2]}.*${m1[4] ? m1[4] : ''}/`
             debug(`Interim pattern is ${resultJsonObject.pattern}`)
         } else if (m2) {
-            console.log('I am in m2')
             if (!repository) {
                 repository = m2[4] ? REPOSITORY_SNAPSHOT : REPOSITORY_RELEASE
             }
             resultJsonObject.pattern = `${repository}/${packagePath}/${m2[1]}.*${m2[4] ? m2[4] : ''}/`
             debug(`Interim pattern is ${resultJsonObject.pattern}`)
         } else {
-            console.log('I am in else')
             // parse semantic version, this may throw exception if version is invalid
             var semanticVersionJson = utils.parseSemanticVersion(definitions.version)
+            console.log(semanticVersionJson)
             if (semanticVersionJson.prerelease) {
+
+                console.log('Iam here 1')
+                console.log(`major is ${semanticVersionJson.major}`)
+                console.log(`minor is ${semanticVersionJson.minor}`)
+                console.log(`patch is ${semanticVersionJson.patch}`)
+                console.log(`prerelease is ${semanticVersionJson.prerelease}`)
                 resultJsonObject.pattern = `${repository ? repository : REPOSITORY_SNAPSHOT}/${packagePath}/${semanticVersionJson.major}.${semanticVersionJson.minor}.${semanticVersionJson.patch}-${semanticVersionJson.prerelease}/`
             }
             else {
                 // this is formal release
+                console.log('Iam here 2')
+                console.log(`version is ${definitions.version}`)
                 resultJsonObject.pattern = `${repository ? repository : REPOSITORY_RELEASE}/${packagePath}/${definitions.version}/`
             }
             debug(`Interim pattern is ${resultJsonObject.pattern}`)
