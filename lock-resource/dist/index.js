@@ -12880,9 +12880,7 @@ class utils {
         versionJson['major'] = semver.major(version)
         versionJson['minor'] = semver.minor(version)
         versionJson['patch'] = semver.patch(version)
-        var prerelease = semver.prerelease(version)
-        if (prerelease)
-            versionJson['prerelease'] = ''+prerelease[0]+prerelease[1]
+        versionJson['prerelease'] = semver.prerelease(version)
         return versionJson
     }
 

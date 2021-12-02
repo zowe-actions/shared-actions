@@ -194,20 +194,11 @@ function processEachPackageInManifest(packageName,definitions) {
         } else {
             // parse semantic version, this may throw exception if version is invalid
             var semanticVersionJson = utils.parseSemanticVersion(definitions.version)
-            console.log(semanticVersionJson)
             if (semanticVersionJson.prerelease) {
-
-                console.log('Iam here 1')
-                console.log(`major is ${semanticVersionJson.major}`)
-                console.log(`minor is ${semanticVersionJson.minor}`)
-                console.log(`patch is ${semanticVersionJson.patch}`)
-                console.log(`prerelease is ${semanticVersionJson.prerelease}`)
                 resultJsonObject.pattern = `${repository ? repository : REPOSITORY_SNAPSHOT}/${packagePath}/${semanticVersionJson.major}.${semanticVersionJson.minor}.${semanticVersionJson.patch}-${semanticVersionJson.prerelease}/`
             }
             else {
                 // this is formal release
-                console.log('Iam here 2')
-                console.log(`version is ${definitions.version}`)
                 resultJsonObject.pattern = `${repository ? repository : REPOSITORY_RELEASE}/${packagePath}/${definitions.version}/`
             }
             debug(`Interim pattern is ${resultJsonObject.pattern}`)
