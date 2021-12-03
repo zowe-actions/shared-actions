@@ -8956,6 +8956,9 @@ function makeUploadFileSpec() {
                 }
             })
         }
+        else {
+            console.warn(`File ${fullFilePath} not found`)
+        }
     })
 
     var json = JSON.stringify(uploadSpec)
