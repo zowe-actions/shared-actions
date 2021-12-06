@@ -39,6 +39,17 @@ utils.mandatoryInputCheck(paxSSHPassword, 'pax-ssh-password')
 
 core.setSecret(paxSSHUsername.toUpperCase())  //this is to prevent uppercased username to be showing in the log
 
+var environmentText = ''
+if (extraEnvironmentVars && extraEnvironmentVars.length > 0) {
+    extraEnvironmentVars.forEach( eachLine => {
+        if (!eachLine.match(/^.+=.*$/)) {
+            throw new Error(`Environment provided ${eachLine} is not valid. Must be in the form KEY=VALUE`)
+        }
+        environmentText += `${eachLine} `
+    })
+    console.log(`Extra environments: ${environmentText}`)
+}
+
 if (!core.getState('isMakePaxPost')) {
 
     // get package name from manifest file if not entered through this action
@@ -57,16 +68,7 @@ if (!core.getState('isMakePaxPost')) {
         else {
             // normalize pax name to only contains letters, numbers or dashes
             paxName = utils.sanitizeBranchName(paxName)
-            var environmentText = ''
-            if (extraEnvironmentVars && extraEnvironmentVars.length > 0) {
-                extraEnvironmentVars.forEach( eachLine => {
-                    if (!eachLine.match(/^.+=.*$/)) {
-                        throw new Error(`Environment provided ${eachLine} is not valid. Must be in the form KEY=VALUE`)
-                    }
-                    environmentText += `${eachLine} `
-                })
-                console.log(`Extra environments: ${environmentText}`)
-            }
+            
             // Real work starts now
             console.log(`Prepare to package ${paxName}`)
             console.log(`Creating pax file "${paxName}" from workspace...`)
@@ -117,5 +119,6 @@ else {
     args.set('paxSSHPassword',paxSSHPassword)
     args.set('remoteWorkspaceFullPath',remoteWorkspaceFullPath)
     args.set('keepTempFolder',keepTempFolder)
+    args.set('environments',environmentText)
     pax.paxCleanup(args)
 }

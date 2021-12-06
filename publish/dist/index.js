@@ -8495,6 +8495,7 @@ get ${remoteWorkspaceFullPath}/${file} ${paxLocalWorkspace}`
         const paxSSHUsername = args.get('paxSSHUsername')
         const paxSSHPassword = args.get('paxSSHPassword')
         const keepTempFolder = args.get('keepTempFolder')
+        var environmentText = args.get('environments')
         
         if (keepTempFolder == true) {
             console.warn(`${func}[warning] remote workspace will be left as-is without clean-up.`)
