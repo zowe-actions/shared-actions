@@ -37,9 +37,15 @@ runs:
 
     - name: 'determine current branch or PR'
       run: |
-        if [ -z ${{ github.event.pull_request.number }} ]
-        then
-          echo CURRENT_BRANCH=${GITHUB_REF#refs/heads/} >> $GITHUB_ENV
+        if [[ -z "${{ github.event.pull_request.number }}" ]]; then
+          # meaning the workflow is NOT triggered from pull_request 
+          # now try to find out if a PR is opened against this running branch
+          pr_num=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ github.repository_owner }}:${{ github.ref }} | jq -r '.[] | .number')
+          if [[ -z "$pr_num" ]]; then
+            echo CURRENT_BRANCH=${GITHUB_REF#refs/heads/} >> $GITHUB_ENV
+          else
+            echo CURRENT_BRANCH=PR-$pr_num >> $GITHUB_ENV
+          fi
         else
           echo CURRENT_BRANCH=PR-${{ github.event.pull_request.number }} >> $GITHUB_ENV
         fi
