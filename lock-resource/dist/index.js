@@ -13205,6 +13205,7 @@ if (!core.getState('isLockPost')) {
     myLockJson.actor = context.actor
     myLockJson.runId = context.runId
     myLockJson.runNumber = context.runNumber
+    myLockJson.link = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
     
     github.shallowClone(lockRepository,lockRoot,lockBranch,true)
     lock(myLockJson)
