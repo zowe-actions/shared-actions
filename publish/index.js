@@ -76,7 +76,7 @@ if (isPerformingRelease) {
 makeUploadFileSpec()
 // upload artifacts if provided
 if (!skipUpload && artifacts && artifacts.length > 0) {
-    console.log(utils.sh_heavyload(`jfrog rt upload --spec ${temporaryUploadSpecName}`))
+    console.log(utils.sh_heavyload(`jfrog rt upload --spec ${temporaryUploadSpecName} --threads 6`))
     utils.sh('jfrog rt bp')
 } else {
     console.warn ('No artifacts to upload to jfrog, normal publish skipped.')
