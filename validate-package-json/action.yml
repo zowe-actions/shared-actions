@@ -1,9 +1,13 @@
 name: "Validate package.json"
 description: "This action helps to validate if package.json is following Zowe project security guidance."
+inputs:
+  excluded-packages:
+    description: 'Exclude these packages which separated by comma'
+    required: false
 
 runs:
   using: "composite"
   steps:
     - name: Validate pacakge.json
-      run: ${{ github.action_path }}/validate-package-json.sh
+      run: ${{ github.action_path }}/validate-package-json.sh "${{ inputs.excluded-packages }}"
       shell: bash
