@@ -12,6 +12,7 @@
 #######################################################################
 
 BASE_DIR=$(pwd)
+EXCLUDED_PACKAGES="${1}"
 
 # consider must have been released for a week
 safe_release_date=$(TZ=GMT date --date '- 7 days' +'%Y-%m-%dT%H:%M:%S.000Z' 2>/dev/null)
@@ -50,26 +51,30 @@ while read -r package; do
         package=$(echo "${dependency}" | awk '{print $1;}')
         version=$(echo "${dependency}" | awk '{print $2;}')
         echo "  * ${package}@${version}"
-        version_first_char=$(echo "${version}" | cut -c 1-1)
-        version_first_3chars=$(echo "${version}" | cut -c 1-3)
-        if [ "${version_first_char}" = "^" -o "${version_first_char}" = "~" ]; then
-          >&2 echo "Error: ${package}@${version} is not imported with static version."
-          exit 1
-        fi
-        if [ "${version_first_3chars}" = "git" ]; then
-          >&2 echo "Warning: cannot validate version of ${package}@${version}."
-          continue
-        fi
-        time=$(npm view "${package}@${version}" time --json 2>/dev/null | jq -r ".\"${version}\"")
-        time_rc=$?
-        echo "    - ${time}"
-        if [ -z "${time}" -o "${time}" = "null" -o "${time_rc}" != "0" ]; then
-          >&2 echo "Error: cannot find release date of ${package}@${version}"
-          exit 1
-        fi
-        if [[ "${time}" > "${safe_release_date}" ]]; then
-          >&2 echo "Error: ${package}@${version} is released at ${time}, which is not considered safe."
-          exit 1
+        if [[ ",${package}," = *,${EXCLUDED_PACKAGES},* ]]; then
+          echo "    - <excluded>"
+        else
+          version_first_char=$(echo "${version}" | cut -c 1-1)
+          version_first_3chars=$(echo "${version}" | cut -c 1-3)
+          if [ "${version_first_char}" = "^" -o "${version_first_char}" = "~" ]; then
+            >&2 echo "Error: ${package}@${version} is not imported with static version."
+            exit 1
+          fi
+          if [ "${version_first_3chars}" = "git" ]; then
+            >&2 echo "Warning: cannot validate version of ${package}@${version}."
+            continue
+          fi
+          time=$(npm view "${package}@${version}" time --json 2>/dev/null | jq -r ".\"${version}\"")
+          time_rc=$?
+          echo "    - ${time}"
+          if [ -z "${time}" -o "${time}" = "null" -o "${time_rc}" != "0" ]; then
+            >&2 echo "Error: cannot find release date of ${package}@${version}"
+            exit 1
+          fi
+          if [[ "${time}" > "${safe_release_date}" ]]; then
+            >&2 echo "Error: ${package}@${version} is released at ${time}, which is not considered safe."
+            exit 1
+          fi
         fi
       done <<EOFD
 $(echo "${dependencies}")
