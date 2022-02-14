@@ -1,0 +1,32 @@
+name: "Workflow Remote Call Wait"
+description: "Workflow Remote Call Wait"
+inputs:
+  github-token:
+    description: 'github api access token, must have access to the repository ${owner}/${repo} you call'
+    required: true
+  owner:
+    description: 'github repository owner'
+    required: true
+  repo:
+    description: 'github repository name'
+    required: true
+  workflow-filename:
+    description: 'workflow file name'
+    required: true
+  branch-name:
+    description: 'which branch your to-be-called workflow resides'
+    required: true
+  poll-frequency:
+    description: 'the polling frequency to check workflow run status'
+    required: true
+  inputs-json-string:
+    description: the extra inputs sent to the remote workflow
+    required: false
+
+outputs:
+  zowe-build-workflow-run-num:
+    description: 'zowe build workflow run number'
+
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
