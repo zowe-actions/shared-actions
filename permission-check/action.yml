@@ -4,6 +4,9 @@ inputs:
   github-token:
     description: 'github token for authenticating api requests'
     required: true
+outputs:
+  user-permission:
+    description: 'return the user permission'
 
 runs:
   using: 'node12'

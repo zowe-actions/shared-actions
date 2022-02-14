@@ -13191,6 +13191,7 @@ else {
     if (!returnedPermission || (returnedPermission != 'admin' && returnedPermission != 'write' && returnedPermission != 'maintain')) {
         core.setFailed(`Permission check failure, user ${context.actor} is not authorized to run workflow on ${repo}, permission is ${returnedPermission}`)
     }
+    core.setOutput('user-permission', returnedPermission)
 }
 })();
 

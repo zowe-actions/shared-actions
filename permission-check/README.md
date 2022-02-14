@@ -14,7 +14,10 @@ This action is created to prevent protected workflow jobs running from unauthori
 
 ## Outputs
 
-None
+### `user-permission`
+
+Returning the user permission for further more processing if needed
+
 <br />
 
 ## Exported environment variables
