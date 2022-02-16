@@ -24,9 +24,10 @@ inputs:
     required: false
 
 outputs:
-  zowe-build-workflow-run-num:
-    description: 'zowe build workflow run number'
-
+  workflow-run-num:
+    description: 'workflow run number'
+  workflow-run-conclusion:
+    description: 'workflow run conclusion'
 runs:
   using: 'node12'
   main: 'dist/index.js'
