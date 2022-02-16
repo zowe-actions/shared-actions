@@ -45,7 +45,7 @@ Process:
 
 ## Outputs
 
-### `zowe-build-workflow-run-num`
+### `workflow-run-num`
 
 Returns the workflow run number for further steps to consume
 
