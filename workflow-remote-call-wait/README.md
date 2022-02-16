@@ -5,7 +5,7 @@ This action calls a remote workflow in another repository, then poll its status 
 Process:
 
 1. Fire the event request by constructing a wrapper of [Create a workflow dispatch event](https://docs.github.com/en/rest/reference/actions#create-a-workflow-dispatch-event) using curl;
-2. Parse the returned complete workflow list and pinpoint the triggered workflow called by this action with a matched random ID generated. The random ID will appear as one of the step names;
+2. Parse the returned complete workflow list and pinpoint the triggered workflow called by this action with a matched random ID generated. The random ID will appear as one of the step names; (The idea of putting inputs to the step name for parsing comes from [here](https://stackoverflow.com/questions/69479400/get-run-id-after-triggering-a-github-workflow-dispatch-event/69500478#69500478))
 3. Remember this workflow run id, wait and poll its status
 4. Finish this action upon triggered workflow being completed (success, failed, or cancelled)
 
