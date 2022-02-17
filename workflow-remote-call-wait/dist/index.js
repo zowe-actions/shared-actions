@@ -5513,6 +5513,7 @@ async function continouslySearchWorkflowRun(sentRandomID) {
     var runNumber
     var runURL
     
+    console.log('Searching and Lock on the launched workflow run...')
     // first sleep for 5 seconds first 
     // because the newly triggered job is likely becomes to in_progress status from queue
     await utils.sleep(5 * 1000)
@@ -5561,6 +5562,9 @@ function sendWorkflowDispatchEvent() {
         console.error(out)
         throw new Error('Workflow dispatch event POST request failed')
     }
+
+    console.log(`Launched ${workflowFileName}, it is flying towards the ==> Andromeda Galaxy`)
+    console.log(' ')
     return inputsJsonObject['RANDOM_DISPATCH_EVENT_ID']
 }
 
@@ -5586,7 +5590,7 @@ function searchWorkflowRun(sentRandomID) {
         // Therefore, we must wait until the job status becomes either 'in_progress' or 'completed'
         //   also ignore anything that is not workflow_dispatch because apparently that is not triggered by this action
         if (eachWFRun['event'] == 'workflow_dispatch' && eachWFRun['status'] != 'queued') {
-            debug(`  Maybe find one, checking its random ID first if exists`)
+            console.log(`  We have found a flying target, identifying its random ID...`)
             // get the jobsURL and look at job details to search for step containing RANDOM_DISPATCH_EVENT_ID
             if (lookForMatchingRandomID(eachWFRun['jobs_url'], sentRandomID)) {
                 // found the matching workflow run, now we need to save the run_number
@@ -5595,7 +5599,7 @@ function searchWorkflowRun(sentRandomID) {
                     result = new Array()
                     result.push(eachWFRun['run_number'])
                     result.push(eachWFRun['url'])
-                    console.log(`Found the job triggered from this action, now waiting for it to be complete`)
+                    console.log(`Found the workflow run triggered from this action, now waiting for it to reach its destination...`)
                     console.log(`-- run number is ${eachWFRun['run_number']}`)  
                     return result
                 } 
@@ -5670,12 +5674,12 @@ async function waitForJobToFinish(runURL, pollFrequency) {
         status = run['status']
         
         if (status != 'completed') {
-            console.log(`Job is not completed yet, you can also manually check at ${run['html_url']}`)
+            console.log(`The workflow run has not completed yet, you can also manually check running status at ${run['html_url']}`)
             console.log(`  waiting ${pollFrequency} mins before checking again...`)
             console.log(' ')
         }
         else {
-            console.log(`Job completes! Its result is ${run['conclusion']}`)
+            console.log(`It has reached our target! Its result is ${run['conclusion']}`)
             return run['conclusion']
         }
     }
