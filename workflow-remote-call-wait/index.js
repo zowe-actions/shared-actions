@@ -137,7 +137,6 @@ function searchWorkflowRun(sentRandomID) {
         // Therefore, we must wait until the job status becomes either 'in_progress' or 'completed'
         //   also ignore anything that is not workflow_dispatch because apparently that is not triggered by this action
         if (eachWFRun['event'] == 'workflow_dispatch' && eachWFRun['status'] != 'queued') {
-            console.log(`  We have found a flying target, identifying its random ID...`)
             // get the jobsURL and look at job details to search for step containing RANDOM_DISPATCH_EVENT_ID
             if (lookForMatchingRandomID(eachWFRun['jobs_url'], sentRandomID)) {
                 // found the matching workflow run, now we need to save the run_number
