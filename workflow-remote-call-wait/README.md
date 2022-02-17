@@ -97,13 +97,14 @@ with:
   owner:
   repo:
   workflow-filename:
-  poll-frequency: 
   branch-name:
+  poll-frequency: 
+  inputs-json-string:
 ```
 
 To enable debug mode, append
 
 ```yaml
 env:
-  DEBUG: 'zowe-actions:shared-actions:workflow-remote-call-wait'
+  DEBUG: 'workflow-remote-call-wait'
 ```

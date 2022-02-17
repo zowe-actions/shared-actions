@@ -5195,7 +5195,7 @@ const semver = __nccwpck_require__(4603)
 
 class utils {
 
-    static async sleep(ms) {
+    static sleep(ms) {
         return new Promise((resolve) => {
             setTimeout(resolve, ms);
         });
