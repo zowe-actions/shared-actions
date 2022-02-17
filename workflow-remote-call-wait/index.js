@@ -206,6 +206,7 @@ function lookForMatchingRandomID(jobsURL, sentRandomID) {
 async function waitForJobToFinish(runURL, pollFrequency) {
     var pollFreqMills = Math.floor(pollFrequency)*60*1000     // convert from string to int then to milliseconds
     var status
+    var firstTime = true
     while (status != 'completed') {
         await utils.sleep(pollFreqMills)
         var cmd = new Array()
@@ -220,14 +221,15 @@ async function waitForJobToFinish(runURL, pollFrequency) {
         status = run['status']
         
         if (status != 'completed') {
-            console.log(`The workflow run has not completed yet, you can also manually check running status at ${run['html_url']}`)
-            console.log(`  waiting ${pollFrequency} mins before checking again...`)
+            console.log(`The workflow run has not completed yet, waiting ${pollFrequency} mins before checking again...`)
+            if (firstTime) {console.log(`you can also manually check running status at ${run['html_url']}`)}
             console.log(' ')
         }
         else {
             console.log(`It has reached our target! Its result is ${run['conclusion']}`)
             return run['conclusion']
         }
+        firstTime = false
     }
 }
 
