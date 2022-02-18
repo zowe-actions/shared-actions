@@ -88,8 +88,6 @@ job:
 
 ## Example usage
 
-(this is a minimal set of inputs you need to provide)
-
 ```yaml
 uses: zowe-actions/shared-actions/workflow-remote-call-wait@main
 with:
@@ -99,7 +97,7 @@ with:
   workflow-filename:
   branch-name:
   poll-frequency: 
-  inputs-json-string:
+  inputs-json-string: (optional)
 ```
 
 To enable debug mode, append
