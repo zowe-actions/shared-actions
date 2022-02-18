@@ -15,7 +15,7 @@ Process:
 
 ### `github-token`
 
-**Required** - The github token to authenticate and do Git push. You need to make sure the token can access on `${owner}/${repo}`
+**Required** - The github token to authenticate Git APIs. You need to make sure the token can access on `${owner}/${repo}`
 
 ### `owner`
 
