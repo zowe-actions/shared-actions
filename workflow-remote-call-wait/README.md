@@ -62,9 +62,9 @@ None
 
 ## Pre-requisite
 
-Your remote to-be-called workflow must contain the `workflow_dispatch` trigger and has the input named `RANDOM_DISPATCH_EVENT_ID`. Then the first job in your workflow must be named `display-dispatch-event-id`, which shall only contain one single step named `RANDOM_DISPATCH_EVENT_ID is ${{ github.event.inputs.RANDOM_DISPATCH_EVENT_ID }}` which will be used to find the event id in the code. Please make sure the name of the job and the step exactly matched with above mentioned because those texts will be used for string checks
+Your remote to-be-called workflow must contain the `workflow_dispatch` trigger and has the input named `RANDOM_DISPATCH_EVENT_ID`. Then the first job in your workflow must be named `display-dispatch-event-id`, which shall only contain one single step named `RANDOM_DISPATCH_EVENT_ID is ${{ github.event.inputs.RANDOM_DISPATCH_EVENT_ID }}` which will be used to find the event id in the code. Please make sure the name of the job and the step exactly matched with above mentioned because those texts will be used for string checks.
 
-For simplicity and your convenience, please copy the follow code to your workflow:
+For simplicity and your convenience, please copy the follow code to your callee workflow:
 
 ```yaml
 workflow_dispatch:
