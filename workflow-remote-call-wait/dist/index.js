@@ -5514,6 +5514,7 @@ async function continouslySearchWorkflowRun(sentRandomID) {
     var runURL
     
     console.log('Searching and Lock on the launched workflow run...')
+    console.log(' ')    
     // first sleep for 5 seconds first 
     // because the newly triggered job is likely becomes to in_progress status from queue
     await utils.sleep(5 * 1000)
@@ -5599,7 +5600,8 @@ function searchWorkflowRun(sentRandomID) {
                     result.push(eachWFRun['run_number'])
                     result.push(eachWFRun['url'])
                     console.log(`Found the workflow run triggered from this action, now waiting for it to reach its destination...`)
-                    console.log(`-- run number is ${eachWFRun['run_number']}`)  
+                    console.log(`-- run number is ${eachWFRun['run_number']}`)
+                    console.log(' ')
                     return result
                 } 
                 else {
