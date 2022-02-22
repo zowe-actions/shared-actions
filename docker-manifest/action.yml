@@ -25,29 +25,66 @@ inputs:
     description: "If we want to create extra primary release manifests when it's a formal release and 'linux-distro' is 'primary-linux-distro'. Use {major}, {minor}, {patch}, {version}, {distro} and {branch} special variables for special manifest based on current version."
     required: false
     default: "latest {major} {major}.{minor} {major}.{minor}.{patch}"
+  release-latest-tag:
+    description: "Whether should update `latest` or `latest-{distro}` tags. Set to true, false or auto."
+    required: false
+    default: "auto"
 
 runs:
   using: "composite"
   steps:
     - name: Define extra manifests
       run: |
+        release_latest_tag="${{ inputs.release-latest-tag }}"
+        if [ "${release_latest_tag}" = "auto" ]; then
+          # by default, do not update `latest` tag
+          release_latest_tag=false
+          # except that
+          case "${{ env.IMAGE_NAME }}" in
+            base|base-jdk|base-node|zowe-launch-scripts|api-catalog-services|caching-service|discovery-service|gateway-service|metrics-service|files-api|jobs-api|explorer-jes|explorer-mvs|explorer-uss|app-server|explorer-ip)
+              if [ "${{ env.IMAGE_VERSION_MAJOR }}" = "2" ]; then
+                release_latest_tag=true
+              fi
+              ;;
+          esac
+        fi
+        echo "Release latest tags? ${release_latest_tag}"
+
         manifests=
         if [ "${{ inputs.snapshot-manifests }}" != "" -a "${{ env.IMAGE_RELEASE }}" != "true" ]; then
           for manifest in ${{ inputs.snapshot-manifests }}
           do
-            manifests="${manifests} ${manifest}"
+            if [[ "${manifest}" = "latest" || "${manifest}" == latest-* ]]; then
+              if [ "${release_latest_tag}" = "true" ]; then
+                manifests="${manifests} ${manifest}"
+              fi
+            else
+              manifests="${manifests} ${manifest}"
+            fi
           done
         fi
         if [ "${{ inputs.release-manifests }}" != "" -a "${{ env.IMAGE_RELEASE }}" = "true" ]; then
           for manifest in ${{ inputs.release-manifests }}
           do
-            manifests="${manifests} ${manifest}"
+            if [[ "${manifest}" = "latest" || "${manifest}" == latest-* ]]; then
+              if [ "${release_latest_tag}" = "true" ]; then
+                manifests="${manifests} ${manifest}"
+              fi
+            else
+              manifests="${manifests} ${manifest}"
+            fi
           done
         fi
         if [ "${{ inputs.primary-release-manifests }}" != "" -a "${{ env.IMAGE_RELEASE }}" = "true" -a "${{ inputs.linux-distro }}" = "${{ inputs.primary-linux-distro}}" ]; then
           for manifest in ${{ inputs.primary-release-manifests }}
           do
-            manifests="${manifests} ${manifest}"
+            if [[ "${manifest}" = "latest" || "${manifest}" == latest-* ]]; then
+              if [ "${release_latest_tag}" = "true" ]; then
+                manifests="${manifests} ${manifest}"
+              fi
+            else
+              manifests="${manifests} ${manifest}"
+            fi
           done
         fi
         manifests=$(echo "${manifests}" | sed -e "s/{major}/${{ env.IMAGE_VERSION_MAJOR }}/g" -e "s/{minor}/${{ env.IMAGE_VERSION_MINOR }}/g" -e "s/{patch}/${{ env.IMAGE_VERSION_PATCH }}/g" -e "s/{version}/${{ env.IMAGE_VERSION }}/" -e "s/{distro}/${{ inputs.linux-distro }}/g" -e "s/{branch}/${{ env.BRANCH_NAME }}/g")
