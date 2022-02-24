@@ -28,6 +28,8 @@ outputs:
     description: 'workflow run number'
   workflow-run-conclusion:
     description: 'workflow run conclusion'
+  workflow-run-html-url:
+    description: 'workflow run html url'
 runs:
   using: 'node12'
   main: 'dist/index.js'

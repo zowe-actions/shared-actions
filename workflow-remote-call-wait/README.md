@@ -53,6 +53,10 @@ Returns the workflow run number for further steps to consume
 
 Returns the workflow run conclusion, could be `success`, `failure` or `cancelled`
 
+### `workflow-run-html-url`
+
+Returns the workflow run html url
+
 <br />
 
 ## Exported environment variables
