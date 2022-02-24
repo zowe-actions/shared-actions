@@ -222,11 +222,12 @@ async function waitForJobToFinish(runURL, pollFrequency) {
         var run = JSON.parse(out)
         status = run['status']
         
+        core.setOutput('workflow-run-html-url',run['html_url'])
+
         if (status != 'completed') {
             console.log(`The workflow run has not completed yet, waiting ${pollFrequency} mins before checking again...`)
             if (firstTime) {
                 console.log(`you can also manually check running status at ${run['html_url']}`)
-                core.setOutput('workflow-run-html-url',run['html_url'])
             }
             console.log(' ')
         }
