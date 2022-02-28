@@ -12956,7 +12956,7 @@ class utils {
         var defaultBranchesJsonObject = JSON.parse(process.env.DEFAULT_BRANCHES_JSON_TEXT)
         for (var i=0; i < defaultBranchesJsonObject.length; i++) {
             var branch = defaultBranchesJsonObject[i]
-            if (process.env.CURRENT_BRANCH === branch.name || process.env.CURRENT_BRANCH.match(branch.name)) {
+            if (process.env.CURRENT_BRANCH.match(branch.name)) {
                 return branch
             }
         }
