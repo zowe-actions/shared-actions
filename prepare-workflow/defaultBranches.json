@@ -1,6 +1,6 @@
 [
     {
-        "name"               : "master",
+        "name"               : "^master$",
         "isProtected"        : true,
         "buildHistory"       : 20,
         "allowRelease"       : true,
@@ -9,7 +9,7 @@
         "npmTag"             : "latest"
     },
     {
-        "name"               : "v[0-9]+\\.[0-9x]+(\\.[0-9x]+)?/master",
+        "name"               : "^v[0-9]+\.[0-9x]+(\.[0-9x]+)?/master$",
         "isProtected"        : true,
         "buildHistory"       : 20,
         "allowRelease"       : true,
@@ -18,14 +18,14 @@
         "npmTag"             : "$1-latest"
     },
     {
-        "name"               : "staging",
+        "name"               : "^staging$",
         "isProtected"        : true,
         "buildHistory"       : 20,
         "allowRelease"       : true,
         "npmTag"             : "dev"
     },
     {
-        "name"               : "v[0-9]+\\.[0-9x]+(\\.[0-9x]+)?/staging",
+        "name"               : "^v[0-9]+\.[0-9x]+(\.[0-9x]+)?/staging$",
         "isProtected"        : true,
         "buildHistory"       : 20,
         "allowRelease"       : true,
