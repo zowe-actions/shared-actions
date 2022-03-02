@@ -5531,7 +5531,7 @@ async function continouslySearchWorkflowRun(sentRandomID) {
             runURL = result[1]
         }
         else {
-            result = iterateQueuedWatchlist(sentRandomID) // returns an array with [run number, url] (could be empty)
+            result = await iterateQueuedWatchlist(sentRandomID) // returns an array with [run number, url] (could be empty)
             if (result.length == 2) {
                 runNumber= result[0]
                 runURL = result[1]
@@ -5549,20 +5549,29 @@ Please check why it is unable to trigger ${workflowFileName} on branch ${branchN
 }
 
 // returns an array (could be empty)
-function iterateQueuedWatchlist(sentRandomID) {
+async function iterateQueuedWatchlist(sentRandomID) {
     var result = new Array()
     while (queuedWorkflowsWatchlist.length > 0) {
+        await utils.sleep(30*1000) // set wait here to prevent sending too frequent HTTP requests
+        var currentWatchList = queuedWorkflowsWatchlist
+        debug('=================================')
         debug('(re)iterating queued workflows...')
-        for (let eachURL of queuedWorkflowsWatchlist) {
+        for (let eachURL of currentWatchList) {
             var run = getWorkflowRun(eachURL)
             debug(`Looking at run_number: ${run['run_number']}`)
             if (run['status'] != 'queued') {
                 result = lookForMatchingRandomIDWrapper(run, sentRandomID)
                 if (result.length == 2) {
-                    break;
+                    queuedWorkflowsWatchlist = [] //clear the watchlist
+                    return result
+                }
+                else {
+                    debug(`${run['run_number']} got the VM, running or completed, but couldn't match randomID.`)
+                    queuedWorkflowsWatchlist.splice(queuedWorkflowsWatchlist.indexOf(eachURL), 1);
+                    continue;
                 }
             }
-            else {
+            else { // status = 'queued'
                 debug(`${run['run_number']} is still waiting in queue`)
             }
         }
