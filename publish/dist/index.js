@@ -8655,7 +8655,7 @@ class utils {
         versionJson['major'] = semver.major(version)
         versionJson['minor'] = semver.minor(version)
         versionJson['patch'] = semver.patch(version)
-        versionJson['prerelease'] = semver.prerelease(version)
+        versionJson['prerelease'] = semver.prerelease(version).join('.')
         return versionJson
     }
 
