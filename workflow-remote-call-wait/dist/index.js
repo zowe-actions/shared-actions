@@ -5484,6 +5484,8 @@ utils.mandatoryInputCheck(workflowFileName,'workflow-filename')
 utils.mandatoryInputCheck(branchName,'branch-name')
 utils.mandatoryInputCheck(pollFrequency,'poll-frequency')
 
+var queuedWorkflowsWatchlist = []
+
 // defaults
 const acceptHeader = `-H "Accept: application/vnd.github.v3+json"`
 const authHeader = `-H "Authorization: Bearer ${githubToken}"`
@@ -5516,26 +5518,81 @@ async function continouslySearchWorkflowRun(sentRandomID) {
     
     console.log('Searching and Lock on the launched workflow run...')
     console.log(' ')    
-    // first sleep for 5 seconds first 
-    // because the newly triggered job is likely becomes to in_progress status from queue
-    await utils.sleep(5 * 1000)
+    // sleep for 50 seconds first 
+    // this is to give sufficient amount of time to have a new workflow run show up on Actions page
+    await utils.sleep(50 * 1000)
 
     while (!runURL && !runNumber && counter < 20) {
-        await utils.sleep(5 * 1000) // sleep for 5 seconds to give enough time to have the new job show up
-        var result = searchWorkflowRun(sentRandomID) // returns an array with [run number, url]
-        if (result) {
+        await utils.sleep(10 * 1000) // sleep for 10 seconds to give enough time to have the new job show up
+        var result = new Array()
+        result = searchWorkflowRun(sentRandomID) // returns an array with [run number, url] (could be empty)
+        if (result.length == 2) {
             runNumber= result[0]
             runURL = result[1]
+        }
+        else {
+            result = iterateQueuedWatchlist(sentRandomID) // returns an array with [run number, url] (could be empty)
+            if (result.length == 2) {
+                runNumber= result[0]
+                runURL = result[1]
+            }
         }
         counter++
     }
     if (!runURL || !runNumber) {
-        console.error('Unable to find triggered workflow run, something bad likely occured on the github side.')
-        console.error(`-- run number: ${runNumber}`)
-        console.error(`-- runURL is ${runURL}`)
-        throw new Error(`Please check why it is unable to trigger ${workflowFileName} on branch ${branchName} of ${owner}/${repo}`)
+        throw new Error(`Unable to find triggered workflow run, something bad likely occured on the github side.
+    -- run number: ${runNumber}
+    -- runURL is ${runURL}
+Please check why it is unable to trigger ${workflowFileName} on branch ${branchName} of ${owner}/${repo}`)
     }
     return [runNumber,runURL]
+}
+
+// returns an array (could be empty)
+function iterateQueuedWatchlist(sentRandomID) {
+    var result = new Array()
+    while (queuedWorkflowsWatchlist.length > 0) {
+        debug('(re)iterating queued workflows...')
+        for (let eachURL of queuedWorkflowsWatchlist) {
+            var run = getWorkflowRun(eachURL)
+            debug(`Looking at run_number: ${run['run_number']}`)
+            if (run['status'] != 'queued') {
+                result = lookForMatchingRandomIDWrapper(run, sentRandomID)
+                if (result.length == 2) {
+                    break;
+                }
+            }
+            else {
+                debug(`${run['run_number']} is still waiting in queue`)
+            }
+        }
+    }
+    return result
+}
+
+// returns an array (could be empty)
+function lookForMatchingRandomIDWrapper(run, sentRandomID) {
+    var result = new Array()
+    // get the jobsURL and look at job details to search for step containing RANDOM_DISPATCH_EVENT_ID
+    if (lookForMatchingRandomID(run['jobs_url'], sentRandomID)) {
+        // found the matching workflow run, now we need to save the run_number
+        // also need to save the runURL for later to check its completions status
+        if (run['run_number'] != '' && run['url'] != '') { // null check
+            result.push(run['run_number'])
+            result.push(run['url'])
+            console.log(`Found the workflow run triggered from this action, now waiting for it to reach its destination...`)
+            console.log(`-- run number is ${run['run_number']}`)
+            console.log(' ')
+        }
+        else {
+            throw new Error(`I can't find the run_number or the url of this run, please click ${eachWFRun['html_url']} and manually check.`)
+        }
+    }
+    else {
+        debug(`  moving on to next workflow run...`)
+        debug(' ')
+    }
+    return result
 }
 
 function sendWorkflowDispatchEvent() {
@@ -5582,36 +5639,29 @@ function searchWorkflowRun(sentRandomID) {
     var out = utils.sh(cmd.join(' ')) // expect a json array coming out
     var workflowRunListJsonObject = JSON.parse(out)
 
-    var result
+    var result = new Array()
 
     // this loop searches for the workflow that is triggered by this action
     for (let eachWFRun of workflowRunListJsonObject) {
         debug(`Looking at ${workflowFileName} run_number: ${eachWFRun['run_number']}`)
-        // When the job status is 'queued', meaning this job is still waiting for an allocation of a github VM,
-        //   in this case, no job information is available.
-        // Therefore, we must wait until the job status becomes either 'in_progress' or 'completed'
-        //   also ignore anything that is not workflow_dispatch because apparently that is not triggered by this action
-        if (eachWFRun['event'] == 'workflow_dispatch' && eachWFRun['status'] != 'queued') {
-            // get the jobsURL and look at job details to search for step containing RANDOM_DISPATCH_EVENT_ID
-            if (lookForMatchingRandomID(eachWFRun['jobs_url'], sentRandomID)) {
-                // found the matching workflow run, now we need to save the run_number
-                // also need to save the runID for later to check its completions status
-                if (eachWFRun['run_number'] != '' && eachWFRun['url'] != '') { // null check
-                    result = new Array()
-                    result.push(eachWFRun['run_number'])
-                    result.push(eachWFRun['url'])
-                    console.log(`Found the workflow run triggered from this action, now waiting for it to reach its destination...`)
-                    console.log(`-- run number is ${eachWFRun['run_number']}`)
-                    console.log(' ')
-                    return result
-                } 
-                else {
-                    throw new Error(`I can't find the run_number or the url of this run, please click ${eachWFRun['html_url']} and manually check.`)
+        // Ignore anything that is not workflow_dispatch because apparently that is not triggered by this action
+        if (eachWFRun['event'] == 'workflow_dispatch') {
+            // When the job status is 'queued', meaning this job is still waiting for an allocation of a github VM,
+            // no job information is available at this time.
+            if (eachWFRun['status'] == 'queued') {
+                // thus we need to pay close attention to those queued workflow_dispatch runs because they are likely to be the workflow run we just triggered
+                // add into a watchlist because we want to make sure they are not getting forgotten.
+                // will process the watchlist at the end.
+                if (!queuedWorkflowsWatchlist.includes(eachWFRun['url'])) { // no duplicates
+                    queuedWorkflowsWatchlist.push(eachWFRun['url'])
                 }
             }
+            // Therefore, we must wait until the job status becomes either 'in_progress' or 'completed'
             else {
-                debug(`  moving on to next workflow run...`)
-                debug(' ')
+                result = lookForMatchingRandomIDWrapper(eachWFRun, sentRandomID)
+                if (result.length == 2){
+                    return result
+                }
             }
         }
         else {
@@ -5665,15 +5715,7 @@ async function waitForJobToFinish(runURL, pollFrequency) {
     var firstTime = true
     while (status != 'completed') {
         await utils.sleep(pollFreqMills)
-        var cmd = new Array()
-        cmd.push(`curl -s ${acceptHeader} ${authHeader}`)
-        cmd.push(httpGet)
-        cmd.push(`"${runURL}"`)
-
-        debug(cmd.join(' '))
-        var out = utils.sh(cmd.join(' ')) // expect a json object coming out
-
-        var run = JSON.parse(out)
+        var run = getWorkflowRun(runURL)
         status = run['status']
         
         core.setOutput('workflow-run-html-url',run['html_url'])
@@ -5691,6 +5733,19 @@ async function waitForJobToFinish(runURL, pollFrequency) {
         }
         firstTime = false
     }
+}
+
+function getWorkflowRun(runURL) {
+    var cmd = new Array()
+    cmd.push(`curl -s ${acceptHeader} ${authHeader}`)
+    cmd.push(httpGet)
+    cmd.push(`"${runURL}"`)
+
+    debug(cmd.join(' '))
+    var out = utils.sh(cmd.join(' ')) // expect a json object coming out
+
+    var run = JSON.parse(out)
+    return run
 }
 
 
