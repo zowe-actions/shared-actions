@@ -12907,7 +12907,8 @@ class utils {
         versionJson['major'] = semver.major(version)
         versionJson['minor'] = semver.minor(version)
         versionJson['patch'] = semver.patch(version)
-        versionJson['prerelease'] = semver.prerelease(version).join('.')
+        const prerelease = semver.prerelease(version);
+        versionJson['prerelease'] = prerelease ? (Array.isArray(prerelease) ? prerelease.join('.') : String(prerelease)) : ''
         return versionJson
     }
 
