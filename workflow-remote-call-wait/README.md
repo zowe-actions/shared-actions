@@ -108,5 +108,5 @@ To enable debug mode, append
 
 ```yaml
 env:
-  DEBUG: 'workflow-remote-call-wait'
+  DEBUG: 'zowe-actions:shared-actions:workflow-remote-call-wait'
 ```

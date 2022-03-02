@@ -5464,7 +5464,7 @@ var __webpack_exports__ = {};
 const core = __nccwpck_require__(4562)
 const { utils } = __nccwpck_require__(386)
 const Debug = __nccwpck_require__(8797)
-const debug = Debug('workflow-remote-call-wait')
+const debug = Debug('zowe-actions:shared-actions:workflow-remote-call-wait')
 
 // gets inputs
 var githubToken = core.getInput('github-token')
