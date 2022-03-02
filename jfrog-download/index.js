@@ -11,7 +11,7 @@
 const core = require('@actions/core')
 const { utils , InvalidArgumentException } = require('zowe-common')
 const Debug = require('debug')
-const debug = Debug('jfrog-download')
+const debug = Debug('zowe-actions:shared-actions:jfrog-download')
 const fs = require('fs');
 
 // Defaults

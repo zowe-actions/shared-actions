@@ -86,5 +86,5 @@ To enable debug mode, append
 
 ```yaml
 env:
-  DEBUG: 'jfrog-download'
+  DEBUG: 'zowe-actions:shared-actions:jfrog-download'
 ```
