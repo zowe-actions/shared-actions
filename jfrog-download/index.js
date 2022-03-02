@@ -183,17 +183,26 @@ function processEachPackageInManifest(packageName,definitions) {
             if (!repository) {
                 repository = m1[4] ? REPOSITORY_SNAPSHOT : REPOSITORY_RELEASE
             }
+            debug('m1 content is:')
+            m1.forEach(function(entry) {
+                debug(entry);
+            });
             resultJsonObject.pattern = `${repository}/${packagePath}/${m1[1]}.${m1[2]}.*${m1[4] ? m1[4] : ''}/`
-            debug(`Interim pattern is ${resultJsonObject.pattern}`)
+            debug(`in m1, Interim pattern is ${resultJsonObject.pattern}`)
         } else if (m2) {
             if (!repository) {
                 repository = m2[4] ? REPOSITORY_SNAPSHOT : REPOSITORY_RELEASE
             }
+            debug('m2 content is:')
+            m2.forEach(function(entry) {
+                debug(entry);
+            });
             resultJsonObject.pattern = `${repository}/${packagePath}/${m2[1]}.*${m2[4] ? m2[4] : ''}/`
-            debug(`Interim pattern is ${resultJsonObject.pattern}`)
+            debug(`in m2, Interim pattern is ${resultJsonObject.pattern}`)
         } else {
             // parse semantic version, this may throw exception if version is invalid
             var semanticVersionJson = utils.parseSemanticVersion(definitions.version)
+            debug(`semver parsed is: ${JSON.stringify(semanticVersionJson, null, 2)}`)
             if (semanticVersionJson.prerelease) {
                 resultJsonObject.pattern = `${repository ? repository : REPOSITORY_SNAPSHOT}/${packagePath}/${semanticVersionJson.major}.${semanticVersionJson.minor}.${semanticVersionJson.patch}-${semanticVersionJson.prerelease}/`
             }
@@ -201,7 +210,7 @@ function processEachPackageInManifest(packageName,definitions) {
                 // this is formal release
                 resultJsonObject.pattern = `${repository ? repository : REPOSITORY_RELEASE}/${packagePath}/${definitions.version}/`
             }
-            debug(`Interim pattern is ${resultJsonObject.pattern}`)
+            debug(`not in m1 or m2, Interim pattern is ${resultJsonObject.pattern}`)
         }
 
         if (resultJsonObject.pattern) {
