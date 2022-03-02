@@ -9049,6 +9049,9 @@ function getBuildStringMacros() {
         if (release) {
             macros.set('branchtag', '')
         } else {
+            if (tag.match(/^v[0-9]+\\.[0-9x]+(\\.[0-9x]+)?\/staging$/)) {
+                tag = 'staging'
+            }
             macros.set('branchtag', tag)
         }
     }

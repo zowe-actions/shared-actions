@@ -11,7 +11,7 @@
 const core = require('@actions/core')
 const { utils , InvalidArgumentException } = require('zowe-common')
 const Debug = require('debug')
-const debug = Debug('zowe-actions:shared-actions:jfrog-download')
+const debug = Debug('jfrog-download')
 const fs = require('fs');
 
 // Defaults
@@ -121,7 +121,7 @@ function validate(response) {
 
 function processEachPackageInManifest(packageName,definitions) {
     debug(`Processing ${packageName}:`)
-    debug(`Original manifest definitions are: ${definitions}`)
+    debug(`Original manifest definitions are: ${JSON.stringify(definitions, null, 2)}`)
 
     var resultJsonObject = JSON.parse('{}')
     var packagePath = packageName.replace(/\./g, '/')

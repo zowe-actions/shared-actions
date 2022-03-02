@@ -5464,7 +5464,7 @@ var __webpack_exports__ = {};
 const core = __nccwpck_require__(4562)
 const { utils , InvalidArgumentException } = __nccwpck_require__(386)
 const Debug = __nccwpck_require__(8797)
-const debug = Debug('zowe-actions:shared-actions:jfrog-download')
+const debug = Debug('jfrog-download')
 const fs = __nccwpck_require__(5747);
 
 // Defaults
@@ -5574,7 +5574,7 @@ function validate(response) {
 
 function processEachPackageInManifest(packageName,definitions) {
     debug(`Processing ${packageName}:`)
-    debug(`Original manifest definitions are: ${definitions}`)
+    debug(`Original manifest definitions are: ${JSON.stringify(definitions, null, 2)}`)
 
     var resultJsonObject = JSON.parse('{}')
     var packagePath = packageName.replace(/\./g, '/')
