@@ -69,7 +69,8 @@ None
 
 ## Pre-requisite
 
-None
+Make sure the branch you specified in `lock-branch` input exists in your repository specified in `lock-repository`. An example branch name you can do is `github-actions-resource-locks`, if using it you can omit `lock-branch` because this is the default branch name this action will use.
+
 <br />
 
 ## Example usage
@@ -79,7 +80,6 @@ None
 ```yaml
 uses: zowe-actions/shared-actions/lock-resource@main
 with:
-  lock-repository: 
   github-token: 
   lock-resource-name: 
   lock-avg-retry-interval: 
