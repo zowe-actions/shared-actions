@@ -12279,9 +12279,9 @@ class github {
                 if (shallow) {
                     cmd += ' --depth 1'
                 }
-                cmd += ` --single-branch --branch ${branch} `
+                cmd += ` --single-branch --branch ${branch}`
             }
-            var fullRepo = `https://github.com/${repo}.git ${dir}`
+            var fullRepo = ` https://github.com/${repo}.git ${dir}`
             cmd += fullRepo
             utils.sh(cmd)
         }
