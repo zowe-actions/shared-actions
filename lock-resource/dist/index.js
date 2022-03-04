@@ -13205,7 +13205,7 @@ utils.mandatoryInputCheck(lockResourceName,'lock-resource-name')
 utils.mandatoryInputCheck(lockAvgRetryIntervalString,'lock-avg-retry-interval')
 utils.mandatoryInputCheck(githubToken,'github-token')
 if (!lockRepository || lockRepository == '') {
-    lockRepository = context.repo
+    lockRepository = context.repo.toString()
 }
 
 // generate a random wait timer for each job, this is to prevent jobs are acquiring the lock at the same time to prevent racing.
