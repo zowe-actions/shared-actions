@@ -41,11 +41,11 @@ You can also manually locks a resource by writing any data to the lock file. Thi
 
 ### `lock-branch`
 
-**Optional** - The branch of where your lock files resides. This branch should be in the repository specified above. Default branch name is `github-actions-resource-locks` if you don't specify.
+**Optional** - The branch of where your lock files resides. This branch should be in the repository specified above. Default branch name is `github-actions-resource-locks` if you don't specify. If this branch does not exist on `lock-repository`, it will get created as a orphan branch (an empty branch which does not have any history).
 
 ### `lock-resource-name`
 
-**Required** - The lock file name
+**Required** - The lock file name. If this file does not exist on the branch of the repo, it will get created on the fly.
 
 ### `lock-avg-retry-interval`
 
@@ -69,8 +69,7 @@ None
 
 ## Pre-requisite
 
-Make sure the branch you specified in `lock-branch` input exists in your repository specified in `lock-repository`. An example branch name you can do is `github-actions-resource-locks`, if using it you can omit `lock-branch` because this is the default branch name this action will use.
-
+None
 <br />
 
 ## Example usage

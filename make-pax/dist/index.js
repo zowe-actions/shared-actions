@@ -4623,48 +4623,25 @@ class github {
      * Clone a remote repository
      *
      * @param  repo            the repository name, required 
-     * @param  dir             the directory name to do the clone, required
-     * @param  branch          the branch name to be cloned, required
+     * @param  dir             the directory name to place the clone, required
+     * @param  branch          the branch name to be cloned, optional
+     * @param  shallow         flag to do shallow clone (just clone latest one history), optional
      */
-    static clone(repo, dir, branch) {
-        if (!repo || !dir || !branch) {
-            console.warn('Clone operation skipped, must specify all three arguments: repo, dir and branch')
+    static clone(repo, dir, branch, shallow) {
+        if (!repo || !dir) {
+            console.warn('Clone operation skipped, must specify both mandatory arguments: repo, dir')
         } 
         else {
-            var cmd = `mkdir ${dir} && cd ${dir} && git clone`
+            var cmd = `mkdir -p ${dir} && git clone`
             if (branch) {
+                if (shallow) {
+                    cmd += ' --depth 1'
+                }
                 cmd += ` --single-branch --branch ${branch} `
             }
-            var fullRepo = `https://github.com/${repo}.git/`
+            var fullRepo = `https://github.com/${repo}.git ${dir}`
             cmd += fullRepo
-            console.log(utils.sh(cmd))
-        }
-    }
-
-    /**
-     * Shallow clone a remote repository with latest
-     *
-     * @param  repo            the repository name, required 
-     * @param  dir             the directory of where files should be cloned to, required
-     * @param  branch          the branch name to be cloned, required
-     */
-     static shallowClone(repo, dir, branch, quiet) {
-        if (!repo || !dir || !branch) {
-            console.warn('Clone operation skipped, must specify all three arguments: repo, dir and branch')
-        } 
-        else {
-            var cmd = `mkdir ${dir} && cd ${dir} && git clone`
-            if (branch) {
-                cmd += ` --depth 1 --single-branch --branch ${branch} `
-            }
-            var fullRepo = `https://github.com/${repo}.git/ ${dir}`
-            cmd += fullRepo
-            if (!quiet) {
-                console.log(utils.sh(cmd))
-            } 
-            else {
-                utils.sh(cmd)
-            }
+            utils.sh(cmd)
         }
     }
 
@@ -4771,6 +4748,25 @@ class github {
                 local : ${localHash}
                 remote: ${remoteHash}`)
             return false
+        }
+    }
+
+    /**
+     * Shallow clone a remote repository with latest
+     *
+     * @param  dir             the directory of where the this new branch checkouts to, required
+     * @param  branch          the branch name to be newly made, required
+    */
+    static createOrphanBranch(dir, branch){
+        if (!dir || !branch) {
+            console.warn('createOrphanBranch operation skipped, must specify all three arguments: repo, dir and branch')
+        }
+        else {
+            var cmd = `mkdir -p ${dir} && cd ${dir}`
+            cmd += ` && git switch --orphan ${branch}`
+            cmd += '&& git commit --allow-empty -m "Initial commit on orphan branch"'
+            cmd += `&& git push -u origin ${branch}`
+            utils.sh(cmd)
         }
     }
 }

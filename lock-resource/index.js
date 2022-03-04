@@ -50,7 +50,16 @@ if (!core.getState('isLockPost')) {
     myLockJson.runNumber = context.runNumber
     myLockJson.link = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
     
-    github.shallowClone(lockRepository,lockRoot,lockBranch,true)
+    try {
+        github.clone(lockRepository, lockRoot, lockBranch, true)
+    }
+    catch (error) {
+        // shallow clone failed, the branch does not exist
+        // clone the repo first,
+        // then we need to create this branch (orphan)
+        github.clone(lockRepository, lockRoot)
+        github.createOrphanBranch(lockRoot, lockBranch)
+    }
     lock(myLockJson)
     core.saveState('isLockPost',true)
     core.exportVariable('MY_LOCK_UID',myLockJson.uid)
@@ -103,7 +112,8 @@ function releaseLock() {
 function getLockFileContent() {
     sync()
     if (!utils.fileExists(`${lockRoot}/${lockResourceName}`, true)) {
-        throw new Error('Lock file not exist! Unable to acquire lock! Failing workflow...')
+        console.warn('Lock file not exist! creating a new lock file now...')
+        utils.sh(`cd ${lockRoot} && touch ${lockResourceName}`)
     }
     var content = fs.readFileSync(`${lockRoot}/${lockResourceName}`)
     return content != '' ? JSON.parse(content) : ''
