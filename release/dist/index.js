@@ -12407,7 +12407,6 @@ class github {
             var cmd = `mkdir -p ${dir} && cd ${dir}`
             cmd += ` && git switch --orphan ${branch}`
             cmd += ' && git commit --allow-empty -m "Initial commit on orphan branch"'
-            cmd += ` && git push -u origin ${branch}`
             utils.sh(cmd)
         }
     }
