@@ -13239,6 +13239,7 @@ if (!core.getState('isLockPost')) {
         // then we need to create this branch (orphan)
         github.clone(lockRepository, lockRoot)
         github.createOrphanBranch(lockRoot, lockBranch)
+        github.push(lockBranch, lockRoot, 'dummyname', githubToken, lockRepository, true)
     }
     lock(myLockJson)
     core.saveState('isLockPost',true)
