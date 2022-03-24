@@ -8931,11 +8931,17 @@ if (isPerformingRelease) {
 makeUploadFileSpec()
 // upload artifacts if provided
 if (!skipUpload && artifacts && artifacts.length > 0) {
-    console.log(utils.sh_heavyload(`jfrog rt upload --spec ${temporaryUploadSpecName} --threads 6`))
+    utils.sh_heavyload(`jfrog rt upload --spec ${temporaryUploadSpecName} --threads 6`)
     utils.sh('jfrog rt bp')
+    // craft a link to this build-info
+    // why doing this? because the link produced by jfrog rt bp is invalid, 
+    // it does not encode forward slash in the build name
+    var encodedBuildName = process.env.JFROG_CLI_BUILD_NAME.replace(/\//g,'%2F')
+    console.log(`URL to just published build-info: https://zowe.jfrog.io/ui/builds/${encodedBuildName}/${process.env.JFROG_CLI_BUILD_NUMBER}`)
 } else {
     console.warn ('No artifacts to upload to jfrog, normal publish skipped.')
 }
+
 core.exportVariable('PUBLISH_TARGET_PATH', parseString(publishTargetPathPattern, macros))
 core.exportVariable('PUBLISH_VERSION', macros.get('publishversion'))
 core.exportVariable('PRE_RELEASE_STRING',preReleaseString)
