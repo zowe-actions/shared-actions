@@ -17,7 +17,6 @@ const projectRootPath = process.env.GITHUB_WORKSPACE
 // Gets inputs
 const currentBranch = process.env.CURRENT_BRANCH
 const buildNumber = core.getInput('run-number')
-const zowePaxJfrogUploadTarget = core.getInput('zowe-pax-jfrog-upload-target')
 const buildDockerSources = core.getInput('build-docker-sources') == 'true' ? true : false
 const dockerhubUser = core.getInput('dockerhub-user')
 const dockerhubPassword = core.getInput('dockerhub-password')
@@ -26,7 +25,6 @@ const zlinuxSSHKeyPassphrase= core.getInput('zlinux-ssh-key-passphrase')
 
 // null check
 utils.mandatoryInputCheck(buildNumber, 'run-number')
-utils.mandatoryInputCheck(zowePaxJfrogUploadTarget, 'zowe-pax-jfrog-upload-target')
 utils.mandatoryInputCheck(dockerhubUser, 'dockerhub-user')
 utils.mandatoryInputCheck(dockerhubPassword, 'dockerhub-password')
 utils.mandatoryInputCheck(zlinuxSSHServer, 'zlinux-ssh-server')
@@ -43,7 +41,7 @@ sftp(cmd2)
 
 printLogDivider(`docker build server-bundle.s390x.tar`)
 var cmd3 = `cd zowe-build/${currentBranch}_${buildNumber}/containers/server-bundle
-wget "https://zowe.jfrog.io/zowe/${zowePaxJfrogUploadTarget}" -O zowe.pax
+cp ${projectRootPath}/.pax/zowe.pax zowe.pax
 mkdir -p utils && cp -r ../utils/* ./utils
 chmod +x ./utils/*.sh ./utils/*/bin/*
 sudo docker login -u \"${dockerhubUser}\" -p \"${dockerhubPassword}\"

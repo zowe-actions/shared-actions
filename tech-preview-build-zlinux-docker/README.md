@@ -10,10 +10,6 @@ This action does building for zowe zlinux docker tech preview.
 
 **Required** - Current workflow run number
 
-### `zowe-pax-jfrog-upload-target`
-
-**Required** - Full path of jfrog upload target for zowe.pax
-
 ### `build-docker-sources`
 
 **Required** - Flag to enable build docker sources. Input has to be either `true` or `false`. Default is `false`.

@@ -36,9 +36,7 @@ Then utilize this newly created JSON file for jFrog to consume, finally does upl
 
 ## Outputs
 
-### `zowe-pax-jfrog-upload-target`
-
-zowe pax jfrog upload target
+None
 <br /><br />
 
 ## Exported environment variables

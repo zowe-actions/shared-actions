@@ -4,9 +4,6 @@ inputs:
   run-number:
     description: current workflow run number
     required: true
-  zowe-pax-jfrog-upload-target:
-    description: full path of zowe.pax upload target
-    required: true
   build-docker-sources:
     description: flag to build docker build-docker-sources
     required: true

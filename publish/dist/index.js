@@ -8977,9 +8977,6 @@ function makeUploadFileSpec() {
                     console.log(`- + found ${file} -> ${t}`)
                     var arr = [{"pattern": file, "target": t}]
                     uploadSpec['files'] = uploadSpec['files'].concat(arr)
-                    if (file.includes('zowe.pax')) {
-                        core.setOutput('zowe-pax-jfrog-upload-target', t)
-                    }
                 }
             })
         }
