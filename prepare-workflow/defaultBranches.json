@@ -14,8 +14,8 @@
         "buildHistory"       : 20,
         "allowRelease"       : true,
         "allowFormalRelease" : true,
-        "releaseTag"         : "$1-snapshot",
-        "npmTag"             : "$1-latest"
+        "releaseTag"         : "BRANCHNAMEREPLACE-snapshot",
+        "npmTag"             : "BRANCHNAMEREPLACE-latest"
     },
     {
         "name"               : "^staging$",
@@ -29,6 +29,6 @@
         "isProtected"        : true,
         "buildHistory"       : 20,
         "allowRelease"       : true,
-        "npmTag"             : "$1-dev"
+        "npmTag"             : "BRANCHNAMEREPLACE-dev"
     }
 ]
