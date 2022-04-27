@@ -9136,9 +9136,9 @@ function getBranchTag(branch) {
         var tag = matchedBranch.releaseTag
         debug(`In getBranchTag(), tag is ${tag}`)
         if (tag) { // has release tag defined
-            // eg. branch=master, matchedBranch = master, tag=snapshot
-            // replacedTag = 'master'.replace('master','snapshot') => 'snapshot'
-            // finalTag = 'snapshot'
+            // eg. branch = v2.x/master, matchedBranch.name = ^v[0-9]+\\.[0-9x]+(\\.[0-9x]+)?/master$, tag = $1-snapshot
+            // replacedTag = 'v2.x/master'.replace(^v[0-9]+\\.[0-9x]+(\\.[0-9x]+)?/master$,'$1-snapshot') => '-snapshot'   $1 is a match on the regex bracket which in this case is null
+            // finalTag = '-snapshot'
             var regex = new RegExp(`${matchedBranch.name}`,'g')
             var replacedTag = branch.replace(regex, tag)
             debug(`In getBranchTag(), replacedTag is ${replacedTag}`)
