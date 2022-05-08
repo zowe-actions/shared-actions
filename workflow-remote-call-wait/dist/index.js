@@ -5460,6 +5460,7 @@ var __webpack_exports__ = {};
 const core = __nccwpck_require__(4562)
 const { utils } = __nccwpck_require__(386)
 const Debug = __nccwpck_require__(8797)
+const { coerce } = __nccwpck_require__(4603)
 const debug = Debug('zowe-actions:shared-actions:workflow-remote-call-wait')
 
 // gets inputs
@@ -5723,6 +5724,9 @@ async function waitForJobToFinish(runURL, pollFrequency) {
         status = run['status']
         
         core.setOutput('workflow-run-html-url',run['html_url'])
+        // If the caller job is about to get cancelled due to waiting for >6 hours,
+        // we can still get the html url and print on the screen so customers can click it and check manually.
+        core.exportVariable('html_url', run['html_url']) 
 
         if (status != 'completed') {
             console.log(`The workflow run has not completed yet, waiting ${pollFrequency} mins before checking again...`)
