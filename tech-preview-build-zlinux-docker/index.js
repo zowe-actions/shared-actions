@@ -41,7 +41,6 @@ sftp(cmd2)
 
 printLogDivider(`docker build server-bundle.s390x.tar`)
 var cmd3 = `cd zowe-build/${currentBranch}_${buildNumber}/containers/server-bundle
-cp ${projectRootPath}/.pax/zowe.pax zowe.pax
 mkdir -p utils && cp -r ../utils/* ./utils
 chmod +x ./utils/*.sh ./utils/*/bin/*
 sudo docker login -u \"${dockerhubUser}\" -p \"${dockerhubPassword}\"
