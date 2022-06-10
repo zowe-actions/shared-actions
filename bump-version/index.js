@@ -49,14 +49,14 @@ else {
     }
     newVersion = utils.bumpManifestVersion(`${workdir}/${manifest}`, version)
     console.log('New version:', newVersion)
-    utils.sh('git status', {cwd: tempFolder});
-    utils.sh('git diff', {cwd: tempFolder});
+    github._cmd(tempFolder, 'status');
+    github._cmd(tempFolder, 'diff');
     github.add(workdir, 'manifest.yaml')
 
     res = github.commit(tempFolder, newVersion)
 
-    utils.sh('git status', {cwd: tempFolder});
-    utils.sh('git diff', {cwd: tempFolder});
+    github._cmd(tempFolder, 'status');
+    github._cmd(tempFolder, 'diff');
     throw new Error('Pause');
 
     if (res.includes('Git working directory not clean.')) {

@@ -12211,7 +12211,27 @@ module.exports.github = __nccwpck_require__(9266)
 const utils = __nccwpck_require__(2528)
 
 class github {
-    
+
+    /**
+     * Issue git command
+     *
+     * @param  workingDir      the working directory
+     * @param  command         git command to issue
+     */
+    static _cmd(workingDir, command, quiet) {
+        if (!workingDir) {
+            console.warn('Git operation skipped, must specify working directory')
+        } 
+        else {
+            var cmd=`git ${command}`
+            const res = utils.sh(cmd, {cwd: workingDir})
+            if (!quiet) {
+                console.log('>>>', cmd, '\n', res, '\n<<<')
+            } 
+            return res
+        }
+    }
+
     /**
      * Validate if a tag exists in remote.
      *
@@ -12286,16 +12306,11 @@ class github {
      * @param  workingDir      the working directory
      */
     static hardReset(branch, workingDir, quiet) {
-        if (!branch || !workingDir) {
-            console.warn('Hard reset operation skipped, must specify branch and working directory')
+        if (!branch) {
+            console.warn('Hard reset operation skipped, must specify branch')
         } 
         else {
-            var cmd=`git reset --hard ${branch}`
-            const res = utils.sh(cmd, {cwd: workingDir})
-            if (!quiet) {
-                console.log('>>>', cmd, '\n', res, '\n<<<')
-            } 
-            return res
+            return this._cmd(workingDir, `reset --hard ${branch}`, quiet)
         }
     }
 
@@ -12305,17 +12320,7 @@ class github {
      * @param  workingDir      the working directory
      */
     static fetch(workingDir, quiet) {
-        if (!workingDir) {
-            console.warn('Fetch operation skipped, must specify working directory')
-        } 
-        else {
-            var cmd=`git fetch`
-            const res = utils.sh(cmd, {cwd: workingDir})
-            if (!quiet) {
-                console.log('>>>', cmd, '\n', res, '\n<<<')
-            } 
-            return res
-        }
+        return this._cmd(workingDir, `fetch`, quiet)
     }
 
     /**
@@ -12324,17 +12329,7 @@ class github {
      * @param  workingDir      the working directory
      */
     static pull(workingDir, quiet) {
-        if (!workingDir) {
-            console.warn('Pull operation skipped, must specify working directory')
-        } 
-        else {
-            var cmd=`git pull`
-            const res = utils.sh(cmd, {cwd: workingDir})
-            if (!quiet) {
-                console.log('>>>', cmd, '\n', res, '\n<<<')
-            } 
-            return res
-        }
+        return this._cmd(workingDir, `pull`, quiet)
     }
 
     /**
@@ -12344,17 +12339,7 @@ class github {
      * @param  file            file to add
      */
     static add(workingDir, file, quiet) {
-        if (!workingDir) {
-            console.warn('Add operation skipped, must specify working directory')
-        } 
-        else {
-            var cmd=`git add ${file}`
-            const res = utils.sh(cmd, {cwd: workingDir})
-            if (!quiet) {
-                console.log('>>>', cmd, '\n', res, '\n<<<')
-            } 
-            return res
-        }
+        return this._cmd(workingDir, `add ${file}`, quiet)
     }
 
     /**
@@ -12364,17 +12349,7 @@ class github {
      * @param  message         commit message
      */
     static commit(workingDir, message, quiet) {
-        if (!workingDir) {
-            console.warn('Commit operation skipped, must specify working directory')
-        } 
-        else {
-            var cmd=`git commit -s -m "${message}"`
-            const res = utils.sh(cmd, {cwd: workingDir})
-            if (!quiet) {
-                console.log('>>>', cmd, '\n', res, '\n<<<')
-            } 
-            return res
-        }
+        return this._cmd(workingDir, `commit -s -m "${message}"`, quiet)
     }
 
     /**
@@ -12388,12 +12363,7 @@ class github {
             console.warn('Push operation skipped, must specify argument: branch')
         } 
         else {
-            var cmd = `git push https://${username}:${passwd}@github.com/${repo} ${branch}`
-            const res = utils.sh(cmd, {cwd: dir})
-            if (!quiet) {
-                console.log('>>>', cmd, '\n', res, '\n<<<')
-            } 
-            return res
+            return this._cmd(workingDir, `push https://${username}:${passwd}@github.com/${repo} ${branch}`, quiet)
         }
     }
 
@@ -13309,14 +13279,14 @@ else {
     }
     newVersion = utils.bumpManifestVersion(`${workdir}/${manifest}`, version)
     console.log('New version:', newVersion)
-    utils.sh('git status', {cwd: tempFolder});
-    utils.sh('git diff', {cwd: tempFolder});
+    github._cmd(tempFolder, 'status');
+    github._cmd(tempFolder, 'diff');
     github.add(workdir, 'manifest.yaml')
 
     res = github.commit(tempFolder, newVersion)
 
-    utils.sh('git status', {cwd: tempFolder});
-    utils.sh('git diff', {cwd: tempFolder});
+    github._cmd(tempFolder, 'status');
+    github._cmd(tempFolder, 'diff');
     throw new Error('Pause');
 
     if (res.includes('Git working directory not clean.')) {
