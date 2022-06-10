@@ -5309,7 +5309,8 @@ class utils {
         }
         const newVersion = this.combineSemanticVersion(oldVersionParsed);
 
-        this.sh(`cat ${manifest} | sed 's/^version:.*$/version: ${newVersion}/' > ${manifest}`);
+        const manifestContent = fs.readFileSync(manifest);
+        fs.writeFileSync(manifest, manifestContent.replace(/^version:.*$/m, `version: ${newVersion}`));
 
         return `v${newVersion}`;
     }
