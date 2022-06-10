@@ -8049,7 +8049,7 @@ class github {
             var cmd=`git reset --hard ${branch}`
             const res = utils.sh(cmd, {cwd: workingDir})
             if (!quiet) {
-                console.log(cmd, '\n', res)
+                console.log('>>>', cmd, '\n', res, '\n<<<')
             } 
             return res
         }
@@ -8068,7 +8068,7 @@ class github {
             var cmd=`git fetch`
             const res = utils.sh(cmd, {cwd: workingDir})
             if (!quiet) {
-                console.log(cmd, '\n', res)
+                console.log('>>>', cmd, '\n', res, '\n<<<')
             } 
             return res
         }
@@ -8087,7 +8087,7 @@ class github {
             var cmd=`git pull`
             const res = utils.sh(cmd, {cwd: workingDir})
             if (!quiet) {
-                console.log(cmd, '\n', res)
+                console.log('>>>', cmd, '\n', res, '\n<<<')
             } 
             return res
         }
@@ -8107,7 +8107,7 @@ class github {
             var cmd=`git add ${file}`
             const res = utils.sh(cmd, {cwd: workingDir})
             if (!quiet) {
-                console.log(cmd, '\n', res)
+                console.log('>>>', cmd, '\n', res, '\n<<<')
             } 
             return res
         }
@@ -8127,7 +8127,7 @@ class github {
             var cmd=`git commit -s -m "${message}"`
             const res = utils.sh(cmd, {cwd: workingDir})
             if (!quiet) {
-                console.log(cmd, '\n', res)
+                console.log('>>>', cmd, '\n', res, '\n<<<')
             } 
             return res
         }
@@ -8147,7 +8147,7 @@ class github {
             var cmd = `git push https://${username}:${passwd}@github.com/${repo} ${branch}`
             const res = utils.sh(cmd, {cwd: dir})
             if (!quiet) {
-                console.log(cmd, '\n', res)
+                console.log('>>>', cmd, '\n', res, '\n<<<')
             } 
             return res
         }

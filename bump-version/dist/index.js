@@ -12293,7 +12293,7 @@ class github {
             var cmd=`git reset --hard ${branch}`
             const res = utils.sh(cmd, {cwd: workingDir})
             if (!quiet) {
-                console.log(cmd, '\n', res)
+                console.log('>>>', cmd, '\n', res, '\n<<<')
             } 
             return res
         }
@@ -12312,7 +12312,7 @@ class github {
             var cmd=`git fetch`
             const res = utils.sh(cmd, {cwd: workingDir})
             if (!quiet) {
-                console.log(cmd, '\n', res)
+                console.log('>>>', cmd, '\n', res, '\n<<<')
             } 
             return res
         }
@@ -12331,7 +12331,7 @@ class github {
             var cmd=`git pull`
             const res = utils.sh(cmd, {cwd: workingDir})
             if (!quiet) {
-                console.log(cmd, '\n', res)
+                console.log('>>>', cmd, '\n', res, '\n<<<')
             } 
             return res
         }
@@ -12351,7 +12351,7 @@ class github {
             var cmd=`git add ${file}`
             const res = utils.sh(cmd, {cwd: workingDir})
             if (!quiet) {
-                console.log(cmd, '\n', res)
+                console.log('>>>', cmd, '\n', res, '\n<<<')
             } 
             return res
         }
@@ -12371,7 +12371,7 @@ class github {
             var cmd=`git commit -s -m "${message}"`
             const res = utils.sh(cmd, {cwd: workingDir})
             if (!quiet) {
-                console.log(cmd, '\n', res)
+                console.log('>>>', cmd, '\n', res, '\n<<<')
             } 
             return res
         }
@@ -12391,7 +12391,7 @@ class github {
             var cmd = `git push https://${username}:${passwd}@github.com/${repo} ${branch}`
             const res = utils.sh(cmd, {cwd: dir})
             if (!quiet) {
-                console.log(cmd, '\n', res)
+                console.log('>>>', cmd, '\n', res, '\n<<<')
             } 
             return res
         }
@@ -13299,26 +13299,28 @@ else {
     }
     if (utils.fileExists(workdir + '/manifest.yaml')) {
         newVersion = utils.bumpManifestVersion(workdir + '/manifest.yaml', version)
-        res = github.add(workdir, 'manifest.yaml')
-        console.log('git add', res)
+        github.add(workdir, 'manifest.yaml')
     } else if (utils.fileExists(workdir + '/manifest.yml')) {
         newVersion = utils.bumpManifestVersion(workdir + '/manifest.yml', version)
-        res = github.add(workdir, 'manifest.yml')
-        console.log('git add', res)
+        github.add(workdir, 'manifest.yml')
     } else if (utils.fileExists(workdir + '/manifest.json')) {
         throw new Error('Bump version on manifest.json is not supported yet.')
     } else {
         throw new Error('No manifest found.')
     }
     console.log('newVersion', newVersion)
-    res = utils.sh('git status before', {cwd: tempFolder});
-    console.log('git status', res)
+    res = utils.sh('git status', {cwd: tempFolder});
+    console.log('git status before', res)
+    res = utils.sh('git diff', {cwd: tempFolder});
+    console.log('git diff before', res)
 
     res = github.commit(tempFolder, newVersion)
     console.log('git commit', res)
 
-    res = utils.sh('git status after', {cwd: tempFolder});
-    console.log('git status', res)
+    res = utils.sh('git status', {cwd: tempFolder});
+    console.log('git status after', res)
+    res = utils.sh('git diff', {cwd: tempFolder});
+    console.log('git diff after', res)
     throw new Error('Pause');
 
     if (res.includes('Git working directory not clean.')) {
