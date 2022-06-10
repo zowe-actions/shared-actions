@@ -12290,13 +12290,12 @@ class github {
             console.warn('Hard reset operation skipped, must specify branch and working directory')
         } 
         else {
-            var cmd=`cd ${workingDir} && git reset --hard ${branch}`
+            var cmd=`git reset --hard ${branch}`
+            const res = utils.sh(cmd, {cwd: workingDir})
             if (!quiet) {
-                console.log(utils.sh(cmd))
+                console.log(cmd, '\n', res)
             } 
-            else {
-                utils.sh(cmd)
-            }
+            return res
         }
     }
 
@@ -12310,13 +12309,12 @@ class github {
             console.warn('Fetch operation skipped, must specify working directory')
         } 
         else {
-            var cmd=`cd ${workingDir} && git fetch`
+            var cmd=`git fetch`
+            const res = utils.sh(cmd, {cwd: workingDir})
             if (!quiet) {
-                console.log(utils.sh(cmd))
+                console.log(cmd, '\n', res)
             } 
-            else {
-                utils.sh(cmd)
-            }
+            return res
         }
     }
 
@@ -12330,13 +12328,12 @@ class github {
             console.warn('Pull operation skipped, must specify working directory')
         } 
         else {
-            var cmd=`cd ${workingDir} && git pull`
+            var cmd=`git pull`
+            const res = utils.sh(cmd, {cwd: workingDir})
             if (!quiet) {
-                console.log(utils.sh(cmd))
+                console.log(cmd, '\n', res)
             } 
-            else {
-                utils.sh(cmd)
-            }
+            return res
         }
     }
 
@@ -12352,14 +12349,11 @@ class github {
         } 
         else {
             var cmd=`git add ${file}`
+            const res = utils.sh(cmd, {cwd: workingDir})
             if (!quiet) {
-                console.log(utils.sh(cmd))
+                console.log(cmd, '\n', res)
             } 
-            else {
-                return utils.sh(cmd, {
-                    cwd: workingDir,
-                })
-            }
+            return res
         }
     }
 
@@ -12375,14 +12369,11 @@ class github {
         } 
         else {
             var cmd=`git commit -s -m "${message}"`
+            const res = utils.sh(cmd, {cwd: workingDir})
             if (!quiet) {
-                console.log(utils.sh(cmd))
+                console.log(cmd, '\n', res)
             } 
-            else {
-                return utils.sh(cmd, {
-                    cwd: workingDir,
-                })
-            }
+            return res
         }
     }
 
@@ -12397,13 +12388,12 @@ class github {
             console.warn('Push operation skipped, must specify argument: branch')
         } 
         else {
-            var cmd = `cd ${dir} && git push https://${username}:${passwd}@github.com/${repo} ${branch}`
+            var cmd = `git push https://${username}:${passwd}@github.com/${repo} ${branch}`
+            const res = utils.sh(cmd, {cwd: dir})
             if (!quiet) {
-                console.log(utils.sh(cmd))
+                console.log(cmd, '\n', res)
             } 
-            else {
-                utils.sh(cmd)
-            }
+            return res
         }
     }
 
