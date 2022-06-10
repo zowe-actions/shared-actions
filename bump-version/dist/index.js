@@ -13297,30 +13297,26 @@ else {
     if (baseDirectory != '' && baseDirectory != '.') {
         workdir += `/${baseDirectory}`
     }
+    var manifest
     if (utils.fileExists(workdir + '/manifest.yaml')) {
-        newVersion = utils.bumpManifestVersion(workdir + '/manifest.yaml', version)
-        github.add(workdir, 'manifest.yaml')
+        manifest = 'manifest.yaml'
     } else if (utils.fileExists(workdir + '/manifest.yml')) {
-        newVersion = utils.bumpManifestVersion(workdir + '/manifest.yml', version)
-        github.add(workdir, 'manifest.yml')
+        manifest = 'manifest.yml'
     } else if (utils.fileExists(workdir + '/manifest.json')) {
         throw new Error('Bump version on manifest.json is not supported yet.')
     } else {
         throw new Error('No manifest found.')
     }
-    console.log('newVersion', newVersion)
-    res = utils.sh('git status', {cwd: tempFolder});
-    console.log('git status before', res)
-    res = utils.sh('git diff', {cwd: tempFolder});
-    console.log('git diff before', res)
+    newVersion = utils.bumpManifestVersion(`${workdir}/${manifest}`, version)
+    console.log('New version:', newVersion)
+    utils.sh('git status', {cwd: tempFolder});
+    utils.sh('git diff', {cwd: tempFolder});
+    github.add(workdir, 'manifest.yaml')
 
     res = github.commit(tempFolder, newVersion)
-    console.log('git commit', res)
 
-    res = utils.sh('git status', {cwd: tempFolder});
-    console.log('git status after', res)
-    res = utils.sh('git diff', {cwd: tempFolder});
-    console.log('git diff after', res)
+    utils.sh('git status', {cwd: tempFolder});
+    utils.sh('git diff', {cwd: tempFolder});
     throw new Error('Pause');
 
     if (res.includes('Git working directory not clean.')) {
