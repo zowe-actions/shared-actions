@@ -38,20 +38,26 @@ else {
     }
     if (utils.fileExists(workdir + '/manifest.yaml')) {
         newVersion = utils.bumpManifestVersion(workdir + '/manifest.yaml', version)
+        res = github.add(workdir, 'manifest.yaml')
+        console.log('git add', res)
     } else if (utils.fileExists(workdir + '/manifest.yml')) {
         newVersion = utils.bumpManifestVersion(workdir + '/manifest.yml', version)
+        res = github.add(workdir, 'manifest.yml')
+        console.log('git add', res)
     } else if (utils.fileExists(workdir + '/manifest.json')) {
         throw new Error('Bump version on manifest.json is not supported yet.')
     } else {
         throw new Error('No manifest found.')
     }
     console.log('newVersion', newVersion)
-    res = github.add(tempFolder, '.')
-    console.log('git add', res)
+    res = utils.sh('git status before', {cwd: tempFolder});
+    console.log('git status', res)
+
     res = github.commit(tempFolder, newVersion)
     console.log('git commit', res)
 
-    utils.sh('git status', {cwd: tempFolder});
+    res = utils.sh('git status after', {cwd: tempFolder});
+    console.log('git status', res)
     throw new Error('Pause');
 
     if (res.includes('Git working directory not clean.')) {
