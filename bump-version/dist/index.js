@@ -13302,6 +13302,7 @@ else {
     console.log(`Making a "${version}" version bump ...`)
 
     var newVersion
+    var res
     var workdir = tempFolder;
     if (baseDirectory != '' && baseDirectory != '.') {
         workdir += `/${baseDirectory}`
