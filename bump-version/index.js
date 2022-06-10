@@ -45,18 +45,20 @@ else {
     } else {
         throw new Error('No manifest found.')
     }
+    console.log('newVersion', newVersion)
     res = github.add(tempFolder, '.')
     console.log('git add', res)
-    res = github.commit(newVersion)
+    res = github.commit(tempFolder, newVersion)
     console.log('git commit', res)
+
+    utils.sh('git status', {cwd: tempFolder});
+    throw new Error('Pause');
+
     if (res.includes('Git working directory not clean.')) {
         throw new Error('Working directory is not clean')
     } else if (!res.match(/^v[0-9]+\.[0-9]+\.[0-9]+$/)) {
         throw new Error(`Bump version failed: ${res}`)
     }
-
-    utils.sh('git status', {cwd: tempFolder});
-    throw new Error('Pause');
 
     console.log(utils.sh(`cd ${tempFolder} && git rebase HEAD~1 --signoff`))
 
