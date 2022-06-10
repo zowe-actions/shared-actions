@@ -8699,7 +8699,7 @@ class utils {
         }
         const newVersion = this.combineSemanticVersion(oldVersionParsed);
 
-        const manifestContent = fs.readFileSync(manifest);
+        const manifestContent = fs.readFileSync(manifest).toString();
         fs.writeFileSync(manifest, manifestContent.replace(/^version:.*$/m, `version: ${newVersion}`));
 
         return `v${newVersion}`;
