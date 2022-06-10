@@ -4729,7 +4729,7 @@ class github {
             console.warn('Push operation skipped, must specify argument: branch')
         } 
         else {
-            return this._cmd(workingDir, `push https://${username}:${passwd}@github.com/${repo} ${branch}`, quiet)
+            return this._cmd(dir, `push https://${username}:${passwd}@github.com/${repo} ${branch}`, quiet)
         }
     }
 

@@ -55,17 +55,11 @@ else {
 
     res = github.commit(tempFolder, newVersion)
 
-    github._cmd(tempFolder, 'status');
-    github._cmd(tempFolder, 'diff');
-    throw new Error('Pause');
-
     if (res.includes('Git working directory not clean.')) {
         throw new Error('Working directory is not clean')
-    } else if (!res.match(/^v[0-9]+\.[0-9]+\.[0-9]+$/)) {
-        throw new Error(`Bump version failed: ${res}`)
+    } else if (!newVersion.match(/^v[0-9]+\.[0-9]+\.[0-9]+$/)) {
+        throw new Error(`Bump version failed: ${newVersion}`)
     }
-
-    console.log(utils.sh(`cd ${tempFolder} && git rebase HEAD~1 --signoff`))
 
     // push version changes
     console.log(`Pushing ${branch} to remote ...`)
