@@ -12341,6 +12341,52 @@ class github {
     }
 
     /**
+     * Add file to commit
+     *
+     * @param  workingDir      the working directory
+     * @param  file            file to add
+     */
+    static add(workingDir, file, quiet) {
+        if (!workingDir) {
+            console.warn('Add operation skipped, must specify working directory')
+        } 
+        else {
+            var cmd=`git add ${file}`
+            if (!quiet) {
+                console.log(utils.sh(cmd))
+            } 
+            else {
+                return utils.sh(cmd, {
+                    cwd: workingDir,
+                })
+            }
+        }
+    }
+
+    /**
+     * Create new commit
+     *
+     * @param  workingDir      the working directory
+     * @param  message         commit message
+     */
+    static commit(workingDir, message, quiet) {
+        if (!workingDir) {
+            console.warn('Commit operation skipped, must specify working directory')
+        } 
+        else {
+            var cmd=`git commit -s -m "${message}"`
+            if (!quiet) {
+                console.log(utils.sh(cmd))
+            } 
+            else {
+                return utils.sh(cmd, {
+                    cwd: workingDir,
+                })
+            }
+        }
+    }
+
+    /**
      * Push committed changes to a remote repository
      *
      * @param  branch          the branch to be pushed to, required
@@ -12834,8 +12880,8 @@ class utils {
         return (new Date()).toISOString().split('.')[0].replace(/[^0-9]/g, "")
     }
 
-    static sh(cmd) {
-        return execSync(cmd).toString().trim()
+    static sh(cmd, options = {}) {
+        return execSync(cmd, options).toString().trim()
     }
 
     static sh_heavyload(cmd) {
@@ -12897,6 +12943,49 @@ class utils {
         const prerelease = semver.prerelease(version);
         versionJson['prerelease'] = prerelease ? (Array.isArray(prerelease) ? prerelease.join('.') : String(prerelease)) : ''
         return versionJson
+    }
+
+    static combineSemanticVersion(versionJson) {
+        let version = `${versionJson['major']}.${versionJson['minor']}.${versionJson['patch']}`;
+        if (versionJson['prerelease']) {
+            version += `-${versionJson['prerelease']}`;
+        }
+
+        return version;
+    }
+
+    static bumpManifestVersion(manifest, version) {
+        if (version == '') {
+            version = 'PATCH';
+        }
+
+        const oldVersionLine = this.sh(`cat ${manifest} | grep 'version:'`);
+        if (!oldVersionLine) {
+            console.log(`Version is not defined in ${manifest}`);
+            return;
+        }
+        const oldVersion = oldVersionLine.split(':')[1].trim();
+        let oldVersionParsed = this.parseSemanticVersion(oldVersion);
+
+        switch (version.toUpperCase()) {
+            case 'PATCH':
+                oldVersionParsed['patch'] = parseInt(oldVersionParsed['patch'], 10) + 1;
+                break;
+            case 'MINOR':
+                oldVersionParsed['minor'] = parseInt(oldVersionParsed['minor'], 10) + 1;
+                break;
+            case 'MAJOR':
+                oldVersionParsed['major'] = parseInt(oldVersionParsed['major'], 10) + 1;
+                break;
+            default:
+                oldVersionParsed = this.parseSemanticVersion(version);
+                break;
+        }
+        const newVersion = this.combineSemanticVersion(oldVersionParsed);
+
+        this.sh(`cat ${manifest} | sed 's/^version:.*$/version: ${newVersion}/' > ${manifest}`);
+
+        return `v${newVersion}`;
     }
 
     static printMap (map) {
