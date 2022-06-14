@@ -13229,43 +13229,77 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
-/*
- * This program and the accompanying materials are made available under the terms of the
- * Eclipse Public License v2.0 which accompanies this distribution, and is available at
- * https://www.eclipse.org/legal/epl-v20.html
- *
- * SPDX-License-Identifier: EPL-2.0
- *
- * Copyright IBM Corporation 2021
- */
-
 const core = __nccwpck_require__(7635)
-const github = __nccwpck_require__(1110)
-const { utils } = __nccwpck_require__(8294)
-
-var context = github.context
-var repo = context.repo.owner + '/' + context.repo.repo
-var g_token = core.getInput('github-token')
-
-utils.mandatoryInputCheck(g_token,'github-token')
-
-if (context.actor == 'dependabot[bot]'){
-    console.log(`${context.actor} is running this workflow now, manually approved - Bypassing permission check`)
-}
+const actionsGithub = __nccwpck_require__(1110)
+const { github, utils } = __nccwpck_require__(8294)
+const Debug = __nccwpck_require__(4597)
+const debug = Debug('zowe-actions:shared-actions:bump-version')
+var noNeedBumpVersion = core.getInput('NO_NEED_BUMP_VERSION') ? true : false
+if (noNeedBumpVersion) {
+    // do nothing, skip this action
+    console.warn(```You may have accidentally triggered this bump-version action. 
+According to the result from shared-actions/release, conditions are not satisfied to bump version.
+Condition to run bump-version are IS_FORMAL_RELEASE_BRANCH == 'true' AND PRE_RELEASE_STRING == ''
+Thus, skip this action run.
+```)
+} 
 else {
-    var cmds = new Array()
-    cmds.push(`curl`)
-    cmds.push(`-H "Accept: application/vnd.github.v3+json"`)
-    cmds.push(`-H "Authorization: Bearer ${g_token}"`)
-    cmds.push(`-X GET`)
-    cmds.push(`"https://api.github.com/repos/${repo}/collaborators/${context.actor}/permission"`)
-    cmds.push(`| jq -r .permission`)
-    var returnedPermission = utils.sh(cmds.join(' '))
-    console.log(`Returned permission is ${returnedPermission}`)
-    if (!returnedPermission || (returnedPermission != 'admin' && returnedPermission != 'write' && returnedPermission != 'maintain')) {
-        core.setFailed(`Permission check failure, user ${context.actor} is not authorized to run workflow on ${repo}, permission is ${returnedPermission}`)
+    var branch = process.env.CURRENT_BRANCH
+    var repo = actionsGithub.context.repo.owner + '/' + actionsGithub.context.repo.repo
+    var baseDirectory = core.getInput('base-directory')
+    var version = core.getInput('version')
+    if (version == '') {
+        version = 'PATCH'
     }
-    core.setOutput('user-permission', returnedPermission)
+
+    // get temp folder for cloning
+    var tempFolder = `${process.env.RUNNER_TEMP}/.tmp-npm-registry-${utils.dateTimeNow()}`
+
+    console.log(`Cloning ${branch} into ${tempFolder} ...`)
+    // clone to temp folder
+    github.clone(repo,tempFolder,branch)
+
+    // run npm version
+    console.log(`Making a "${version}" version bump ...`)
+
+    var newVersion
+    var res
+    var workdir = tempFolder;
+    if (baseDirectory != '' && baseDirectory != '.') {
+        workdir += `/${baseDirectory}`
+    }
+    var manifest
+    if (utils.fileExists(workdir + '/manifest.yaml')) {
+        manifest = 'manifest.yaml'
+    } else if (utils.fileExists(workdir + '/manifest.yml')) {
+        manifest = 'manifest.yml'
+    } else if (utils.fileExists(workdir + '/manifest.json')) {
+        throw new Error('Bump version on manifest.json is not supported yet.')
+    } else {
+        throw new Error('No manifest found.')
+    }
+    newVersion = utils.bumpManifestVersion(`${workdir}/${manifest}`, version)
+    console.log('New version:', newVersion)
+    github._cmd(tempFolder, 'status');
+    github._cmd(tempFolder, 'diff');
+    github.add(workdir, 'manifest.yaml')
+
+    res = github.commit(tempFolder, newVersion)
+
+    if (res.includes('Git working directory not clean.')) {
+        throw new Error('Working directory is not clean')
+    } else if (!newVersion.match(/^v[0-9]+\.[0-9]+\.[0-9]+$/)) {
+        throw new Error(`Bump version failed: ${newVersion}`)
+    }
+
+    // push version changes
+    console.log(`Pushing ${branch} to remote ...`)
+    github.push(branch, tempFolder, actionsGithub.context.actor, process.env.GITHUB_TOKEN, repo)
+    if (!github.isSync(branch, tempFolder)) {
+        throw new Error('Branch is not synced with remote after npm version.')
+    }
+
+    // No need to clean up tempFolder, Github VM will get disposed
 }
 })();
 

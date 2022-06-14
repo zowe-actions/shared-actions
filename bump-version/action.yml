@@ -1,0 +1,16 @@
+name: "bump-version"
+description: "version bump for Zowe component manifest"
+inputs:
+  base-directory:
+    description: 'the base directory to run version bump'
+    required: false
+  version:
+    description: 'which version level needed to bump version, eg. npm version patch'
+    required: false
+    default: 'patch'
+
+
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
+

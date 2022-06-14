@@ -10,9 +10,11 @@ fi
 
 for file in $(find . -type f -name "index.js" -maxdepth 2)
 do
+    echo ">>>>>>>>>>>> ${file}"
     cd $(echo $file | cut -d'/' -f 2)
     ncc build index.js --license licenses.txt
     cd ..
+    echo
 done
 
 
