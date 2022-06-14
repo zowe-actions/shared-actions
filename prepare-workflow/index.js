@@ -88,6 +88,9 @@ else {
             manifestInfo['versionTrunks'] = utils.parseSemanticVersion(_manifestObject['version'])
         }
     }
+    else {
+        console.warn(`Unable to read manifest file, or the file is empty: ${manifest}`)
+    }
     
     if (packageName != '' && !manifestInfo['id']) {
         manifestInfo['id'] = packageName
