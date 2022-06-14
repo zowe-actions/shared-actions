@@ -13,6 +13,7 @@ const { utils , InvalidArgumentException } = require('zowe-common')
 const Debug = require('debug')
 const debug = Debug('zowe-actions:shared-actions:jfrog-download')
 const fs = require('fs');
+var glob = require("glob")
 
 // Defaults
 const projectRootPath = process.env.GITHUB_WORKSPACE
@@ -28,6 +29,7 @@ var extraOptions = core.getInput('extra-options')
 var expectedCount = core.getInput('expected-count')!= '' ? parseInt(core.getInput('expected-count')) : -1
 var bypassValidation = core.getBooleanInput('bypass-validation')
 
+var packageNameInManifestMap = new Map()
 
 // mandatory check
 utils.mandatoryInputCheck(defaultTargetPath,'default-target-path')
@@ -73,8 +75,8 @@ function manifest2DownloadSpecDownload() {
     if (binaryDependenciesObject == '') {
         throw new Error (`There is no binaryDependencies present in your specified manifest file: ${manifestFilePath}, this is mandatory. Try again.`)
     }
-    for (const [packageName, definitions] of Object.entries(binaryDependenciesObject)) {
-        downloadSpec.files.push(processEachPackageInManifest(packageName,definitions))
+    for (const [packageNameWithDot, definitions] of Object.entries(binaryDependenciesObject)) {
+        downloadSpec.files.push(processEachPackageInManifest(packageNameWithDot,definitions))
     }
     var jfrogDownloadSpecJsonFilePath=`${process.env.RUNNER_TEMP}/jfrog-download-spec-${utils.dateTimeNow()}.json`
     var downloadSpecString=JSON.stringify(downloadSpec, null, 2)
@@ -113,18 +115,49 @@ function validate(response) {
     }
 
     if (expectedCount > 0 && parseInt(totalSuccess) != expectedCount) {
+        listWhichArtifactMissing()
         throw new Error(`Expected ${expectedCount} artifact(s) to be downloaded but only got ${totalSuccess}.`)
     }
 
     console.log('Artifact downloading is successful.')
 }
 
-function processEachPackageInManifest(packageName,definitions) {
-    debug(`Processing ${packageName}:`)
+function listWhichArtifactMissing() {
+    packageNameInManifestMap.forEach(function(target, currentPackageNameInManifest) {  
+        if (target.endsWith('/')) {
+            target += '*'
+        }
+        var downloadedFiles = glob.sync(target)
+        var foundFile = false
+        for (const downloadedFile of downloadedFiles) {
+            var downloadedFileName = downloadedFile.split('/').pop()
+            if (downloadedFileName.includes(currentPackageNameInManifest)) {
+                foundFile = true
+                break;
+            }
+            else if (downloadedFileName.includes('keyring-util') && currentPackageNameInManifest == 'keyring-utilities') {
+                foundFile = true
+                break;
+            }
+        }
+        if (!foundFile) {
+            console.log(`Missing the component ${currentPackageNameInManifest}!`)
+        }
+    });
+}
+
+function savePackageName(packageNameWithDot, target) {
+    // get the package name after last dot then save it to packageNameInManifestMap for later use
+    
+    packageNameInManifestMap.set(packageNameWithDot.split('.').pop(), projectRootPath + '/' + target) 
+}
+
+function processEachPackageInManifest(packageNameWithDot,definitions) {
+    debug(`Processing ${packageNameWithDot}:`)
     debug(`Original manifest definitions are: ${JSON.stringify(definitions, null, 2)}`)
 
     var resultJsonObject = JSON.parse('{}')
-    var packagePath = packageName.replace(/\./g, '/')
+    var packagePath = packageNameWithDot.replace(/\./g, '/')
     var repository = ''
 
     // if package definition has target, we will use it;
@@ -134,6 +167,8 @@ function processEachPackageInManifest(packageName,definitions) {
     } else if (defaultTargetPath != '') {
         resultJsonObject.target = defaultTargetPath
     }
+
+    savePackageName(packageNameWithDot, resultJsonObject.target)
 
     // if package definition has repository, we will use it;
     //   if not, we will use the defaultRepository passed in
