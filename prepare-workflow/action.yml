@@ -56,9 +56,9 @@ runs:
       run: echo BUILD_NUMBER=${{ github.run_number }} >> $GITHUB_ENV
       shell: bash
 
-    - name: 'grab current branch name'
-      run: echo BRANCH_NAME=${GITHUB_REF_NAME} >> $GITHUB_ENV
-      shell: bash
+    # - name: 'grab current branch name'
+    #   run: echo BRANCH_NAME=${GITHUB_REF_NAME} >> $GITHUB_ENV
+    #   shell: bash
     
     - name: 'overwrite jfrog build name'
       run: echo JFROG_CLI_BUILD_NAME=${{ github.event.repository.name }}/${{ env.CURRENT_BRANCH }} >> $GITHUB_ENV
