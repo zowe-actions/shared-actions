@@ -41,7 +41,9 @@ runs:
           # meaning the workflow is NOT triggered from pull_request 
           # sometimes user can manually trigger a workflow on a branch that a PR is open,
           # thus try to find out if a PR is opened against this running branch
-          pr_num=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ github.repository_owner }}:${{ github.ref }} | jq -r '.[] | .number')
+          api_req=$(curl -s -H "authorization: Bearer ${{ github.token }}" -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ github.repository_owner }}:${{ github.ref }})
+          echo "$api_req"
+          pr_num=$(echo $api_req | jq -r '.[] | .number')
           if [[ -z "$pr_num" ]]; then
             echo CURRENT_BRANCH=${GITHUB_REF_NAME} >> $GITHUB_ENV
           else
