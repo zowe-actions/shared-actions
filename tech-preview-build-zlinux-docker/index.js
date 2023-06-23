@@ -40,8 +40,8 @@ var cmd2 = `put -r ${projectRootPath}/containers zowe-build/${currentBranch}_${b
 sftp(cmd2)
 
 printLogDivider(`docker build server-bundle.s390x.tar`)
-var cmd3 = `cd zowe-build/${currentBranch}_${buildNumber}/containers/server-bundle
-mkdir -p utils && cp -r ../utils/* ./utils
+var cmd3 = `cd zowe-build/${currentBranch}_${buildNumber}/containers/server-bundle/ubuntu
+mkdir -p utils && cp -r ../../utils/* ./utils
 chmod +x ./utils/*.sh ./utils/*/bin/*
 sudo docker login -u \"${dockerhubUser}\" -p \"${dockerhubPassword}\"
 sudo docker build -t ompzowe/server-bundle:s390x .
@@ -50,25 +50,25 @@ ssh(cmd3)
 
 if (buildDockerSources) {
     printLogDivider(`docker build server-bundle.s390x-sources.tar`)
-    var cmd4 = `cd zowe-build/${currentBranch}_${buildNumber}/containers/server-bundle
+    var cmd4 = `cd zowe-build/${currentBranch}_${buildNumber}/containers/server-bundle/ubuntu
 sudo docker build -f Dockerfile.sources --build-arg BUILD_PLATFORM=s390x -t ompzowe/server-bundle:s390x-sources .
 sudo docker save -o server-bundle.s390x-sources.tar ompzowe/server-bundle:s390x-sources`
     ssh(cmd4)
 }
 
 printLogDivider(`ls stuff matching server-bundle`)
-var cmd5 = `cd zowe-build/${currentBranch}_${buildNumber}/containers/server-bundle
+var cmd5 = `cd zowe-build/${currentBranch}_${buildNumber}/containers/server-bundle/ubuntu
 sudo chmod 777 *
 echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr server-bundle.*`
 ssh(cmd5)
 
 printLogDivider(`Get server-bundle.s390x.tar back`)
-var cmd6 = `get zowe-build/${currentBranch}_${buildNumber}/containers/server-bundle/server-bundle.s390x.tar ${projectRootPath}/server-bundle.s390x.tar`
+var cmd6 = `get zowe-build/${currentBranch}_${buildNumber}/containers/server-bundle/ubuntu/server-bundle.s390x.tar ${projectRootPath}/server-bundle.s390x.tar`
 sftp(cmd6)
 
 if (buildDockerSources) {
     printLogDivider(`Get server-bundle.s390x-sources.tar back`)
-    var cmd7 = `get zowe-build/${currentBranch}_${buildNumber}/containers/server-bundle/server-bundle.s390x-sources.tar ${projectRootPath}/server-bundle.sources.s390x.tar`
+    var cmd7 = `get zowe-build/${currentBranch}_${buildNumber}/containers/server-bundle/ubuntu/server-bundle.s390x-sources.tar ${projectRootPath}/server-bundle.sources.s390x.tar`
     sftp(cmd7)   
 }
 
