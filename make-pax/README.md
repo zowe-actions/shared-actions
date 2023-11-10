@@ -11,7 +11,7 @@ This action does packaging step for Zowe projects. It transfers files over to a 
 
 ### `pax-ssh-host`
 
-**Optional** - The ssh zOS host for doing packaging. Default `zzow04.zowe.marist.cloud`
+**Optional** - The ssh zOS host for doing packaging. Default `zzow08.zowe.marist.cloud`
 
 ### `pax-ssh-port`
 
