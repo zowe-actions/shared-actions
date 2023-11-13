@@ -11,7 +11,7 @@ inputs:
   pax-ssh-port:
     description: 'ssh port for packaging'
     required: false
-    default: '22'
+    default: '65522'
   pax-ssh-username:
     description: 'ssh username'
     required: true

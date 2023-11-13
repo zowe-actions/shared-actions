@@ -15,7 +15,7 @@ This action does packaging step for Zowe projects. It transfers files over to a 
 
 ### `pax-ssh-port`
 
-**Optional** - The ssh zOS port. Default `22`
+**Optional** - The ssh zOS port. Default `65522`
 
 ### `pax-ssh-username`
 
