@@ -26,7 +26,7 @@ runs:
   using: 'composite'
   steps:
     - run: |
-        response=$(gh project item-add ${{ inputs.project-number }} --format json --owner ${{ inputs.project-owner }} --url ${{ github.event.issue.url || github.event.pull_request.url }})
+        response=$(gh project item-add ${{ inputs.project-number }} --format json --owner ${{ inputs.project-owner }} --url ${{ github.event.issue.html_url || github.event.pull_request.html_url }})
         echo "itemId=$(echo $response | jq -r '.id')" >> "$GITHUB_OUTPUT"
       env:
         GITHUB_TOKEN: ${{ inputs.project-token }}
