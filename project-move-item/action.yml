@@ -22,6 +22,7 @@ outputs:
   itemId:
     description: 'Item ID of GitHub project card'
     value: ${{ steps.add-to-project.outputs.itemId }}
+
 runs:
   using: 'composite'
   steps:
@@ -32,6 +33,7 @@ runs:
         GITHUB_TOKEN: ${{ inputs.project-token }}
       id: add-to-project
       shell: bash
+
     - uses: titoportas/update-project-fields@v0.1.0
       with:
         project-url: https://github.com/orgs/${{ inputs.project-owner }}/projects/${{ inputs.project-number }}
@@ -39,6 +41,7 @@ runs:
         item-id: ${{ steps.add-to-project.outputs.itemId }}
         field-keys: Status
         field-values: ${{ inputs.item-status }}
+
     - run: |
         response=$(curl -fs -H "Authorization: Token $GITHUB_TOKEN" \
           https://api.github.com/repos/${{ github.repository }}/collaborators/${{ github.event.pull_request.user.login }}/permission)
@@ -48,6 +51,7 @@ runs:
       id: check-author-permissions
       if: ${{ inputs.assign-author == 'true' && github.event.pull_request && toJSON(github.event.pull_request.assignees) == '[]' }}
       shell: bash
+
     - run: gh pr edit ${{ github.event.pull_request.number }} --repo ${{ github.repository }} --add-assignee ${{ github.event.pull_request.user.login }}
       env:
         GITHUB_TOKEN: ${{ github.token }}
