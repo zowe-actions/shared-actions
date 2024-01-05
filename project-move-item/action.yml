@@ -48,7 +48,7 @@ runs:
       id: check-author-permissions
       if: ${{ inputs.assign-author == 'true' && github.event.pull_request && toJSON(github.event.pull_request.assignees) == '[]' }}
       shell: bash
-    - run: gh pr edit ${{ github.event.pull_request.number }} --add-assignee ${{ github.event.pull_request.user.login }}
+    - run: gh pr edit ${{ github.event.pull_request.number }} --repo ${{ github.repository }} --add-assignee ${{ github.event.pull_request.user.login }}
       env:
         GITHUB_TOKEN: ${{ github.token }}
       if: ${{ steps.check-author-permissions.outputs.hasWrite == 'true' }}
