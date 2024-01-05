@@ -1,0 +1,49 @@
+name: 'Move Project Item'
+description: 'Update status of issue or pull request in GitHub v2 project'
+inputs:
+  assign-author:
+    description: 'Assign author to pull request if they are on team'
+    required: false
+    default: 'false'
+  item-status:
+    description: 'Column name (Status) to assign to item'
+    required: true
+  project-number:
+    description: 'GitHub project number'
+    required: true
+  project-owner:
+    description: 'Organization that owns GitHub project'
+    required: false
+    default: 'zowe'
+  project-token:
+    description: 'GitHub token with access to read/write projects'
+    required: true
+outputs:
+  itemId:
+    description: 'Item ID of GitHub project card'
+    value: ${{ steps.add-to-project.outputs.itemId }}
+runs:
+  using: 'composite'
+  steps:
+    - run: |
+        response=$(gh project item-add ${{ inputs.project-number }} --format json --owner ${{ inputs.project-owner }} --url ${{ github.event.issue.url || github.event.pull_request.url }})
+        echo "itemId=$(echo $response | jq -r '.id')" >> "$GITHUB_OUTPUT"
+      id: add-to-project
+      shell: bash
+    - uses: titoportas/update-project-fields@v0.1.0
+      with:
+        project-url: https://github.com/orgs/${{ inputs.project-owner }}/projects/${{ inputs.project-number }}
+        github-token: ${{ inputs.project-token }}
+        item-id: ${{ steps.add-to-project.outputs.itemId }}
+        field-keys: Status
+        field-values: ${{ inputs.item-status }}
+    - run: |
+        response=$(curl -fs -H "Authorization: Token ${{ github.token }}" \
+          https://api.github.com/repos/${{ github.repository }}/collaborators/${{ github.event.pull_request.user.login }}/permission)
+        echo "hasWrite=$(echo $response | jq -r '.user.permissions.push')" >> "$GITHUB_OUTPUT"
+      id: check-author-permissions
+      if: ${{ inputs.assign-author == 'true' && github.event.pull_request && toJSON(github.event.pull_request.assignees) == '[]' }}
+      shell: bash
+    - run: gh pr edit ${{ github.event.pull_request.number }} --add-assignee ${{ github.event.pull_request.user.login }}
+      if: ${{ steps.check-author-permissions.outputs.hasWrite == 'true' }}
+      shell: bash
