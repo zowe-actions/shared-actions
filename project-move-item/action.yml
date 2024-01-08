@@ -5,6 +5,9 @@ inputs:
     description: 'Assign author to pull request if they are on team'
     required: false
     default: 'false'
+  issue-url:
+    description: 'GitHub issue URL (required only if event payload is missing)'
+    required: false
   item-status:
     description: 'Column name (Status) to assign to item'
     required: true
@@ -27,7 +30,7 @@ runs:
   using: 'composite'
   steps:
     - run: |
-        response=$(gh project item-add ${{ inputs.project-number }} --format json --owner ${{ inputs.project-owner }} --url ${{ github.event.issue.html_url || github.event.pull_request.html_url }})
+        response=$(gh project item-add ${{ inputs.project-number }} --format json --owner ${{ inputs.project-owner }} --url ${{ inputs.issue-url || github.event.issue.html_url || github.event.pull_request.html_url }})
         echo "itemId=$(echo $response | jq -r '.id')" >> "$GITHUB_OUTPUT"
       env:
         GITHUB_TOKEN: ${{ inputs.project-token }}

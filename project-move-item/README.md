@@ -1,6 +1,6 @@
 # Move Project Item
 
-This action updates the Status field of an issue or pull request in a GitHub v2 project. It can be used in workflows triggered by `issue` or `pull_request_target` events.
+This action updates the Status field of an issue or pull request in a GitHub v2 project. It is designed to be used in workflows triggered by `issue` or `pull_request_target` events.
 
 <br />
 
@@ -21,6 +21,10 @@ This action updates the Status field of an issue or pull request in a GitHub v2 
 ### `item-status`
 
 **Required** - The column name (aka Status field) to assign to the project item (e.g., "In Progress").
+
+## `issue-url`
+
+**Optional** - The GitHub issue or pull request URL. Defaults to the `issue.html_url` or `pull_request.html_url` property on GitHub event payload.
 
 ### `assign-author`
 
