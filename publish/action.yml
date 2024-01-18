@@ -38,6 +38,9 @@ runs:
       uses: actions/setup-node@v3.6.0
       with:
         node-version: 16
+    - name: Debug Info
+      run: ls -lask ${{ github.action_path }}
+      shell: bash
     - name: Run publish
       run: node ${{ github.action_path }}/dist/index.js
       shell: bash
