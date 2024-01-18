@@ -1,11 +1,16 @@
 name: "Publish"
 description: "Publish to artifactory for all project builds"
 inputs:
+  # Dev Note: These inputs must be mapped to an env INPUT_* below due to a composite action limitation
   artifacts:
     description: 'artifacts to upload, also support multiple line inputs'
     required: false
   perform-release:
     description: 'flag to perform steps to release'
+    required: false
+    default: 'false'
+  sigstore-sign-artifacts:
+    description: 'use cosign to sign the artifacts as blobs'
     required: false
     default: 'false'
   pre-release-string:
@@ -25,5 +30,25 @@ inputs:
     default: 'false'
     
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: 'composite'
+  steps: 
+    - name: Install Cosign
+      uses: sigstore/cosign-installer@v3.3.0
+      if: ${{ inputs.sigstore-sign-artifacts == 'true' }} 
+    - name: setup node
+      uses: actions/setup-node@v3.6.0
+      with:
+        node-version: 16
+    - name: Run publish
+      run: node ${GITHUB_ACTION_PATH}/dist/index.js
+      shell: bash
+      env:
+        INPUT_PERFORM-RELEASE: ${{ inputs.perform-release }}
+        INPUT_SIGSTORE-SIGN-ARTIFACTS: ${{ inputs.sigstore-sign-artifacts }}
+        INPUT_PRE-RELEASE-STRING: ${{ inputs.pre-release-string }}
+        INPUT_PUBLISH-TARGET-PATH-PATTERN: ${{ inputs.publish-target-path-pattern }}
+        INPUT_PUBLISH-TARGET-FILE-PATTERN: ${{ inputs.publish-target-file-pattern }}
+        INPUT_SKIP-UPLOAD: ${{ inputs.skip-upload }}
+        INPUT_ARTIFACTS: ${{ inputs.artifacts }}
+
+
