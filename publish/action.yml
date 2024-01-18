@@ -43,12 +43,12 @@ runs:
       run: node ${GITHUB_ACTION_PATH}/dist/index.js
       shell: bash
       env:
-        INPUT_perform-release: ${{ inputs.perform-release }}
-        INPUT_sigstore-sign-artifacts: ${{ inputs.sigstore-sign-artifacts }}
-        INPUT_pre-release-string: ${{ inputs.pre-release-string }}
-        INPUT_publish-target-path-pattern: ${{ inputs.publish-target-path-pattern }}
-        INPUT_publish-target-file-pattern: ${{ inputs.publish-target-file-pattern }}
-        INPUT_skip-upload: ${{ inputs.skip-upload }}
-        INPUT_artifacts: ${{ inputs.artifacts }}
+        INPUT_PERFORM-RELEASE: ${{ inputs.perform-release }}
+        INPUT_SIGSTORE-SIGN-ARTIFACTS: ${{ inputs.sigstore-sign-artifacts }}
+        INPUT_PRE-RELEASE-STRING: ${{ inputs.pre-release-string }}
+        INPUT_PUBLISH-TARGET-PATH-PATTERN: ${{ inputs.publish-target-path-pattern }}
+        INPUT_PUBLISH-TARGET-FILE-PATTERN: ${{ inputs.publish-target-file-pattern }}
+        INPUT_SKIP-UPLOAD: ${{ inputs.skip-upload }}
+        INPUT_ARTIFACTS: ${{ inputs.artifacts }}
 
 
