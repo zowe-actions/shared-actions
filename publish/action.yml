@@ -33,13 +33,13 @@ runs:
   steps: 
     - name: Install Cosign
       uses: sigstore/cosign-installer@v3.3.0
-      if: ${{ github.event.inputs.sigstore-sign-artifacts == 'true' }} 
+      if: ${{ inputs.sigstore-sign-artifacts == 'true' }} 
     - name: setup node
       uses: actions/setup-node@v3.6.0
       with:
         node-version: 16
     - name: Run publish
-      run: node dist/index.js
+      run: node ${{ github.action_path }}/dist/index.js
       shell: bash
       env:
         INPUTS: ${{ toJSON(inputs) }}
