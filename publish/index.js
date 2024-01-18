@@ -30,6 +30,7 @@ const artifacts = core.getMultilineInput('artifacts') //array form
 const isPerformingRelease = core.getInput('perform-release') == 'true' ? true : false
 const currentBranch = process.env.CURRENT_BRANCH
 const preReleaseString = core.getInput('pre-release-string')
+const cosignArtifact = core.getInput('sigstore-sign-artifacts') == 'true' ? true : false;
 const packageInfo = process.env.PACKAGE_INFO ? JSON.parse(process.env.PACKAGE_INFO) : ''
 const manifestInfo = process.env.MANIFEST_INFO ? JSON.parse(process.env.MANIFEST_INFO) : ''
 const skipUpload = core.getBooleanInput('skip-upload')
@@ -66,6 +67,13 @@ if (process.env.DEBUG) {
     utils.printMap(macros)
 }
 
+if (cosignArtifact) {
+    // install cosign
+    for (let artifact of artifacts) {
+        utils.sh(`cosign sign-blob ${artifact} --bundle ${artifact}.bundle --yes`)
+    }
+}
+
 if (isPerformingRelease) {
     var tag = 'v' + macros.get('publishversion')     // when doing release, macros.get('publishversion') will just return a version number 
     if (github.tagExistsRemote(tag)) {
@@ -73,7 +81,7 @@ if (isPerformingRelease) {
     }
 }
 
-makeUploadFileSpec()
+makeUploadFileSpec(cosignArtifact)
 // upload artifacts if provided
 if (!skipUpload && artifacts && artifacts.length > 0) {
     utils.sh_heavyload(`jfrog rt upload --spec ${temporaryUploadSpecName} --threads 6`)
@@ -98,7 +106,7 @@ core.exportVariable('PRE_RELEASE_STRING',preReleaseString)
  * <p>This is a part of publish stage default behavior. If {@link PublishStageArguments#artifacts}
  * is defined, those artifacts will be uploaded to artifactory with this method.</p>
  */
-function makeUploadFileSpec() {
+function makeUploadFileSpec(hasCosignedArtifacts) {
     if (!publishTargetPathPattern.endsWith('/')) {
         publishTargetPathPattern += '/'
     }
@@ -113,7 +121,7 @@ function makeUploadFileSpec() {
                 if (utils.fileExists(file)) {    
                     var targetFileFull = publishTargetPathPattern + publishTargetFilePattern
                     var newMacros = extractArtifactoryUploadTargetFileMacros(file)
-                    debug('After extractArtifactoryUploadTargetFileMacros():')
+                    debug('After file extractArtifactoryUploadTargetFileMacros():')
                     if (process.env.DEBUG) {
                         utils.printMap(newMacros)
                     }
@@ -128,6 +136,30 @@ function makeUploadFileSpec() {
         else {
             console.warn(`File ${fullFilePath} not found`)
         }
+        if (hasCosignedArtifacts) {
+            var fullBundlePath = `${projectRootPath}/${eachArtifact}.bundle`
+            var bundles = glob.sync(fullBundlePath)
+            if (bundles) {
+                bundles.forEach( bundle => {
+                    if (utils.fileExists(bundle)) {
+                        var targetBundleFull = publishTargetPathPattern + publishTargetFilePattern
+                        var bundleMacros = extractArtifactoryUploadTargetFileMacros(bundle)
+                        debug('After cosign bundle extractArtifactoryUploadTargetFileMacros():')
+                        if (process.env.DEBUG) {
+                            utils.printMap(bundleMacros);
+                        }
+                        var mergedBundleMacros = new Map([...macros, ...bundleMacros])
+                        var tb = parseString(targetBundleFull, mergedBundleMacros)
+                        console.log(`- + found ${bundle} -> ${tb}`)
+                        var arrBundle = [{"pattern":bundle, "target": tb}]
+                        uploadSpec['files'] = uploadSpec['files'].concat(arrBundle)
+                    }
+                })
+            }
+        } else {
+            console.warn(`No cosign bundles expected; ignoring.`)
+        }
+        
     })
 
     var json = JSON.stringify(uploadSpec)

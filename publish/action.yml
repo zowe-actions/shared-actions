@@ -8,6 +8,10 @@ inputs:
     description: 'flag to perform steps to release'
     required: false
     default: 'false'
+  sigstore-sign-artifacts:
+    description: 'use cosign to sign the artifacts as blobs'
+    required: false
+    default: 'false'
   pre-release-string:
     description: 'pre-release string'
     required: false
@@ -25,5 +29,10 @@ inputs:
     default: 'false'
     
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: 'composite'
+  steps: 
+    - name: Install Cosign
+      uses: sigstore/cosign-installer@v3.3.0
+      if: ${{ github.event.inputs.sigstore-sign-artifacts == 'true' }} 
+    - uses: node18
+      run: 'dist/index.js'
