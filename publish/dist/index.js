@@ -404,9 +404,6 @@ function getBooleanInput(name, options) {
     const trueValue = ['true', 'True', 'TRUE'];
     const falseValue = ['false', 'False', 'FALSE'];
     const val = getInput(name, options);
-    console.log(val)
-    console.log(name)
-    console.log(options)
     if (trueValue.includes(val))
         return true;
     if (falseValue.includes(val))
