@@ -1,6 +1,7 @@
 name: "Publish"
 description: "Publish to artifactory for all project builds"
 inputs:
+  # Dev Note: These inputs must be mapped to an env INPUT_* below due to a composite action limitation
   artifacts:
     description: 'artifacts to upload, also support multiple line inputs'
     required: false
@@ -42,4 +43,11 @@ runs:
       run: node ${GITHUB_ACTION_PATH}/dist/index.js
       shell: bash
       env:
-        INPUTS: ${{ toJSON(inputs) }}
+        INPUT_artifacts: ${{ inputs.artifacts }}
+        INPUT_perform-release: ${{ inputs.perform-release }}
+        INPUT_sigstore-sign-artifacts: ${{ inputs.sigstore-sign-artifacts }}
+        INPUT_pre-release-string: ${{ inputs.pre-release-string }}
+        INPUT_publish-target-path-pattern: ${{ inputs.publish-target-path-pattern }}
+        INPUT_publish-target-file-pattern: ${{ inputs.publish-target-file-pattern }}
+        INPUT_skip-upload: ${{ inputs.skip-upload }}
+
