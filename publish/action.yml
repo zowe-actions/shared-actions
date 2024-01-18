@@ -39,7 +39,7 @@ runs:
       with:
         node-version: 16
     - name: Run publish
-      run: node ${{ github.action_path }}/dist/index.js
+      run: node ${{ github.action_path }}/publish/dist/index.js
       shell: bash
       env:
         INPUTS: ${{ toJSON(inputs) }}
