@@ -11350,7 +11350,7 @@ const artifacts = core.getMultilineInput('artifacts') //array form
 const isPerformingRelease = core.getInput('perform-release') == 'true' ? true : false
 const currentBranch = process.env.CURRENT_BRANCH
 const preReleaseString = core.getInput('pre-release-string')
-const cosignArtifact = core.getInput('sigstore-sign-artifacts') == 'true' ? true : false;
+const shouldSignArtifacts = core.getInput('sigstore-sign-artifacts') == 'true' ? true : false;
 const packageInfo = process.env.PACKAGE_INFO ? JSON.parse(process.env.PACKAGE_INFO) : ''
 const manifestInfo = process.env.MANIFEST_INFO ? JSON.parse(process.env.MANIFEST_INFO) : ''
 const skipUpload = core.getBooleanInput('skip-upload')
@@ -11387,17 +11387,6 @@ if (process.env.DEBUG) {
     utils.printMap(macros)
 }
 
-if (cosignArtifact) {
-    // install cosign
-    for (let artifact of artifacts) {
-        if (fs.existsSync(artifact)) {
-            utils.sh(`cosign sign-blob ${artifact} --bundle ${artifact}.bundle --yes`)
-        } else {
-            console.log(`Skipping digital signature for ${artifact} - file does not exist.`)
-        }
-    }
-}
-
 if (isPerformingRelease) {
     var tag = 'v' + macros.get('publishversion')     // when doing release, macros.get('publishversion') will just return a version number 
     if (github.tagExistsRemote(tag)) {
@@ -11405,7 +11394,7 @@ if (isPerformingRelease) {
     }
 }
 
-makeUploadFileSpec(cosignArtifact)
+makeUploadFileSpec(shouldSignArtifacts)
 // upload artifacts if provided
 if (!skipUpload && artifacts && artifacts.length > 0) {
     utils.sh_heavyload(`jfrog rt upload --spec ${temporaryUploadSpecName} --threads 6`)
@@ -11430,7 +11419,7 @@ core.exportVariable('PRE_RELEASE_STRING',preReleaseString)
  * <p>This is a part of publish stage default behavior. If {@link PublishStageArguments#artifacts}
  * is defined, those artifacts will be uploaded to artifactory with this method.</p>
  */
-function makeUploadFileSpec(hasCosignedArtifacts) {
+function makeUploadFileSpec(signArtifacts) {
     if (!publishTargetPathPattern.endsWith('/')) {
         publishTargetPathPattern += '/'
     }
@@ -11443,6 +11432,12 @@ function makeUploadFileSpec(hasCosignedArtifacts) {
         if (files) {
             files.forEach( file => {
                 if (utils.fileExists(file)) {    
+                    // cosign here, since file patterns could be globs
+                    if (signArtifacts) {
+                        console.log(`Signing ${artifact} using sigstore's cosign utility.`)
+                        utils.sh(`cosign sign-blob ${artifact} --bundle ${artifact}.bundle --yes`)
+                    }
+
                     var targetFileFull = publishTargetPathPattern + publishTargetFilePattern
                     var newMacros = extractArtifactoryUploadTargetFileMacros(file)
                     debug('After file extractArtifactoryUploadTargetFileMacros():')
@@ -11460,7 +11455,7 @@ function makeUploadFileSpec(hasCosignedArtifacts) {
         else {
             console.warn(`File ${fullFilePath} not found`)
         }
-        if (hasCosignedArtifacts) {
+        if (signArtifacts) {
             var fullBundlePath = `${projectRootPath}/${eachArtifact}.bundle`
             var bundles = glob.sync(fullBundlePath)
             if (bundles) {
