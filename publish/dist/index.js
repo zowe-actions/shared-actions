@@ -11390,7 +11390,11 @@ if (process.env.DEBUG) {
 if (cosignArtifact) {
     // install cosign
     for (let artifact of artifacts) {
-        utils.sh(`cosign sign-blob ${artifact} --bundle ${artifact}.bundle --yes`)
+        if (fs.existsSync(artifact)) {
+            utils.sh(`cosign sign-blob ${artifact} --bundle ${artifact}.bundle --yes`)
+        } else {
+            console.log(`Skipping digital signature for ${artifact} - file does not exist.`)
+        }
     }
 }
 
