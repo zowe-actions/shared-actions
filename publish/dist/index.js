@@ -11434,8 +11434,8 @@ function makeUploadFileSpec(signArtifacts) {
                 if (utils.fileExists(file)) {    
                     // cosign here, since file patterns could be globs
                     if (signArtifacts) {
-                        console.log(`Signing ${artifact} using sigstore's cosign utility.`)
-                        utils.sh(`cosign sign-blob ${artifact} --bundle ${artifact}.bundle --yes`)
+                        console.log(`Signing ${file} using sigstore's cosign utility.`)
+                        utils.sh(`cosign sign-blob ${file} --bundle ${file}.bundle --yes`)
                     }
 
                     var targetFileFull = publishTargetPathPattern + publishTargetFilePattern
