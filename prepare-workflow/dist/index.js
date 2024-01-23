@@ -11681,7 +11681,8 @@ module.exports = pax;
 const { execSync, spawnSync } = __nccwpck_require__(3129)
 const InvalidArgumentException = __nccwpck_require__(1534)
 const fs = __nccwpck_require__(5747)
-const semver = __nccwpck_require__(4603)
+const semver = __nccwpck_require__(4603);
+const { basename } = __nccwpck_require__(5622);
 
 class utils {
 
@@ -11723,6 +11724,7 @@ class utils {
     static parseFileExtension(file) {
         var result = new Map()
         var KNOWN_DOUBLE_EXTS = ['.tar.gz', '.pax.Z']
+        var COSIGN_BUNDLE_EXT_REGEXES = [/(\.)tar\.gz\.bundle/i, /(\.)pax\.Z\.bundle/i,/.*(\.).*?\.bundle$/]
 
         var baseName = file.lastIndexOf('/') != -1 ? file.substring(file.lastIndexOf('/')+1) : file
 
@@ -11734,6 +11736,15 @@ class utils {
                 idx = baseName.length - ext.length
             }
         })
+        // only scan for cosign bundle if it's not an already matched static ext
+        if (idx != -1) {
+            COSIGN_BUNDLE_EXT_REGEXES.forEach( regex => {
+                var regexResult = baseName.match(regex)
+                if (regexResult != null) {
+                   idx = baseName.indexOf(regexResult[1]);
+                }
+            })
+        }
 
         if (idx == -1) {
             idx = baseName.lastIndexOf('.')
