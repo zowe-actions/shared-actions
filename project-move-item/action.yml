@@ -52,7 +52,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
       id: check-author-permissions
-      if: ${{ inputs.assign-author == 'true' && github.event.pull_request && toJSON(github.event.pull_request.assignees) == '[]' }}
+      if: ${{ inputs.assign-author == 'true' && github.event.pull_request && toJSON(github.event.pull_request.assignees) == '[]' && github.event.pull_request.user.type != 'Bot' }}
       shell: bash
 
     - run: gh pr edit ${{ github.event.pull_request.number }} --repo ${{ github.repository }} --add-assignee ${{ github.event.pull_request.user.login }}
