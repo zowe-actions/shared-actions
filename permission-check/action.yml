@@ -9,5 +9,5 @@ outputs:
     description: 'return the user permission'
 
 runs:
-  using: 'node12'
+  using: 'node20'
   main: 'dist/index.js'

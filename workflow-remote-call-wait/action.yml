@@ -31,5 +31,5 @@ outputs:
   workflow-run-html-url:
     description: 'workflow run html url'
 runs:
-  using: 'node12'
+  using: 'node20'
   main: 'dist/index.js'
