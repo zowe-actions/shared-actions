@@ -31711,13 +31711,18 @@ const path = __nccwpck_require__(5622);
 
 // Defaults
 const projectRootPath = process.env.GITHUB_WORKSPACE
+
 // Gets inputs
 const artifacts = core.getMultilineInput('artifacts') //array form
 const outputDir = core.getInput('output-path')
 
-for (const file of artifacts) {
-    console.log(`Signing ${file} using sigstore's cosign utility.`)
-    utils.sh(`cosign sign-blob ${file} --bundle ${outputDir}/${path.basename(file)}.bundle --yes`)
+for (const eachArtifact of artifacts) {
+    const fullFilePath = `${projectRootPath}/${eachArtifact}`
+    const files = glob.sync(fullFilePath)
+    for (const file of files) {
+        console.log(`Signing ${file} using sigstore's cosign utility.`)
+        utils.sh(`cosign sign-blob ${file} --bundle ${outputDir}/${path.basename(file)}.bundle --yes`)
+    }
 }
 
 })();
