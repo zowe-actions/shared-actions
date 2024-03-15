@@ -1,0 +1,31 @@
+name: "Sign Artifacts"
+description: "Manually sign selected artifacts. Output files will be ${basename}.bundle"
+inputs:
+  # Dev Note: These inputs must be mapped to an env INPUT_* below due to a composite action limitation
+  artifacts:
+    description: 'artifacts to upload, also support multiple line inputs'
+    required: false
+  output_path:
+    description: 'sets target output directory, defaults to current working directory'
+    required: false
+    default: './' 
+    
+runs:
+  using: 'composite'
+  steps: 
+    - name: Install Cosign
+      uses: sigstore/cosign-installer@v3.3.0
+
+    - name: setup node
+      uses: actions/setup-node@v3.6.0
+      with:
+        node-version: 20
+
+    - name: Run sign
+      run: node ${GITHUB_ACTION_PATH}/dist/index.js
+      shell: bash
+      env:
+        INPUT_OUTPUT_PATH: ${{ inputs.output_path }}
+        INPUT_ARTIFACTS: ${{ inputs.artifacts }}
+
+
