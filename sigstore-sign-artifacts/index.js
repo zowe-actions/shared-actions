@@ -11,6 +11,7 @@
 const core = require('@actions/core')
 const { utils } = require('zowe-common')
 const path = require('path');
+var glob = require("glob")
 
 // Defaults
 const projectRootPath = process.env.GITHUB_WORKSPACE
