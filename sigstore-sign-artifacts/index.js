@@ -18,7 +18,7 @@ const projectRootPath = process.env.GITHUB_WORKSPACE
 
 // Gets inputs
 const artifacts = core.getMultilineInput('artifacts') //array form
-const outputDir = core.getInput('output-path')
+const outputDir = core.getInput('output_path')
 
 for (const eachArtifact of artifacts) {
     const fullFilePath = `${projectRootPath}/${eachArtifact}`
