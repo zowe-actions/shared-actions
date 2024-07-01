@@ -150,6 +150,17 @@ function writeLockFile(lockFileContentJson) {
 }
 
 function sync() {
-    github.fetch(lockRoot, true)
-    github.hardReset(`origin/${lockBranch}`,lockRoot, true)
-}
+    let fetchTries = 10;
+    let fetched = false;
+    while(!fetched && fetchTries > 0) {
+        try {        
+            github.fetch(lockRoot, true)
+            github.hardReset(`origin/${lockBranch}`,lockRoot, true)
+            fetched = true;
+        } catch (error) {
+            fetchTries--;
+            console.log('error during fetch: ' + error);
+            console.log(`${fetchTries} fetches attempts left`);
+        }
+    }
+    }
