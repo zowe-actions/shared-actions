@@ -41,8 +41,8 @@ runs:
           release_latest_tag=false
           # except that
           case "${{ env.IMAGE_NAME }}" in
-            base|base-jdk|base-node|zowe-launch-scripts|api-catalog-services|caching-service|discovery-service|gateway-service|metrics-service|files-api|jobs-api|explorer-jes|explorer-mvs|explorer-uss|app-server|explorer-ip)
-              if [ "${{ env.IMAGE_VERSION_MAJOR }}" = "2" ]; then
+            base|base-jdk|base-node|zowe-launch-scripts|api-catalog-services|caching-service|discovery-service|gateway-service|metrics-service|files-api|jobs-api|explorer-jes|explorer-mvs|explorer-uss|app-server|explorer-ip|zaas-service)
+              if [ "${{ env.IMAGE_VERSION_MAJOR }}" = "3" ]; then
                 release_latest_tag=true
               fi
               ;;
