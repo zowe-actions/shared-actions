@@ -26,6 +26,9 @@ outputs:
     description: 'Item ID of GitHub project card'
     value: ${{ steps.add-to-project.outputs.itemId }}
 
+permissions:
+  pull-requests: write
+
 runs:
   using: 'composite'
   steps:
