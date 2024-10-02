@@ -14,7 +14,7 @@ runs:
   using: 'composite'
   steps: 
     - name: Install Cosign
-      uses: sigstore/cosign-installer@v3.3.0
+      uses: sigstore/cosign-installer@v3.6.0
 
     - name: setup node
       uses: actions/setup-node@v3.6.0
