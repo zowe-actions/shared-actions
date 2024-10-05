@@ -11,6 +11,10 @@ inputs:
   item-status:
     description: 'Column name (Status) to assign to item'
     required: true
+  locked-status:
+    description: 'Column name to keep (items here won''t update their status)'
+    required: false
+    default: 'In Progress'
   project-number:
     description: 'GitHub project number'
     required: true
@@ -43,7 +47,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.project-token }}
       id: get-issue-status
-      if: ${{ github.event.issue }}
+      if: ${{ github.event.issue && inputs.locked-status }}
       shell: bash
 
     - run: |
@@ -59,16 +63,15 @@ runs:
         import os
         status_names = "${{ steps.get-project-fields.outputs.statusNames }}".split(",")
         old_status_idx = status_names.index("${{ steps.get-issue-status.outputs.statusName }}")
-        new_status_idx = status_names.index("${{ inputs.item-status }}")
-        cmp = lambda a, b: (a > b) - (a < b)
+        max_status_idx = status_names.index("${{ inputs.locked-status }}")
         with open(os.environ["GITHUB_OUTPUT"], 'a') as f:
-          f.write("compareResult=" + str(cmp(old_status_idx, new_status_idx)) + "\n")
-      id: compare-status-names
+          f.write("isLocked=" + str(old_status_idx >= max_status_idx).lower() + "\n")
+      id: check-status-name
       if: ${{ github.event.issue && steps.get-project-fields.outputs.statusNames }}
       shell: python
 
     - uses: titoportas/update-project-fields@v0.1.0
-      if: ${{ steps.compare-status-names.outputs.compareResult != '1' }}
+      if: ${{ steps.check-status-name.outputs.isLocked != 'true' }}
       with:
         project-url: https://github.com/orgs/${{ inputs.project-owner }}/projects/${{ inputs.project-number }}
         github-token: ${{ inputs.project-token }}
