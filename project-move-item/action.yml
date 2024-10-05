@@ -48,7 +48,7 @@ runs:
 
     - run: |
         response=$(gh project field-list ${{ inputs.project-number }} --format json --owner ${{ inputs.project-owner }})
-        echo "statusNames=$(echo $response | jq -r '.fields[] | select(.name == \"Status\") | [ .options[].name ] | join(\",\")')" >> "$GITHUB_OUTPUT"
+        echo "statusNames=$(echo $response | jq -r '.fields[] | select(.name == "Status") | [.options[].name] | join(",")')" >> "$GITHUB_OUTPUT"
       env:
         GITHUB_TOKEN: ${{ inputs.project-token }}
       id: get-project-fields
