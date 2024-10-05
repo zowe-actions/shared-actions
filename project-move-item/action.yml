@@ -56,11 +56,12 @@ runs:
       shell: bash
 
     - run: |
+        import os
         status_names = "${{ steps.get-project-fields.outputs.statusNames }}".split(",")
         old_status_idx = status_names.index("${{ steps.get-issue-status.outputs.statusName }}")
         new_status_idx = status_names.index("${{ inputs.item-status }}")
         cmp = lambda a, b: (a > b) - (a < b)
-        with open("${{ env.GITHUB_OUTPUT }}", 'a') as f:
+        with open(os.environ["GITHUB_OUTPUT"], 'a') as f:
           f.write("compareResult=" + str(cmp(old_status_idx, new_status_idx)) + "\n")
       id: compare-status-names
       if: ${{ github.event.issue && steps.get-project-fields.outputs.statusNames }}
