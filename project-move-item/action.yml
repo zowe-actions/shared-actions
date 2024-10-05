@@ -52,7 +52,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.project-token }}
       id: get-project-fields
-      if: ${{ github.event.issue && steps.get-issue-status.outputs.statusName != 'null' }}
+      if: ${{ github.event.issue && steps.get-issue-status.outputs.statusName }}
       shell: bash
 
     - run: |
