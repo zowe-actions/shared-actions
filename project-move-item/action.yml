@@ -56,10 +56,9 @@ runs:
       shell: bash
 
     - run: |
-        import os
-        from difflib import SequenceMatcher
+        import difflib as dl, os
         status_names = "${{ steps.get-project-fields.outputs.statusNames }}".split(",")
-        find_similar = lambda xs, x: next(y for y in xs if SequenceMatcher(None, x, y).ratio() > 0.5)
+        find_similar = lambda xs, x: next(i for i, y in enumerate(xs) if dl.SequenceMatcher(None, x, y).ratio() > 0.5)
         old_status_idx = find_similar(status_names, "${{ steps.get-issue-status.outputs.statusName }}")
         new_status_idx = find_similar(status_names, "${{ inputs.item-status }}")
         cmp = lambda a, b: (a > b) - (a < b)
