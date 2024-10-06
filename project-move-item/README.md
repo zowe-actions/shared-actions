@@ -30,10 +30,6 @@ This action updates the Status field of an issue or pull request in a GitHub v2 
 
 **Optional** - For pull requests, set to `true` to assign author to the PR so that the project can be viewed in "Group By: Assignee" mode. Assignee is only added if they are a team member (with write access) and no one else is assigned. Defaults to `false`.
 
-### `locked-status`
-
-**Optional** - For issues, a column name that indicates their status is locked. Issues that have reached this column or one past it will not have their status updated. Defaults to `In Progress` if not specified.
-
 <br />
 
 ## Outputs

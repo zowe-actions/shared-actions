@@ -11,10 +11,6 @@ inputs:
   item-status:
     description: 'Column name (Status) to assign to item'
     required: true
-  locked-status:
-    description: 'Column name to keep (items here won''t update their status)'
-    required: false
-    default: 'In Progress'
   project-number:
     description: 'GitHub project number'
     required: true
@@ -47,7 +43,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.project-token }}
       id: get-issue-status
-      if: ${{ github.event.issue && inputs.locked-status }}
+      if: ${{ github.event.issue }}
       shell: bash
 
     - run: |
@@ -61,17 +57,20 @@ runs:
 
     - run: |
         import os
+        from difflib import SequenceMatcher
         status_names = "${{ steps.get-project-fields.outputs.statusNames }}".split(",")
-        old_status_idx = status_names.index("${{ steps.get-issue-status.outputs.statusName }}")
-        max_status_idx = status_names.index("${{ inputs.locked-status }}")
+        find_similar = lambda xs, x: next(y for y in xs if SequenceMatcher(None, x, y).ratio() > 0.5)
+        old_status_idx = find_similar(status_names, "${{ steps.get-issue-status.outputs.statusName }}")
+        new_status_idx = find_similar(status_names, "${{ inputs.item-status }}")
+        cmp = lambda a, b: (a > b) - (a < b)
         with open(os.environ["GITHUB_OUTPUT"], 'a') as f:
-          f.write("isLocked=" + str(old_status_idx >= max_status_idx).lower() + "\n")
-      id: check-status-name
+          f.write("compareResult=" + str(cmp(old_status_idx, new_status_idx)) + "\n")
+      id: compare-status-names
       if: ${{ github.event.issue && steps.get-project-fields.outputs.statusNames }}
       shell: python
 
     - uses: titoportas/update-project-fields@v0.1.0
-      if: ${{ steps.check-status-name.outputs.isLocked != 'true' }}
+      if: ${{ steps.compare-status-names.outputs.compareResult != '1' }}
       with:
         project-url: https://github.com/orgs/${{ inputs.project-owner }}/projects/${{ inputs.project-number }}
         github-token: ${{ inputs.project-token }}
