@@ -37,7 +37,39 @@ runs:
       id: add-to-project
       shell: bash
 
+    - run: |
+        response=$(gh issue view ${{ github.event.issue.number }} --repo ${{ github.repository }} --json projectItems)
+        echo "statusName=$(echo $response | jq -r '.projectItems[] | .status.name')" >> "$GITHUB_OUTPUT"
+      env:
+        GITHUB_TOKEN: ${{ inputs.project-token }}
+      id: get-issue-status
+      if: ${{ github.event.issue }}
+      shell: bash
+
+    - run: |
+        response=$(gh project field-list ${{ inputs.project-number }} --format json --owner ${{ inputs.project-owner }})
+        echo "statusNames=$(echo $response | jq -r '.fields[] | select(.name == "Status") | [.options[].name] | join(",")')" >> "$GITHUB_OUTPUT"
+      env:
+        GITHUB_TOKEN: ${{ inputs.project-token }}
+      id: get-project-fields
+      if: ${{ github.event.issue && steps.get-issue-status.outputs.statusName }}
+      shell: bash
+
+    - run: |
+        import difflib as dl, os
+        status_names = "${{ steps.get-project-fields.outputs.statusNames }}".split(",")
+        find_similar = lambda xs, x: next(i for i, y in enumerate(xs) if dl.SequenceMatcher(None, x, y).ratio() > 0.5)
+        old_status_idx = find_similar(status_names, "${{ steps.get-issue-status.outputs.statusName }}")
+        new_status_idx = find_similar(status_names, "${{ inputs.item-status }}")
+        cmp = lambda a, b: (a > b) - (a < b)
+        with open(os.environ["GITHUB_OUTPUT"], 'a') as f:
+          f.write("compareResult=" + str(cmp(old_status_idx, new_status_idx)) + "\n")
+      id: compare-status-names
+      if: ${{ github.event.issue && steps.get-project-fields.outputs.statusNames }}
+      shell: python
+
     - uses: titoportas/update-project-fields@v0.1.0
+      if: ${{ steps.compare-status-names.outputs.compareResult != '1' }}
       with:
         project-url: https://github.com/orgs/${{ inputs.project-owner }}/projects/${{ inputs.project-number }}
         github-token: ${{ inputs.project-token }}
