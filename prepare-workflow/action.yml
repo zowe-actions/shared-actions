@@ -67,7 +67,7 @@ runs:
       shell: bash
 
     - name: 'set ansible to 2.14.x (regression #80944)'
-      run: python3 -m pip install --upgrade --user ansible==7.6.0
+      run: python3 -m pip install --upgrade --user ansible==7.6.0 --break-system-packages
       shell: bash
     
     - name: 'export github username and email'
