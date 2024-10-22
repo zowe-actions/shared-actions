@@ -7,7 +7,7 @@ inputs:
   pax-ssh-host:
     description: 'ssh host for packaging'
     required: false
-    default: zzow08.zowe.marist.cloud
+    default: zzow11.zowe.marist.cloud
   pax-ssh-port:
     description: 'ssh port for packaging'
     required: false
