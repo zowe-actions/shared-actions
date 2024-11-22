@@ -1,3 +1,20 @@
+/**
+ * Metadata about a pull request.
+ * @typedef {{ number: number;
+ *   title: string;
+ *   author: string;
+ *   hasReviews: boolean;
+ *   mergeable: boolean;
+ *   reviewers: { login: string }[];
+ *   mergeBy: string;
+ * }} PullInfo[]
+ */
+
+/**
+ * 
+ * @param {Object} github The github object for interacting w/ REST APIs 
+ * @returns {PullInfo[]} List of metadata for each pull request
+ */
 export async function getPullRequests({ github }) {
     return (await github.rest.pulls.list({
         owner,

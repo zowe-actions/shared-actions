@@ -1,18 +1,13 @@
 import { QUERIES, MUTATIONS } from "./graphql";
 import { getPullRequests } from "./promises";
 
+/** @typedef {import("./promises").PullInfo} PullInfo */
+
 /**
  * Builds a row for the Markdown table given the GitHub repo owner, repo name and pull request.
  * @param {string} owner The owner of the repository (user or organization)
  * @param {string} repo The name of the repository on GitHub
- * @param {Object} pr The pull request data to use for the table row
- * @param {number} pr.number The number for the pull request
- * @param {string} pr.author The author of the pull request
- * @param {string} pr.title The title of the pull request
- * @param {boolean} pr.hasReviews Whether the pull request has 2 or more approvals
- * @param {boolean} pr.mergeable Whether the pull request is able to be merged
- * @param {Object[]} pr.reviewers The list of requested reviewers for the pull request
- * @param {string} pr.mergeBy (optional) The merge-by date for the pull request
+ * @param {PullInfo} pr The pull request data to use for the table row
  * @returns
  */
 const buildTableRow = (owner, repo, pr) =>
@@ -37,13 +32,7 @@ const DISCUSSION_NAME = "PR Status List";
  *
  * @param {Object} github The OctoKit/rest.js API for making requests to GitHub
  * @param {string} owner The owner of the repository (user or organization)
- * @param {Object[]} pullRequests The list of pull requests to include in the table
- * @param {number} pullRequests[].number The number for the pull request
- * @param {string} pullRequests[].author The author of the pull request
- * @param {string} pullRequests[].title The title of the pull request
- * @param {boolean} pullRequests[].hasReviews Whether the pull request has 2 or more approvals
- * @param {boolean} pullRequests[].mergeable Whether the pull request is able to be merged
- * @param {Object[]} pullRequests[].reviewers The list of requested reviewers for the pull request
+ * @param {PullInfo[]} pullRequests The list of pull requests to include in the table
  * @param {string} pullRequests[].mergeBy (optional) The merge-by date for the pull request
  * @param {string} repo The name of the repository on GitHub
  */
@@ -94,13 +83,7 @@ const scanPRsAndUpdateTable = async ({ github, owner, pullRequests, repo }) => {
  * @param {Object} dayJs Day.js exports for manipulating/querying time differences
  * @param {Object} github The OctoKit/rest.js API for making requests to GitHub
  * @param {string} owner The owner of the repo (user or organization)
- * @param {Object[]} pullRequests The list of pull requests to include in the table
- * @param {string} pullRequests[].number The number for the pull request
- * @param {string} pullRequests[].author The author of the pull request
- * @param {string} pullRequests[].title The title of the pull request
- * @param {string} pullRequests[].mergeable Whether the pull request is able to be merged
- * @param {string} pullRequests[].reviewers The list of requested reviewers for the pull request
- * @param {string} pullRequests[].mergeBy (optional) The merge-by date for the pull request
+ * @param {PullInfo[]} pullRequests The list of pull requests to include in the table
  * @param {string} repo The name of the GitHub repo
  * @param {Object} today Today's date represented as a Day.js object
  */
