@@ -75,6 +75,17 @@ async function getPullRequests({ dayJs, github, owner, repo }) {
                     })
                 ).data;
                 const timeLineLastToFirst = timeline.reverse();
+                const lastReadyEvent = timeLineLastToFirst.find((ev) => ev.event === "ready_for_review");
+                let daysSinceReady = pr.draft ? -1 : 0;
+                if (!pr.draft) {
+                    if (lastReadyEvent != null) {
+                        // PR was previously marked as draft but then marked ready
+                        daysSinceReady = dayJs().diff(dayJs(lastReadyEvent.created_at), "day");
+                    } else {
+                        // PR was marked as ready when it was created
+                        daysSinceReady = dayJs().diff(dayJs(pr.created_at), "day");
+                    }
+                }
 
                 console.log("timeline: ", JSON.stringify(timeLineLastToFirst));
                 return {
@@ -84,7 +95,7 @@ async function getPullRequests({ dayJs, github, owner, repo }) {
                     hasReviews: hasTwoReviews,
                     mergeable: pr.mergeable,
                     reviewers: reviewersNotApproved,
-                    daysSinceReady: 0,
+                    daysSinceReady,
                     mergeBy: existingComment?.body
                         .substring(existingComment.body.lastIndexOf("*") + 1)
                         .trim(),
