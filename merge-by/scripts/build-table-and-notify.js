@@ -1,5 +1,5 @@
-import { QUERIES, MUTATIONS } from "./graphql";
-import { getPullRequests } from "./promises";
+const { QUERIES, MUTATIONS } = require("./graphql");
+const { getPullRequests } = require("./promises");
 
 /** @typedef {import("./promises").PullInfo} PullInfo */
 
