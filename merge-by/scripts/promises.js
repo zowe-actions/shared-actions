@@ -86,7 +86,6 @@ async function getPullRequests({ dayJs, github, owner, repo }) {
                     }
                 }
 
-                console.log("timeline: ", JSON.stringify(timeLineLastToFirst));
                 return {
                     number: pr.number,
                     title: pr.title,

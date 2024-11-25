@@ -3,7 +3,7 @@ description: "Tracks the status of ongoing pull requests and provides expected d
 
 inputs:
   operation:
-    description: 'The operation to run as part of this action (table, bump-dates)'
+    description: 'The operation to run as part of this action (build-table, bump-dates)'
     required: true
     default: 'build-table'
 
