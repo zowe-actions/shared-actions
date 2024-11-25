@@ -75,10 +75,6 @@ async function getPullRequests({ dayJs, github, owner, repo }) {
                     })
                 ).data;
                 const timeLineLastToFirst = timeline.reverse();
-                const lastReadyEvent = pr.draft ? timeLineLastToFirst.findIndex((ev) => ev.event === "ready_for_review") :
-                    new Date(pr.created_at);
-                const daysSinceReady = pr.draft || lastReadyEvent === -1 ? -1 :
-                    dayJs().diff(dayJs(timeLineLastToFirst[lastReadyEvent].created_at), "day");
 
                 console.log("timeline: ", JSON.stringify(timeLineLastToFirst));
                 return {
@@ -88,7 +84,7 @@ async function getPullRequests({ dayJs, github, owner, repo }) {
                     hasReviews: hasTwoReviews,
                     mergeable: pr.mergeable,
                     reviewers: reviewersNotApproved,
-                    daysSinceReady: daysSinceReady,
+                    daysSinceReady: 0,
                     mergeBy: existingComment?.body
                         .substring(existingComment.body.lastIndexOf("*") + 1)
                         .trim(),
