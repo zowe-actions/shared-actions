@@ -22,7 +22,7 @@ runs:
         cache: 'pnpm'
 
     - name: Install dependencies
-      run: pnpm install
+      run: pnpm install && pnpm install -g dayjs
       shell: "bash"
 
     - uses: actions/github-script@v7
