@@ -1,4 +1,4 @@
-export const QUERIES = {
+const QUERIES = {
     GET_DISCUSSIONS: `#graphql query($owner:String!, $repo:String!) {
         repository(owner:$owner, name:$repo) {
             id
@@ -21,7 +21,7 @@ export const QUERIES = {
     }`,
 };
 
-export const MUTATIONS = {
+const MUTATIONS = {
     CREATE_DISCUSSION: `#graphql mutation($input:CreateDiscussionInput!) {
         createDiscussion(input: $input) {
             discussion {
@@ -36,4 +36,9 @@ export const MUTATIONS = {
             }
         }
     }`,
+};
+
+module.exports = {
+    QUERIES,
+    MUTATIONS
 };

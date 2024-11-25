@@ -19,7 +19,7 @@
  * @param {Object} github The github object for interacting w/ REST APIs
  * @returns {PullInfo[]} List of metadata for each pull request
  */
-export async function getPullRequests({ dayJs, github }) {
+async function getPullRequests({ dayJs, github }) {
     return (
         await github.rest.pulls.list({
             owner,
@@ -94,3 +94,7 @@ export async function getPullRequests({ dayJs, github }) {
             };
         });
 }
+
+module.exports = {
+    getPullRequests
+};
