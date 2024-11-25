@@ -4,6 +4,23 @@ import { getPullRequests } from "./promises";
 /** @typedef {import("./promises").PullInfo} PullInfo */
 
 /**
+ * @param {number} days Days between PR marked as ready and current date
+ * @returns {string} The appropriate string based on the number given
+ */
+const getDaysReady = (days) => {
+  switch (days) {
+    case -1:
+      return "Not ready";
+    case 0:
+      return "Today";
+    case 1:
+      return "a day ago";
+    default:
+      return `${days} days ago`;
+  }
+};
+
+/**
  * Builds a row for the Markdown table given the GitHub repo owner, repo name and pull request.
  * @param {string} owner The owner of the repository (user or organization)
  * @param {string} repo The name of the repository on GitHub
@@ -11,19 +28,18 @@ import { getPullRequests } from "./promises";
  * @returns
  */
 const buildTableRow = (owner, repo, pr) =>
-  `| [#${pr.number}](https://github.com/${owner}/${repo}/pull/${
-    pr.number
-  }) | [**${pr.title.trim()}**](https://github.com/${owner}/${repo}/pull/${
-    pr.number
-  }) | ${pr.author} | ${pr.mergeBy ?? "N/A"} | ${
-    pr.hasReviews && pr.mergeable !== false
-      ? ":white_check_mark:"
-      : ":white_large_square:"
-  } |`;
+  `| [#${pr.number}](https://github.com/${owner}/${repo}/pull/${pr.number
+  }) | [**${pr.title.trim()}**](https://github.com/${owner}/${repo}/pull/${pr.number
+  }) | ${pr.author} | ${pr.mergeBy ?? "N/A"} | ${getDaysReady(
+    pr.daysSinceReady
+  )} | ${pr.hasReviews && pr.mergeable !== false
+    ? ":white_check_mark:"
+    : ":white_large_square:"
+  }`;
 
 const TABLE_HEADER = `
-| # | Title | Author | Merge by | Ready to merge? |
-| - | ----- | ------ | ------------- | -------------- |`;
+| # | Title | Author | Merge by | Marked ready | Can merge? | 
+| - | ----- | ------ | -------- | ------------ | ---------- |`;
 
 const DISCUSSION_NAME = "PR Status List";
 
@@ -150,7 +166,7 @@ const notifyUsers = async ({
  */
 const fetchPullRequests = async ({ dayJs, github, owner, repo, today }) => {
   const nextWeek = today.add(7, "day");
-  return (await Promise.all(getPullRequests({ github })))
+  return (await Promise.all(getPullRequests({ dayJs, github })))
     .filter((pr) => {
       if (pr.mergeBy == null) {
         return true;
