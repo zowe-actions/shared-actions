@@ -19,13 +19,13 @@
  * @param {Object} github The github object for interacting w/ REST APIs
  * @returns {PullInfo[]} List of metadata for each pull request
  */
-async function getPullRequests({ dayJs, github }) {
-    return (await Promise.all(
-        await github.rest.pulls.list({
+async function getPullRequests({ dayJs, github, owner, repo }) {
+    return Promise.all(
+        (await github.rest.pulls.list({
             owner,
             repo,
             state: "open",
-        })?.data
+        }))?.data
             .filter((pr) => !pr.draft)
             .map(async (pr) => {
                 const comments = (
@@ -91,7 +91,7 @@ async function getPullRequests({ dayJs, github }) {
                         .substring(existingComment.body.lastIndexOf("*") + 1)
                         .trim(),
                 };
-            })));
+            }));
 }
 
 module.exports = {

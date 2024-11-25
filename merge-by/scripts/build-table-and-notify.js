@@ -169,7 +169,7 @@ const notifyUsers = async ({
  */
 const fetchPullRequests = async ({ dayJs, github, owner, repo, today }) => {
   const nextWeek = today.add(7, "day");
-  return getPullRequests({ dayJs, github })
+  return (await getPullRequests({ dayJs, github, owner, repo }))
     .filter((pr) => {
       if (pr.mergeBy == null) {
         return true;
