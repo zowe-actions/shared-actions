@@ -13,8 +13,8 @@ module.exports = async ({ github, context }) => {
     const existingComment = comments?.find((comment) => 
         comment.user.login === "github-actions[bot]" && comment.body.includes("**📅 Suggested merge-by date:"));
     
-    // For existing PRs, only post the date if a bot comment doesn't already exist.
-    if (context.payload.pull_request.draft || (wasJustPushed && existingComment != null)) {
+    // For existing PRs, only post the date if the PR isn't in draft.
+    if (context.payload.pull_request.draft) {
         return;
     }
     
