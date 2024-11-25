@@ -23,7 +23,7 @@ runs:
 
     - name: Install dependencies
       run: pnpm install && pnpm install -g dayjs
-      shell: "bash"
+      shell: "sh"
 
     - uses: actions/github-script@v7
       if: ${{ inputs.operation == 'build-table' }}
