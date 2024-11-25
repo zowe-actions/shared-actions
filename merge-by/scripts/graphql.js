@@ -1,5 +1,5 @@
 const QUERIES = {
-    GET_DISCUSSIONS: `#graphql query($owner:String!, $repo:String!) {
+    GET_DISCUSSIONS: `query($owner:String!, $repo:String!) {
         repository(owner:$owner, name:$repo) {
             id
 
@@ -22,14 +22,14 @@ const QUERIES = {
 };
 
 const MUTATIONS = {
-    CREATE_DISCUSSION: `#graphql mutation($input:CreateDiscussionInput!) {
+    CREATE_DISCUSSION: `mutation($input:CreateDiscussionInput!) {
         createDiscussion(input: $input) {
             discussion {
                 id
             }
         }
     }`,
-    UPDATE_DISCUSSION: `#graphql mutation($input:UpdateDiscussionInput!) {
+    UPDATE_DISCUSSION: `mutation($input:UpdateDiscussionInput!) {
         updateDiscussion(input: $input) {
             discussion {
                 id
