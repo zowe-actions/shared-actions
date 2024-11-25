@@ -29,14 +29,14 @@ runs:
       if: ${{ inputs.operation == 'build-table' }}
       with:
         script: |
-            const script = require("./merge-by/scripts/build-table-and-notify.js");
+            const script = require("${{ github.action_path }}/scripts/build-table-and-notify.js");
             await script({ github, context });
 
     - uses: actions/github-script@v7
       if: ${{ inputs.operation == 'bump-dates' }}
       with:
         script: |
-            const script = require("./merge-by/scripts/bump-dates.js");
+            const script = require("${{ github.action_path }}/scripts/bump-dates.js");
             await script({ github, context });
 
           
