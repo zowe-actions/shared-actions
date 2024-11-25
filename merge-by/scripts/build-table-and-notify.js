@@ -55,8 +55,8 @@ const DISCUSSION_NAME = "PR Status List";
  * @param {string} pullRequests[].mergeBy (optional) The merge-by date for the pull request
  * @param {string} repo The name of the repository on GitHub
  */
+// Build a table using Markdown to post within the issue
 const scanPRsAndUpdateTable = async ({ github, owner, pullRequests, repo }) => {
-  // Build a table using Markdown to post within the issue
   const body = `${TABLE_HEADER}\n${pullRequests
     .map((pr) => buildTableRow(owner, repo, pr))
     .join("\n")}`;
@@ -168,17 +168,7 @@ const notifyUsers = async ({
  * @param {Object} today Today's date, represented as a day.js object
  */
 const fetchPullRequests = async ({ dayJs, github, owner, repo, today }) => {
-  const nextWeek = today.add(7, "day");
   return (await getPullRequests({ dayJs, github, owner, repo }))
-    .filter((pr) => {
-      if (pr.mergeBy == null) {
-        return true;
-      }
-
-      // Filter out any PRs that have merge-by dates > 1 week from now
-      const mergeByDate = dayJs(pr.mergeBy);
-      return nextWeek.diff(mergeByDate, "day") <= 7;
-    })
     .reverse();
 };
 

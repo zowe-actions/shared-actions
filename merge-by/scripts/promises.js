@@ -26,7 +26,6 @@ async function getPullRequests({ dayJs, github, owner, repo }) {
             repo,
             state: "open",
         }))?.data
-            .filter((pr) => !pr.draft)
             .map(async (pr) => {
                 const comments = (
                     await github.rest.issues.listComments({
