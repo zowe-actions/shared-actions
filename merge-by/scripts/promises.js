@@ -77,7 +77,7 @@ async function getPullRequests({ dayJs, github, owner, repo }) {
                 const timeLineLastToFirst = timeline.reverse();
                 const lastReadyEvent = timeLineLastToFirst.findIndex((ev) => ev.event === "ready_for_review");
                 const daysSinceReady = pr.draft ? -1 :
-                    dayJs().diff(dayjs(timeLineLastToFirst(lastReadyEvent).created_at), "day");
+                    dayJs().diff(dayJs(timeLineLastToFirst(lastReadyEvent).created_at), "day");
 
                 return {
                     number: pr.number,
