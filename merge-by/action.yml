@@ -26,7 +26,7 @@ runs:
       with:
         script: |
             const script = require("${{ github.action_path }}/scripts/build-table-and-notify.js");
-            await script({ github, context });
+            await script({ github, context, require });
     - uses: actions/github-script@v7
       if: ${{ inputs.operation == 'bump-dates' }}
       with:

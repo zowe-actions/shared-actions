@@ -28,13 +28,16 @@ const getDaysReady = (days) => {
  * @returns
  */
 const buildTableRow = (owner, repo, pr) =>
-  `| [#${pr.number}](https://github.com/${owner}/${repo}/pull/${pr.number
-  }) | [**${pr.title.trim()}**](https://github.com/${owner}/${repo}/pull/${pr.number
+  `| [#${pr.number}](https://github.com/${owner}/${repo}/pull/${
+    pr.number
+  }) | [**${pr.title.trim()}**](https://github.com/${owner}/${repo}/pull/${
+    pr.number
   }) | ${pr.author} | ${pr.mergeBy ?? "N/A"} | ${getDaysReady(
     pr.daysSinceReady
-  )} | ${pr.hasReviews && pr.mergeable !== false
-    ? ":white_check_mark:"
-    : ":white_large_square:"
+  )} | ${
+    pr.hasReviews && pr.mergeable !== false
+      ? ":white_check_mark:"
+      : ":white_large_square:"
   }`;
 
 const TABLE_HEADER = `
@@ -179,7 +182,7 @@ const fetchPullRequests = async ({ dayJs, github, owner, repo, today }) => {
     .reverse();
 };
 
-module.exports = async ({ github, context }) => {
+module.exports = async ({ github, context, require }) => {
   const dayJs = require("dayjs");
   const today = dayJs();
   const owner = context.repo.owner;
