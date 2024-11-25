@@ -5,7 +5,7 @@ inputs:
   operation:
     description: 'The operation to run as part of this action (table, bump-dates)'
     required: true
-    default: 'table'
+    default: 'build-table'
 
 runs:
   using: "composite"
@@ -21,7 +21,7 @@ runs:
       shell: bash
 
     - uses: actions/github-script@v7
-      if: ${{ inputs.operation == 'table' }}
+      if: ${{ inputs.operation == 'build-table' }}
       with:
         script: |
             const script = require("./merge-by/scripts/build-table-and-notify.js");
