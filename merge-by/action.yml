@@ -10,9 +10,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - run: mkdir merge-by-pkg && cd merge-by-pkg && npm init -y
-      shell: "sh"
-    - run: npm install dayjs
+    - run: npm install -g dayjs
       shell: "sh"
     - uses: actions/github-script@v7
       if: ${{ inputs.operation == 'build-table' }}
