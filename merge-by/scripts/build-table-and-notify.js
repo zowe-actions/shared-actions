@@ -28,16 +28,13 @@ const getDaysReady = (days) => {
  * @returns
  */
 const buildTableRow = (owner, repo, pr) =>
-  `| [#${pr.number}](https://github.com/${owner}/${repo}/pull/${
-    pr.number
-  }) | [**${pr.title.trim()}**](https://github.com/${owner}/${repo}/pull/${
-    pr.number
+  `| [#${pr.number}](${process.env.GITHUB_SERVER_URL}/${owner}/${repo}/pull/${pr.number
+  }) | [**${pr.title.trim()}**](${process.env.GITHUB_SERVER_URL}/${owner}/${repo}/pull/${pr.number
   }) | ${pr.author} | ${pr.mergeBy ?? "N/A"} | ${getDaysReady(
     pr.daysSinceReady
-  )} | ${
-    pr.hasReviews && pr.mergeable !== false
-      ? ":white_check_mark:"
-      : ":white_large_square:"
+  )} | ${pr.hasReviews && pr.mergeable !== false
+    ? ":white_check_mark:"
+    : ":white_large_square:"
   }`;
 
 const TABLE_HEADER = `
@@ -158,36 +155,28 @@ const notifyUsers = async ({
   }
 };
 
-/**
- * Fetches PRs with a merge-by date < 1 week from now.
- *
- * @param {Object} dayJs Day.js exports for manipulating/querying time differences
- * @param {Object} github The OctoKit/rest.js API for making requests to GitHub
- * @param {string} owner The owner of the repository (user or organization)
- * @param {string} repo The name of the repository on GitHub
- * @param {Object} today Today's date, represented as a day.js object
- */
-const fetchPullRequests = async ({ dayJs, github, owner, repo, today }) => {
-  return (await getPullRequests({ dayJs, github, owner, repo }))
-    .reverse();
-};
-
 module.exports = async ({ github, context, require }) => {
   const dayJs = require("dayjs");
-  const today = dayJs();
   const owner = context.repo.owner;
   const repo = context.repo.repo;
-  const pullRequests = await fetchPullRequests({
+  const pullRequests = await getPullRequests({
     dayJs,
     github,
     owner,
     repo,
-    today,
+    reverse,
   });
   // Look over existing PRs, grab all PRs with a merge-by date <= 1w from now, and update the issue with the new table
   await scanPRsAndUpdateTable({ github, owner, pullRequests, repo });
   // Notify users for PRs with merge-by dates coming up within 24hrs from now
   if (context.eventName === "schedule") {
-    await notifyUsers({ dayJs, github, owner, pullRequests, repo, today });
+    await notifyUsers({
+      dayJs,
+      github,
+      owner,
+      pullRequests,
+      repo,
+      today: dayJs(),
+    });
   }
 };

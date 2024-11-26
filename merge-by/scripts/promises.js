@@ -17,10 +17,13 @@
  *
  * @param {Object} dayJs Day.js exports for manipulating/querying time differences
  * @param {Object} github The github object for interacting w/ REST APIs
+ * @param {string} owner The repository owner (e.g. zowe)
+ * @param {string} repo The name of the repository
+ * @param {boolean} reverse Whether to reverse the order of results
  * @returns {PullInfo[]} List of metadata for each pull request
  */
-async function getPullRequests({ dayJs, github, owner, repo }) {
-    return Promise.all(
+async function getPullRequests({ dayJs, github, owner, repo, reverse }) {
+    const res = await Promise.all(
         (await github.rest.pulls.list({
             owner,
             repo,
@@ -99,6 +102,8 @@ async function getPullRequests({ dayJs, github, owner, repo }) {
                         .trim(),
                 };
             }));
+    
+    return reverse ? res.reverse() : res;
 }
 
 module.exports = {
