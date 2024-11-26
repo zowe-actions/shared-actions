@@ -164,7 +164,7 @@ module.exports = async ({ github, context, require }) => {
     github,
     owner,
     repo,
-    reverse,
+    reverse: true
   });
   // Look over existing PRs, grab all PRs with a merge-by date <= 1w from now, and update the issue with the new table
   await scanPRsAndUpdateTable({ github, owner, pullRequests, repo });
