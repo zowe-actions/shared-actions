@@ -21,6 +21,7 @@
     "debug": "4.3.2",
     "glob": "7.1.7",
     "js-yaml": "4.1.0",
+    "lodash": "^4.17.21",
     "semver": "7.3.5",
     "zowe-common": "git://github.com/zowe-actions/zowe-common"
   }

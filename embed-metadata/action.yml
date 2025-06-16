@@ -1,0 +1,19 @@
+name: "Embed build metadata into a file"
+description: "Embeds build metadata into a file using either YAML or JSON format"
+inputs:
+  target-file:
+    description: 'target file to embed metadata into'
+    required: true
+  create-if-missing:
+    description: 'creates metadata file if it does not already exist'
+    required: false
+    default: 'false'
+  metadata-format:
+    description: 'either "YAML" or "JSON", defaults to "YAML"'
+    required: true
+    default: 'YAML'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
+  post: 'dist/index.js'
