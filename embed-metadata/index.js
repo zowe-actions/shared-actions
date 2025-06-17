@@ -6,6 +6,7 @@ const {github} = require('zowe-common');
 
 const targetFile = core.getInput('target-file');
 const createIfMissing = core.getInput('create-if-missing');
+const userBranchName = core.getInput('branch-name');
 const metadataFormat = core.getInput('metadata-format').toUpperCase();
 
 if (!fs.existsSync(targetFile)) { 
@@ -18,13 +19,13 @@ if (!fs.existsSync(targetFile)) {
 }
 
 const commitHash = github._cmd(process.cwd(), 'rev-parse HEAD');
-const currentBranch = github._cmd(process.cwd(), 'rev-parse --abbrev-ref HEAD');
+const gitDetectedBranch = github._cmd(process.cwd(), 'rev-parse --abbrev-ref HEAD');
 const timestamp = Date.now();
 
 
 const buildInfo = {
     'build': {
-        'branch': currentBranch,
+        'branch': (userBranchName?.length > 0) ? userBranchName : gitDetectedBranch,
         'timestamp': timestamp,
         'commit': commitHash, 
     }

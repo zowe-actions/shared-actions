@@ -12,6 +12,10 @@ inputs:
     description: 'either "YAML" or "JSON", defaults to "YAML"'
     required: true
     default: 'YAML'
+  branch-name:
+    description: 'user-provided branch name, use this when the action-detected branch is incorrect or not specific enough (i.e. HEAD)'
+    required: false
+    default: ''
 
 runs:
   using: 'node20'
