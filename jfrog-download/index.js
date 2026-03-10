@@ -123,6 +123,8 @@ function validate(response) {
 }
 
 function listWhichArtifactMissing() {
+    debug(glob.sync(target));
+
     packageNameInManifestMap.forEach(function(target, currentPackageNameInManifest) {  
         if (target.endsWith('/')) {
             target += '*'
