@@ -64,6 +64,11 @@ while read -r package; do
             >&2 echo "Warning: cannot validate version of ${package}@${version}."
             continue
           fi
+          version_first_5chars=$(echo "${version}" | cut -c 1-5)
+          if [ "${version_first_5chars}" = "file:" -o "${version_first_5chars}" = "link:" ]; then
+            >&2 echo "Warning: cannot validate version of ${package}@${version}."
+            continue
+          fi
           time=$(npm view "${package}@${version}" time --json 2>/dev/null | jq -r ".\"${version}\"")
           time_rc=$?
           echo "    - ${time}"
