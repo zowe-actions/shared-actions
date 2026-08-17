@@ -6,11 +6,11 @@ This action updates Sonar scan properties with branch context and coverage info.
 
 ## Inputs
 
-### `project-owner`
+### `coverage-artifact`
 
 **Optional** - Name of artifact containing coverage info.
 
-### `project-number`
+### `extract-dir`
 
 **Optional** - Directory to extract the coverage artifact to.
 
