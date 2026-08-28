@@ -16,6 +16,9 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Install dependencies
+      shell: bash
+      run: curl -L https://unpkg.com/java-properties/dist-src/index.js -o scripts/java-properties.js
     - name: Download coverage artifact
       if: inputs.coverage-artifact != ''
       shell: bash
