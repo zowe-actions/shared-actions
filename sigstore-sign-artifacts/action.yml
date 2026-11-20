@@ -8,29 +8,13 @@ inputs:
   output_path:
     description: 'sets target output directory, defaults to current working directory'
     required: false
-    default: './' 
-    
+    default: './'
+
 runs:
   using: 'composite'
-  steps: 
+  steps:
     - name: Install Cosign
       uses: sigstore/cosign-installer@v3.6.0
-
-    - name: Check Node version
-      id: check-node
-      shell: bash
-      run: |
-        if command -v node >/dev/null 2>&1 && [ "$(node -p 'process.versions.node.split(".")[0]')" -ge 20 ]; then
-          echo "needs_install=false" >> "$GITHUB_OUTPUT"
-        else
-          echo "needs_install=true" >> "$GITHUB_OUTPUT"
-        fi
-
-    - name: setup node
-      if: steps.check-node.outputs.needs_install == 'true'
-      uses: actions/setup-node@v3.6.0
-      with:
-        node-version: 20
 
     - name: Run sign
       run: node ${GITHUB_ACTION_PATH}/dist/index.js
@@ -38,5 +22,3 @@ runs:
       env:
         INPUT_OUTPUT_PATH: ${{ inputs.output_path }}
         INPUT_ARTIFACTS: ${{ inputs.artifacts }}
-
-
